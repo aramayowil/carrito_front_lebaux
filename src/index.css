@@ -1,0 +1,525 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/inter";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: "Inter Variable", sans-serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-whatsapp: var(--whatsapp);
+  --color-whatsapp-foreground: var(--whatsapp-foreground);
+  --color-brand-black: var(--brand-black);
+  --color-brand-graphite: var(--brand-graphite);
+  --color-catalog-line: var(--catalog-line);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Alto compacto del Navbar sticky. También alimenta h-navbar y
+     scroll-mt-navbar para mantener alineados el encabezado y las anclas. */
+  --spacing-navbar: 4.5rem;
+
+  /* Escala responsive adicional para dispositivos muy estrechos. Se expresa
+     en rem y se consume como variante semántica `xs:`. */
+  --breakpoint-xs: 22.5rem;
+}
+
+:root {
+  /* base */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.25 0.004 228.938); /* gray-900 #202223 */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.25 0.004 228.938);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.25 0.004 228.938);
+  --catalog-line: oklch(0.982 0 0); /* #F9F9F9 */
+
+  /* brand — amber, from logo */
+  --primary: oklch(0.789 0.148 70.872); /* amber-500 #F5A83D */
+  --primary-foreground: oklch(
+    0.25 0.004 228.938
+  ); /* gray-900, reads better than white on amber */
+
+  /* neutral — gray, from logo */
+  --secondary: oklch(0.933 0.001 197.14); /* gray-100 #E8E9E9 */
+  --secondary-foreground: oklch(0.25 0.004 228.938);
+  --muted: oklch(0.933 0.001 197.14); /* gray-100 */
+  --muted-foreground: oklch(0.496 0.005 214.347); /* gray-700 #5F6364 */
+  --accent: oklch(
+    0.948 0.049 85.149
+  ); /* amber-100 #FDECC9, for hover/highlight rows */
+  --accent-foreground: oklch(0.412 0.087 64.133); /* amber-900 #6B3F0A */
+
+  /* semantic */
+  --destructive: oklch(0.577 0.215 27.325); /* red #DC2626, sin stock / error */
+  --destructive-foreground: oklch(1 0 0);
+  --success: oklch(
+    0.627 0.17 149.214
+  ); /* green #16A34A, en stock / confirmado */
+  --success-foreground: oklch(1 0 0);
+  --warning: oklch(0.666 0.157 58.318); /* orange #D97706, advertencia */
+  --warning-foreground: oklch(1 0 0);
+  --info: oklch(0.546 0.215 262.881); /* blue #2563EB, enlaces / info */
+  --info-foreground: oklch(1 0 0);
+
+  /* Color fijo de marca de WhatsApp (#25D366), no del logo Lebaux. Se
+     mantiene aparte de la paleta ámbar/gris porque el CTA de WhatsApp
+     necesita ser reconocible como "ese botón verde" en cualquier tema. */
+  --whatsapp: oklch(
+    0.761 0.201 149.74
+  ); /* #25D366, verde oficial de WhatsApp */
+  --whatsapp-foreground: oklch(1 0 0);
+
+  /* Negros fijos de marca (Hero, Footer, header y CTAs puntuales). A propósito
+     NO son alias de --background/--foreground: estos bloques son
+     siempre oscuros, sea cual sea el tema claro/oscuro activo del resto
+     del sitio (igual que hacía el proyecto anterior con brand-black /
+     brand-graphite). Ver docs/2026-08-02-migracion-home.md. */
+  --brand-black: oklch(0.191 0 0); /* #141414, fondo del Hero/Header/Footer */
+  --brand-graphite: oklch(
+    0.235 0 0
+  ); /* #1e1e1e, superficies oscuras de marca */
+
+  --border: oklch(0.933 0.001 197.14); /* gray-100 */
+  --input: oklch(0.933 0.001 197.14);
+  --ring: oklch(0.789 0.148 70.872); /* amber-500, foco con color de marca */
+
+  --chart-1: oklch(0.789 0.148 70.872); /* amber-500 */
+  --chart-2: oklch(0.667 0.005 214.337); /* gray-500 */
+  --chart-3: oklch(0.652 0.136 67.083); /* amber-700 */
+  --chart-4: oklch(0.496 0.005 214.347); /* gray-700 */
+  --chart-5: oklch(0.91 0.078 82.419); /* amber-200 */
+
+  --radius: 0.625rem;
+
+  --sidebar: oklch(0.976 0 0); /* gray-50 */
+  --sidebar-foreground: oklch(0.25 0.004 228.938);
+  --sidebar-primary: oklch(0.789 0.148 70.872);
+  --sidebar-primary-foreground: oklch(0.25 0.004 228.938);
+  --sidebar-accent: oklch(0.933 0.001 197.14);
+  --sidebar-accent-foreground: oklch(0.25 0.004 228.938);
+  --sidebar-border: oklch(0.933 0.001 197.14);
+  --sidebar-ring: oklch(0.789 0.148 70.872);
+}
+
+.dark {
+  --background: oklch(0.25 0.004 228.938); /* gray-900 #202223 */
+  --foreground: oklch(0.976 0 0); /* gray-50 */
+  --card: oklch(0.369 0.004 219.598); /* gray-800 #3D4041 */
+  --card-foreground: oklch(0.976 0 0);
+  --popover: oklch(0.369 0.004 219.598);
+  --popover-foreground: oklch(0.976 0 0);
+  --catalog-line: oklch(0.369 0.004 219.598); /* gray-800 */
+
+  --primary: oklch(0.866 0.111 75.901); /* amber-300 #FDC97D, pops on dark bg */
+  --primary-foreground: oklch(0.25 0.004 228.938); /* gray-900 */
+
+  --secondary: oklch(0.496 0.005 214.347); /* gray-700 */
+  --secondary-foreground: oklch(0.976 0 0);
+  --muted: oklch(0.496 0.005 214.347); /* gray-700 */
+  --muted-foreground: oklch(0.822 0.003 228.792); /* gray-300 */
+  --accent: oklch(0.412 0.087 64.133); /* amber-900, hover/highlight */
+  --accent-foreground: oklch(0.866 0.111 75.901); /* amber-300 */
+
+  --destructive: oklch(
+    0.711 0.166 22.216
+  ); /* red-400, más suave para fondo oscuro */
+  --destructive-foreground: oklch(0.25 0.004 228.938);
+  --success: oklch(0.8 0.182 151.711); /* green-400 */
+  --success-foreground: oklch(0.25 0.004 228.938);
+  --warning: oklch(0.837 0.164 84.429); /* amber-warning-400 */
+  --warning-foreground: oklch(0.25 0.004 228.938);
+  --info: oklch(0.714 0.143 254.624); /* blue-400 */
+  --info-foreground: oklch(0.25 0.004 228.938);
+
+  /* Mismo verde oficial de WhatsApp que en claro: ya tiene buen contraste
+     sobre fondo oscuro, no hace falta una variante más clara. */
+  --whatsapp: oklch(0.761 0.201 149.74); /* #25D366 */
+  --whatsapp-foreground: oklch(1 0 0);
+
+  /* Mismos negros fijos que en claro: no dependen del tema. */
+  --brand-black: oklch(0.191 0 0);
+  --brand-graphite: oklch(0.235 0 0);
+
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.866 0.111 75.901); /* amber-300 */
+
+  --chart-1: oklch(0.866 0.111 75.901); /* amber-300 */
+  --chart-2: oklch(0.822 0.003 228.792); /* gray-300 */
+  --chart-3: oklch(0.789 0.148 70.872); /* amber-500 */
+  --chart-4: oklch(0.667 0.005 214.337); /* gray-500 */
+  --chart-5: oklch(0.652 0.136 67.083); /* amber-700 */
+
+  --sidebar: oklch(0.369 0.004 219.598); /* gray-800 */
+  --sidebar-foreground: oklch(0.976 0 0);
+  --sidebar-primary: oklch(0.866 0.111 75.901);
+  --sidebar-primary-foreground: oklch(0.25 0.004 228.938);
+  --sidebar-accent: oklch(0.496 0.005 214.347);
+  --sidebar-accent-foreground: oklch(0.976 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.866 0.111 75.901);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+
+  /* Base UI conserva el gutter del scrollbar al bloquear el documento.
+     Mientras el Sheet oscuro de navegación está abierto, el canvas raíz y
+     sus controles nativos también usan esquema oscuro. El selector está
+     acotado para no alterar CartDrawer ni los Dialog claros. */
+  html:has([data-mobile-navigation]) {
+    background-color: var(--brand-black);
+    color-scheme: dark;
+  }
+}
+
+/* --------------------------------------------------------------------------
+ * Utilidades de layout y tipografía de secciones "home".
+ * Portadas del proyecto anterior (carrito_responsive_actualizado), ver
+ * docs/2026-08-02-migracion-home.md. Los colores de marca fijos
+ * (--brand-steel, --brand-brass, etc. del proyecto viejo) se reemplazaron
+ * acá por los tokens semánticos de la paleta actual (muted-foreground,
+ * primary, border) para no reintroducir una paleta paralela.
+ * ------------------------------------------------------------------------ */
+
+/* Reemplaza el `container` de Tailwind v3 (center + padding por breakpoint)
+   que en v4 ya no viene por defecto. Cada sección full-bleed (fondo negro,
+   ancho completo) usa esta clase adentro para centrar su contenido. */
+@utility container {
+  margin-inline: auto;
+  padding-inline: 1rem;
+
+  @variant sm {
+    max-width: 640px;
+    padding-inline: 1.5rem;
+  }
+  @variant md {
+    max-width: 768px;
+  }
+  @variant lg {
+    max-width: 1024px;
+    padding-inline: 2rem;
+  }
+  @variant xl {
+    max-width: 1280px;
+    padding-inline: 2.5rem;
+  }
+  @variant 2xl {
+    max-width: 1400px;
+  }
+}
+
+@layer components {
+  /* Título de sección: centrado, con una línea de cota abajo (motivo "plano
+     técnico" que usan Obras/Productos destacados en la home). */
+  .section-title {
+    @apply relative text-center text-3xl font-bold tracking-tight text-foreground md:text-4xl;
+  }
+
+  .section-title::after {
+    content: "";
+    @apply mx-auto mt-4 block h-px w-24;
+    background-image: linear-gradient(
+      to right,
+      transparent 0%,
+      var(--primary) 15%,
+      var(--primary) 85%,
+      transparent 100%
+    );
+  }
+
+  /* Variante alineada a la izquierda (AboutSection). */
+  .section-title-left {
+    @apply text-left;
+  }
+
+  .section-title-left::after {
+    @apply ml-0;
+  }
+
+  /* Etiqueta técnica corta sobre un título ("Por qué LEBAUX", "Catálogo"). */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-primary;
+  }
+
+  /* Entrada breve del botón flotante. El movimiento se ejecuta una sola vez
+     al montar el layout y respeta la preferencia de movimiento reducido. */
+  .fab-inicio-animado {
+    animation: fab-inicio 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Marcas de esquina (referencia a planos de corte de aberturas): visibles
+     solo en hover/focus, para elementos interactivos como tarjetas. */
+  .corner-marks {
+    position: relative;
+  }
+
+  .corner-marks::before,
+  .corner-marks::after {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    @apply border-primary;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+  }
+
+  .corner-marks::before {
+    top: 8px;
+    left: 8px;
+    border-top: 2px solid;
+    border-left: 2px solid;
+  }
+
+  .corner-marks::after {
+    bottom: 8px;
+    right: 8px;
+    border-bottom: 2px solid;
+    border-right: 2px solid;
+  }
+
+  .corner-marks:hover::before,
+  .corner-marks:hover::after,
+  .corner-marks:focus-visible::before,
+  .corner-marks:focus-visible::after {
+    opacity: 1;
+  }
+
+  /* Misma idea que .corner-marks, pero siempre visible: para elementos
+     decorativos no interactivos (la foto del Hero). */
+  .corner-marks-static::before,
+  .corner-marks-static::after {
+    content: "";
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    @apply border-primary;
+    pointer-events: none;
+  }
+
+  .corner-marks-static::before {
+    top: 14px;
+    left: 14px;
+    border-top: 2px solid;
+    border-left: 2px solid;
+  }
+
+  .corner-marks-static::after {
+    bottom: 14px;
+    right: 14px;
+    border-bottom: 2px solid;
+    border-right: 2px solid;
+  }
+
+  /* Línea de cota tipo plano técnico: separador con texto centrado
+     (usado en AboutSection: "Fabricación propia"). */
+  .dim-line {
+    @apply flex items-center gap-3 text-xs uppercase tracking-widest text-muted-foreground;
+  }
+
+  .dim-line::before,
+  .dim-line::after {
+    content: "";
+    @apply h-px flex-1 bg-border;
+  }
+
+  /* Contenido HTML producido por RichTextEditor (Tiptap). Se usa tanto
+     dentro del editor (admin) como, más adelante, donde se renderice la
+     descripción ya guardada — por eso vive acá y no en el componente. */
+  .rich-text-content {
+    @apply text-sm leading-relaxed text-foreground;
+  }
+
+  .rich-text-content > * + * {
+    margin-top: 0.75em;
+  }
+
+  .rich-text-content h1 {
+    @apply font-heading text-xl font-semibold;
+  }
+
+  .rich-text-content h2 {
+    @apply font-heading text-lg font-semibold;
+  }
+
+  .rich-text-content h3 {
+    @apply font-heading text-base font-semibold;
+  }
+
+  .rich-text-content ul {
+    @apply list-disc space-y-1 pl-5;
+  }
+
+  .rich-text-content ol {
+    @apply list-decimal space-y-1 pl-5;
+  }
+
+  .rich-text-content a {
+    @apply text-primary underline underline-offset-2 hover:text-primary/80;
+  }
+
+  .rich-text-content img {
+    @apply h-auto max-w-full rounded-lg;
+  }
+
+  /* TextAlign es una extensión pensada para bloques de texto: guarda la
+     alineación como `style="text-align: …"` en el propio nodo. Eso no
+     mueve un <img> por sí solo (text-align alinea contenido *dentro* de
+     un contenedor, y una imagen no tiene contenido) — acá lo traducimos
+     a display:block + margin para que el botón de alineación de la
+     barra de herramientas también funcione con imágenes. */
+  .rich-text-content img[style*="text-align: center"] {
+    display: block;
+    margin-inline: auto;
+  }
+
+  .rich-text-content img[style*="text-align: right"] {
+    display: block;
+    margin-left: auto;
+    margin-right: 0;
+  }
+
+  .rich-text-content img[style*="text-align: left"] {
+    display: block;
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  .rich-text-content blockquote {
+    @apply border-l-2 border-border pl-3 text-muted-foreground italic;
+  }
+
+  .rich-text-content code {
+    @apply rounded bg-muted px-1 py-0.5 text-xs;
+  }
+
+  .rich-text-content pre {
+    @apply overflow-x-auto rounded-lg bg-muted p-3 text-xs;
+  }
+
+  .rich-text-content pre code {
+    @apply bg-transparent p-0;
+  }
+
+  .rich-text-content hr {
+    @apply border-border;
+  }
+
+  .rich-text-content table {
+    @apply w-full border-collapse text-sm;
+    table-layout: fixed;
+  }
+
+  .rich-text-content th,
+  .rich-text-content td {
+    @apply border border-border px-2 py-1.5 align-top;
+  }
+
+  .rich-text-content th {
+    @apply bg-muted text-left font-medium;
+  }
+
+  .rich-text-content .selectedCell {
+    @apply bg-primary/10;
+  }
+
+  .rich-text-content p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    @apply pointer-events-none float-left h-0 text-muted-foreground;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Quien pide menos movimiento (prefers-reduced-motion) no debería ver
+   animaciones de entrada ni transiciones largas. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes fab-inicio {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.85);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(-0.125rem) scale(1.03);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fab-inicio-animado {
+    animation: none;
+  }
+}
