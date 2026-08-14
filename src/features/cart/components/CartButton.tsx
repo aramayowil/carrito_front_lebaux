@@ -16,7 +16,7 @@ export function CartButton() {
   )
   const { abrirCarrito } = useUICarrito()
   const pathname = usePathname()
-  const withBottomBar = pathname.startsWith("/producto/")
+  const withBottomBar = pathname?.startsWith("/producto/") ?? false
 
   return (
     <div

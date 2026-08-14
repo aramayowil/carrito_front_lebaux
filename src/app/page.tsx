@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 
-import { HomePage } from "@/pages/home/HomePage"
+import { HomePage } from "@/screens/home/HomePage"
 import { cargarDatosHome } from "@/server/datos-publicos"
 
 export const metadata: Metadata = {

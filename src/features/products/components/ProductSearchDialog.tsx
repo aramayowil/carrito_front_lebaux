@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { ArrowRight, LoaderCircle, Search } from "lucide-react"
 import { useRouter } from "next/navigation"
 
@@ -35,9 +35,14 @@ export function ProductSearchDialog({ compact = false }: { compact?: boolean }) 
   const [error, setError] = useState(false)
   const router = useRouter()
 
-  useEffect(() => {
-    if (!abierto || indice || cargando) return
-    let activo = true
+  function handleOpenChange(open: boolean) {
+    setAbierto(open)
+    if (!open) {
+      setConsulta("")
+      return
+    }
+    if (indice || cargando) return
+
     setCargando(true)
     setError(false)
 
@@ -47,19 +52,15 @@ export function ProductSearchDialog({ compact = false }: { compact?: boolean }) 
         return respuesta.json() as Promise<ResultadoBusquedaProducto[]>
       })
       .then((datos) => {
-        if (activo) setIndice(datos)
+        setIndice(datos)
       })
       .catch(() => {
-        if (activo) setError(true)
+        setError(true)
       })
       .finally(() => {
-        if (activo) setCargando(false)
+        setCargando(false)
       })
-
-    return () => {
-      activo = false
-    }
-  }, [abierto, cargando, indice])
+  }
 
   const consultaNormalizada = normalizarBusqueda(consulta)
   const resultados = useMemo(() => {
@@ -80,10 +81,7 @@ export function ProductSearchDialog({ compact = false }: { compact?: boolean }) 
   return (
     <Dialog
       open={abierto}
-      onOpenChange={(open) => {
-        setAbierto(open)
-        if (!open) setConsulta("")
-      }}
+      onOpenChange={handleOpenChange}
     >
       <DialogTrigger
         render={

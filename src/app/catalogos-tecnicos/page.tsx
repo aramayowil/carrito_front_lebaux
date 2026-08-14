@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 
-import { TechnicalCatalogsPage } from "@/pages/technical-catalogs/TechnicalCatalogsPage"
+import { TechnicalCatalogsPage } from "@/screens/technical-catalogs/TechnicalCatalogsPage"
 import { cargarDatosCatalogosTecnicos } from "@/server/datos-publicos"
 
 export const metadata: Metadata = {

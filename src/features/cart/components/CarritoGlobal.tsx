@@ -1,6 +1,6 @@
 "use client"
 
-import type { ReactNode } from "react"
+import { Suspense, type ReactNode } from "react"
 
 import { Toaster } from "@/components/ui/sonner"
 import { CartButton } from "@/features/cart/components/CartButton"
@@ -29,7 +29,9 @@ export function CarritoGlobal({
   return (
     <ProveedorUICarrito>
       {children}
-      <CartButton />
+      <Suspense fallback={null}>
+        <CartButton />
+      </Suspense>
       <CartDrawer />
       <CheckoutDialog configuracion={checkout} telefonoWhatsapp={telefonoWhatsapp} />
       <OrderSuccessDialog />

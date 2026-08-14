@@ -9,6 +9,7 @@ import type { ConfiguracionSitio, LineaProducto, TipologiaProducto } from "@/typ
 
 const URL_ADMIN =
   process.env.ADMIN_URL?.trim() || "http://localhost:5173/admin/login"
+const COPYRIGHT_YEAR = "2026"
 
 /** Pie global renderizado en servidor. Solo el botón de volver arriba hidrata JS. */
 export function Footer({
@@ -133,7 +134,7 @@ export function Footer({
       <div className="border-t border-white/10 py-4 sm:py-5">
         <div className="container flex flex-col items-center gap-3 sm:flex-row sm:justify-between sm:gap-4">
           <p className="text-center text-xs uppercase tracking-wide text-white/40 sm:text-left">
-            © {new Date().getFullYear()} {sitio.nombreLegal}. Todos los derechos reservados.{" "}
+            © {COPYRIGHT_YEAR} {sitio.nombreLegal}. Todos los derechos reservados.{" "}
             <Link href={URL_ADMIN} className="text-white/10 no-underline hover:text-white/30" aria-label="Acceso administrador">
               ·
             </Link>

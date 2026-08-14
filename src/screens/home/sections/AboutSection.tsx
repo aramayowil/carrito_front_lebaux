@@ -1,8 +1,8 @@
 import {
   DynamicIcon,
-  iconNames,
+  dynamicIconImports,
   type IconName,
-} from "lucide-react/dynamic"
+} from "lucide-react/dynamic.mjs"
 
 import { RichTextContent } from "@/components/content/RichTextContent"
 import { ProductImage } from "@/components/media/ProductImage"
@@ -13,10 +13,8 @@ import {
 } from "@/services/cloudinary/imagen-entrega"
 import type { AcercaDeNosotrosInicio } from "@/types"
 
-const ICONOS_LUCIDE = new Set<string>(iconNames)
-
 function iconoSeguro(nombre: string): IconName {
-  return ICONOS_LUCIDE.has(nombre) ? (nombre as IconName) : "sparkles"
+  return nombre in dynamicIconImports ? (nombre as IconName) : "sparkles"
 }
 
 /** Presentación institucional completamente administrable de la fábrica. */

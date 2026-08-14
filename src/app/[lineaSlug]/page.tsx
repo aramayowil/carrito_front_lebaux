@@ -1,7 +1,8 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
+import { Suspense } from "react"
 
-import { CatalogLinePage } from "@/pages/catalog/CatalogLinePage"
+import { CatalogLinePage } from "@/screens/catalog/CatalogLinePage"
 import { cargarDatosCatalogoLinea } from "@/server/datos-publicos"
 
 export async function generateMetadata({
@@ -23,5 +24,9 @@ export default async function Page({
   const { lineaSlug } = await params
   const datos = await cargarDatosCatalogoLinea(lineaSlug)
   if (!datos) notFound()
-  return <CatalogLinePage datos={datos} />
+  return (
+    <Suspense fallback={null}>
+      <CatalogLinePage datos={datos} />
+    </Suspense>
+  )
 }

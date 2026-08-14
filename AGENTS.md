@@ -67,7 +67,7 @@ src/
 │   ├── admin/             # panel /admin: auth, formularios y CRUD de contenido
 │   ├── site-content/      # documentos públicos: sitio, Inicio y experiencia
 │   └── theme/             # toggle claro/oscuro
-├── pages/                # pantallas de ruta, componen features entre sí
+├── screens/              # pantallas de ruta, componen features entre sí
 │   └── home/
 │       └── sections/      # secciones propias de ESA página (no reutilizables)
 ├── routes/               # definición de rutas
@@ -87,7 +87,7 @@ src/
 - ¿Es un primitivo de UI genérico (botón, input, card)? → `components/ui`, vía shadcn CLI.
 - ¿Es parte del "esqueleto" de la app (header, footer, nav)? → `components/layout`.
 - ¿Pertenece a una lógica de negocio concreta (carrito, productos, checkout)? → `features/<esa-cosa>`.
-- ¿Es una sección visual que solo se usa en una página puntual? → `pages/<esa-página>/sections`.
+- ¿Es una sección visual que solo se usa en una página puntual? → `screens/<esa-página>/sections`.
 - ¿Se reutiliza en más de un feature? → si es UI pura, `components/`; si es lógica, evaluar
   moverlo a `features/` compartido o a `lib/` según corresponda. No hay carpeta
   automática "shared" — se crea cuando aparece la segunda reutilización, no antes.
@@ -216,6 +216,7 @@ src/
 - [x] Documentos `sitio`, `inicio` y `experiencia` migrados mediante el feature compartido `site-content`; todas las fuentes de contenido quedaron activadas en Supabase (ver `docs/2026-08-11-documentos-sitio-supabase.md`).
 - [x] Contenido operativo migrado por completo a Supabase: se retiraron el store, la importación local y la persistencia lebaux-content; el carrito conserva su almacenamiento propio (ver docs/2026-08-11-cierre-migracion-contenido-y-medios-cloudinary.md).
 - [x] Zustand reducido al único store persistente del carrito (`lebaux-cart`); la UI de carrito/checkout usa Context de React y se limpian las claves heredadas `lebaux-content` y `lebaux-admin-auth` (ver `docs/2026-08-12-store-unico-carrito.md`).
+- [x] Pantallas reutilizables movidas a `src/screens` para evitar la detección errónea de Pages Router por Next.js App Router (ver `docs/2026-08-14-correccion-rutas-next-y-validaciones.md`).
 - [ ] Desplegar `cloudinary-signature` y `cloudinary-cleanup`, configurar sus secretos del lado de Supabase y completar la prueba operativa de medios. El frontend no usa una bandera Vite adicional.
 
 Cuando se complete un ítem o se agregue uno nuevo, actualizar esta lista y sumar

@@ -1,7 +1,6 @@
-import { iconNames, type IconName } from "lucide-react/dynamic"
+import { dynamicIconImports, type IconName } from "lucide-react/dynamic.mjs"
 
 const ICONO_FALLBACK: IconName = "sparkles"
-const CONJUNTO_ICONOS = new Set<string>(iconNames)
 const ICONOS_LEGACY: Record<string, IconName> = {
   BadgeDollarSign: "badge-dollar-sign",
   Wrench: "wrench",
@@ -15,5 +14,5 @@ const ICONOS_LEGACY: Record<string, IconName> = {
 export function normalizarNombreIconoLucide(nombre?: string): IconName {
   if (!nombre) return ICONO_FALLBACK
   if (ICONOS_LEGACY[nombre]) return ICONOS_LEGACY[nombre]
-  return CONJUNTO_ICONOS.has(nombre) ? (nombre as IconName) : ICONO_FALLBACK
+  return nombre in dynamicIconImports ? (nombre as IconName) : ICONO_FALLBACK
 }

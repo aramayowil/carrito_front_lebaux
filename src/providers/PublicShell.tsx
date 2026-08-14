@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import { Suspense, type ReactNode } from "react"
 
 import { Footer } from "@/components/layout/Footer"
 import { Navbar } from "@/components/layout/Navbar"
@@ -21,11 +21,13 @@ export async function PublicShell({ children }: { children: ReactNode }) {
         >
           Saltar al contenido
         </a>
-        <Navbar
-          lineas={lineas}
-          telefonoWhatsapp={sitio.contacto.telefonoWhatsapp}
-          nombreSitio={sitio.nombre}
-        />
+        <Suspense fallback={null}>
+          <Navbar
+            lineas={lineas}
+            telefonoWhatsapp={sitio.contacto.telefonoWhatsapp}
+            nombreSitio={sitio.nombre}
+          />
+        </Suspense>
         <main id="main-content" className="flex-1 overflow-x-clip">
           {children}
         </main>

@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import { descripcionProductoComoTexto } from "@/features/products/lib/product-description"
-import { ProductDetailPage } from "@/pages/product/ProductDetailPage"
+import { ProductDetailPage } from "@/screens/product/ProductDetailPage"
 import { cargarDatosProducto } from "@/server/datos-publicos"
 
 export async function generateMetadata({

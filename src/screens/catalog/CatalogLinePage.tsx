@@ -44,7 +44,7 @@ import { ProductGrid } from "@/features/products/components/ProductGrid"
 import { resumirPromocionProducto } from "@/features/products/lib/discounts"
 import { obtenerPrecioInicial } from "@/features/products/lib/pricing"
 import { normalizarUrlCatalogoTecnico } from "@/features/products/lib/technical-catalog"
-import { CatalogLineMoreContent } from "@/pages/catalog/sections/CatalogLineMoreContent"
+import { CatalogLineMoreContent } from "@/screens/catalog/sections/CatalogLineMoreContent"
 import type { Producto } from "@/types"
 import type { DatosCatalogoLineaPublica } from "@/server/datos-publicos"
 
@@ -66,6 +66,7 @@ const FILTER_PARAMS = [
   PARAMS.promotion,
 ]
 type CatalogOrder = "relevancia" | "precio-asc" | "precio-desc"
+const EMPTY_SEARCH_PARAMS = new URLSearchParams()
 
 const TEXTOS_CATALOGO = {
   sobrelineaHero: "Línea de fabricación",
@@ -256,9 +257,9 @@ function sortProducts(products: Producto[], order: CatalogOrder) {
 /** Catálogo editorial por línea con filtros responsive y estado en la URL. */
 export function CatalogLinePage({ datos }: { datos: DatosCatalogoLineaPublica }) {
   const lineaSlug = datos.linea.slug
-  const searchParams = useSearchParams()
+  const searchParams = useSearchParams() ?? EMPTY_SEARCH_PARAMS
   const router = useRouter()
-  const pathname = usePathname()
+  const pathname = usePathname() ?? ""
   const [filtersOpen, setFiltersOpen] = useState(false)
   const { productos, lineas, tipologias, tiposApertura } = datos
   const lineInfo = datos.linea
