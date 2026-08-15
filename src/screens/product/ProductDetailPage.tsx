@@ -130,21 +130,6 @@ export function ProductDetailPage({ datos }: { datos: DatosProductoPublico }) {
           </div>
         </div>
 
-        <section
-          aria-label="Información de compra"
-          className="mt-10 grid gap-px overflow-hidden rounded-3xl border bg-border sm:grid-cols-2 lg:mt-14 lg:grid-cols-4"
-        >
-          {BLOQUES_CONFIANZA.map(({ id, Icono, titulo, descripcion }) => (
-            <article key={id} className="bg-card p-5">
-              <Icono className="size-5 text-primary" aria-hidden="true" />
-              <h2 className="mt-3 text-sm font-semibold">{titulo}</h2>
-              <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                {descripcion}
-              </p>
-            </article>
-          ))}
-        </section>
-
         {(mostrarDescripcionExtensa || tipologia?.descripcion) && (
           <section
             className="mt-16 border-t border-border/70 pt-12 sm:mt-20 sm:pt-16"
@@ -208,6 +193,21 @@ export function ProductDetailPage({ datos }: { datos: DatosProductoPublico }) {
             </div>
           </section>
         )}
+
+        <section
+          aria-label="Información de compra"
+          className="mt-10 grid gap-px overflow-hidden rounded-3xl border bg-border sm:grid-cols-2 lg:mt-14 lg:grid-cols-4"
+        >
+          {BLOQUES_CONFIANZA.map(({ id, Icono, titulo, descripcion }) => (
+            <article key={id} className="bg-card p-5">
+              <Icono className="size-5 text-primary" aria-hidden="true" />
+              <h2 className="mt-3 text-sm font-semibold">{titulo}</h2>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                {descripcion}
+              </p>
+            </article>
+          ))}
+        </section>
 
         {related.length > 0 && (
           <section

@@ -321,6 +321,36 @@ describe("obtenerPrecioInicial", () => {
     expect(resultado?.tarjeta).toBe(117_000)
   })
 
+  it("ignora variantes marcadas como 'consultar precio' al calcular el precio desde", () => {
+    const consultar = crearVariante({
+      id: "var-consultar",
+      medidaId: "size-a",
+      precioContado: 50_000,
+      precioTarjeta: 65_000,
+      consultarPrecio: true,
+    })
+    const publicada = crearVariante({
+      id: "var-publicada",
+      medidaId: "size-b",
+      precioContado: 120_000,
+      precioTarjeta: 156_000,
+    })
+
+    const resultado = obtenerPrecioInicial(
+      crearProductoConVariantes([consultar, publicada]),
+    )
+
+    expect(resultado).toEqual({ tarjeta: 156_000, contado: 120_000 })
+  })
+
+  it("null si todas las variantes disponibles requieren consultar precio", () => {
+    const producto = crearProductoConVariantes([
+      crearVariante({ consultarPrecio: true }),
+    ])
+
+    expect(obtenerPrecioInicial(producto)).toBeNull()
+  })
+
   it("null si ninguna variante tiene stock", () => {
     const producto = crearProductoConVariantes([
       crearVariante({ stock: stockLimitado(0) }),

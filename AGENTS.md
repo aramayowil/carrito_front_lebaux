@@ -217,6 +217,7 @@ src/
 - [x] Contenido operativo migrado por completo a Supabase: se retiraron el store, la importación local y la persistencia lebaux-content; el carrito conserva su almacenamiento propio (ver docs/2026-08-11-cierre-migracion-contenido-y-medios-cloudinary.md).
 - [x] Zustand reducido al único store persistente del carrito (`lebaux-cart`); la UI de carrito/checkout usa Context de React y se limpian las claves heredadas `lebaux-content` y `lebaux-admin-auth` (ver `docs/2026-08-12-store-unico-carrito.md`).
 - [x] Pantallas reutilizables movidas a `src/screens` para evitar la detección errónea de Pages Router por Next.js App Router (ver `docs/2026-08-14-correccion-rutas-next-y-validaciones.md`).
+- [x] Consultar precio extendido a variantes en la tienda pública: override global, decisión individual, ficha sin importes, promociones coherentes y protección del carrito (ver `docs/2026-08-15-consultar-precio-variantes-tienda-publica.md`).
 - [ ] Desplegar `cloudinary-signature` y `cloudinary-cleanup`, configurar sus secretos del lado de Supabase y completar la prueba operativa de medios. El frontend no usa una bandera Vite adicional.
 
 Cuando se complete un ítem o se agregue uno nuevo, actualizar esta lista y sumar

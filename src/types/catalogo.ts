@@ -420,6 +420,7 @@ export type VisibilidadVariante = VisibilidadProducto
  *   colorSlug: "negro",
  *   precioContado: 133000,
  *   precioTarjeta: 172900,
+ *   consultarPrecio: false,
  *   stock: { modo: "infinito" },
  * };
  *   visibilidad: "visible",
@@ -431,6 +432,7 @@ export type VisibilidadVariante = VisibilidadProducto
  *   colorSlug: "blanco",
  *   precioContado: 250000,
  *   precioTarjeta: 310000,
+ *   consultarPrecio: true,
  *   stock: { modo: "limitado", cantidad: 0 },
  *   visibilidad: "oculto",
  * };
@@ -444,6 +446,10 @@ export interface VarianteProducto {
 
   precioContado: number
   precioTarjeta: number
+  /** Si es true, esta combinación puntual no publica precio y deriva la consulta
+   *  a WhatsApp. `Producto.precios.consultarPrecio` funciona como override global
+   *  para todas las variantes. */
+  consultarPrecio: boolean
   /** Indica si esta combinación participa del descuento global del producto. */
   aplicaDescuento: boolean
 

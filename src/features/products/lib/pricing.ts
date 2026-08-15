@@ -14,6 +14,16 @@ export interface PrecioInicialProducto {
   contado: number
 }
 
+/** Resuelve la regla efectiva de publicación de precio. El flag del producto
+ *  actúa como override global; el de la variante permite ocultar solo una
+ *  combinación puntual. */
+export function debeConsultarPrecio(
+  producto: Producto,
+  variante?: Producto["variantes"][number],
+): boolean {
+  return producto.precios.consultarPrecio || variante?.consultarPrecio === true
+}
+
 /** Busca la variante (Medida × Color × Vidrio) exacta elegida. */
 export function buscarVariante(
   producto: Producto,
@@ -108,7 +118,7 @@ export function calcularPrecioProducto(
 export function obtenerPrecioInicial(
   producto: Producto,
 ): PrecioInicialProducto | null {
-  if (producto.precios.consultarPrecio) return null
+  if (debeConsultarPrecio(producto)) return null
 
   if (producto.variantes.length === 0) {
     if (!hayStock(producto.stock)) return null
@@ -128,7 +138,10 @@ export function obtenerPrecioInicial(
   }
 
   const variantesDisponibles = producto.variantes.filter(
-    (variante) => variante.visibilidad !== "oculto" && hayStock(variante.stock),
+    (variante) =>
+      variante.visibilidad !== "oculto" &&
+      !debeConsultarPrecio(producto, variante) &&
+      hayStock(variante.stock),
   )
   if (variantesDisponibles.length === 0) return null
 

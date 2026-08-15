@@ -18,6 +18,7 @@ import {
   getPrimaryProductImage,
 } from "@/features/products/lib/product-card-formatters"
 import { descripcionProductoComoTexto } from "@/features/products/lib/product-description"
+import { obtenerPrecioInicial } from "@/features/products/lib/pricing"
 import type { Producto } from "@/types"
 
 interface FeaturedProductCardProps {
@@ -27,7 +28,7 @@ interface FeaturedProductCardProps {
 /** Presenta un producto destacado de la Home con imagen, precios y consulta directa. */
 export function FeaturedProductCard({ product }: FeaturedProductCardProps) {
   const primaryImage = getPrimaryProductImage(product)
-  const { precios } = product
+  const startingPrice = obtenerPrecioInicial(product)
   const href = `/producto/${product.slug}`
 
   return (
@@ -65,7 +66,7 @@ export function FeaturedProductCard({ product }: FeaturedProductCardProps) {
         </CardHeader>
 
         <CardContent className="mt-2 flex-1 px-3 sm:mt-4 sm:px-5">
-          {precios.consultarPrecio || precios.precioTarjeta === null ? (
+          {startingPrice === null ? (
             <p className="text-sm font-semibold">{"Precio a consultar"}</p>
           ) : (
             <div className="space-y-2.5 sm:space-y-3">
@@ -74,21 +75,20 @@ export function FeaturedProductCard({ product }: FeaturedProductCardProps) {
                   {"Precio"}
                 </span>
                 <span className="mt-0.5 block text-base font-bold tracking-tight tabular-nums xs:text-lg sm:text-2xl">
-                  {formatProductPrice(precios.precioTarjeta)}
+                  {formatProductPrice(startingPrice.tarjeta)}
                 </span>
               </div>
 
-              {precios.precioContado !== null &&
-                precios.precioContado < precios.precioTarjeta && (
-                  <div className="rounded-lg bg-success/10 px-2 py-1.5 sm:rounded-xl sm:px-3 sm:py-2">
-                    <span className="block text-[0.5625rem] font-semibold uppercase tracking-wide text-success sm:text-xs">
-                      {"contado"}
-                    </span>
-                    <span className="mt-0.5 block text-xs font-bold text-success tabular-nums xs:text-sm sm:text-lg">
-                      {formatProductPrice(precios.precioContado)}
-                    </span>
-                  </div>
-                )}
+              {startingPrice.contado < startingPrice.tarjeta && (
+                <div className="rounded-lg bg-success/10 px-2 py-1.5 sm:rounded-xl sm:px-3 sm:py-2">
+                  <span className="block text-[0.5625rem] font-semibold uppercase tracking-wide text-success sm:text-xs">
+                    {"contado"}
+                  </span>
+                  <span className="mt-0.5 block text-xs font-bold text-success tabular-nums xs:text-sm sm:text-lg">
+                    {formatProductPrice(startingPrice.contado)}
+                  </span>
+                </div>
+              )}
             </div>
           )}
 

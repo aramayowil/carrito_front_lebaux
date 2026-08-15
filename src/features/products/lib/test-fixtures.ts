@@ -57,6 +57,7 @@ export function crearVariante(
     vidrioSlug: null,
     precioContado: 100_000,
     precioTarjeta: 130_000,
+    consultarPrecio: false,
     aplicaDescuento: false,
     stock: { modo: "infinito" },
     visibilidad: "visible",

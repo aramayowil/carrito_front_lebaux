@@ -26,6 +26,25 @@ type KindCatalogo =
   | "obra"
   | "beneficio"
 
+
+/** Compatibilidad con productos guardados antes de incorporar
+ * `VarianteProducto.consultarPrecio`. El payload de products es JSONB, por lo
+ * que normalizamos también en la tienda pública además del backfill de DB. */
+function normalizarProductoDesdePayload(payload: unknown): Producto {
+  const producto = payload as Producto
+  return {
+    ...producto,
+    precios: {
+      ...producto.precios,
+      consultarPrecio: producto.precios?.consultarPrecio ?? false,
+    },
+    variantes: (producto.variantes ?? []).map((variante) => ({
+      ...variante,
+      consultarPrecio: variante.consultarPrecio ?? false,
+    })),
+  }
+}
+
 interface FilaCatalogo {
   payload: unknown
 }
@@ -239,7 +258,7 @@ async function cargarProductosVisibles(): Promise<Producto[]> {
     .eq("visibility", "visible")
     .order("updated_at", { ascending: false })
   if (error) throw new Error(`No se pudieron cargar productos: ${error.message}`)
-  return (data ?? []).map((fila) => fila.payload as Producto)
+  return (data ?? []).map((fila) => normalizarProductoDesdePayload(fila.payload))
 }
 
 async function cargarProductosLinea(lineaSlug: string): Promise<Producto[]> {
@@ -255,7 +274,7 @@ async function cargarProductosLinea(lineaSlug: string): Promise<Producto[]> {
     .eq("visibility", "visible")
     .order("updated_at", { ascending: false })
   if (error) throw new Error(`No se pudo cargar ${lineaSlug}: ${error.message}`)
-  return (data ?? []).map((fila) => fila.payload as Producto)
+  return (data ?? []).map((fila) => normalizarProductoDesdePayload(fila.payload))
 }
 
 /** Cantidad de productos que se envían al cliente por tanda en el catálogo por línea. */
@@ -291,7 +310,7 @@ export async function cargarProductosLineaPagina(
     .range(offset, offset + limite - 1)
 
   if (error) throw new Error(`No se pudo cargar ${lineaSlug}: ${error.message}`)
-  const productos = (data ?? []).map((fila) => fila.payload as Producto)
+  const productos = (data ?? []).map((fila) => normalizarProductoDesdePayload(fila.payload))
   const total = count ?? offset + productos.length
   return { productos, total, hasMore: offset + productos.length < total }
 }
@@ -317,7 +336,7 @@ async function cargarProductosPorIds(ids: string[]): Promise<Producto[]> {
     )
   }
 
-  const productos = (data ?? []).map((fila) => fila.payload as Producto)
+  const productos = (data ?? []).map((fila) => normalizarProductoDesdePayload(fila.payload))
   const porId = new Map(productos.map((item) => [item.id, item]))
 
   return idsUnicos.flatMap((id) => {
@@ -339,7 +358,7 @@ async function cargarProductoPorSlug(slug: string): Promise<Producto | null> {
     .neq("visibility", "oculto")
     .maybeSingle()
   if (error) throw new Error(`No se pudo cargar el producto: ${error.message}`)
-  return data ? (data.payload as Producto) : null
+  return data ? normalizarProductoDesdePayload(data.payload) : null
 }
 
 export interface DatosLayoutPublico {
@@ -571,7 +590,9 @@ export async function cargarDatosSincronizacionCarrito(ids: string[]) {
     throw new Error(`No se pudo sincronizar el carrito: ${productosRes.error.message}`)
   }
   return {
-    productos: (productosRes.data ?? []).map((fila) => fila.payload as Producto),
+    productos: (productosRes.data ?? []).map((fila) =>
+      normalizarProductoDesdePayload(fila.payload),
+    ),
     accesorios,
   }
 }

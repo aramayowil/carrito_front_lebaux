@@ -1,5 +1,9 @@
 import { formatProductPrice } from "@/features/products/lib/product-card-formatters"
 import { etiquetaDescuento } from "@/features/products/lib/discounts"
+import {
+  buscarVariante,
+  debeConsultarPrecio,
+} from "@/features/products/lib/pricing"
 import type {
   AccesorioLinea,
   DesglosePrecio,
@@ -28,6 +32,8 @@ export function buildConfiguredProductMessage(
         seleccion.accesoriosSlug.includes(item.slug),
       )
     : []
+  const variante = buscarVariante(producto, seleccion)
+  const consultarPrecio = debeConsultarPrecio(producto, variante)
 
   return [
     "Hola Lebaux! Quiero consultar por esta abertura:",
@@ -42,13 +48,17 @@ export function buildConfiguredProductMessage(
       ? [`Mano de apertura: ${seleccion.manoApertura}`]
       : []),
     `Cantidad: ${cantidad}`,
-    ...(desglose.descuentoAplicado
+    ...(!consultarPrecio && desglose.descuentoAplicado
       ? [
           `Promoción: ${etiquetaDescuento(desglose.descuentoAplicado)}`,
           `Ahorro: ${formatProductPrice(desglose.ahorroTotal)}`,
         ]
       : []),
-    `Estimado contado: ${formatProductPrice(desglose.totalContado)}`,
-    `Estimado tarjeta: ${formatProductPrice(desglose.totalTarjeta)}`,
+    ...(consultarPrecio
+      ? ["Precio: a consultar"]
+      : [
+          `Estimado contado: ${formatProductPrice(desglose.totalContado)}`,
+          `Estimado tarjeta: ${formatProductPrice(desglose.totalTarjeta)}`,
+        ]),
   ].join("\n")
 }

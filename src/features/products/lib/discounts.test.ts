@@ -184,6 +184,42 @@ describe("obtenerVariantesPromocion", () => {
     })
     expect(obtenerVariantesPromocion(producto)).toEqual([])
   })
+
+  it("vacío si consultar precio está activo de forma global", () => {
+    const variante = crearVariante({ aplicaDescuento: true })
+    const producto = crearProductoConVariantes([variante], {
+      descuento: crearDescuento(),
+      precios: {
+        precioBase: null,
+        precioTarjeta: null,
+        precioContado: null,
+        porcentajeDescuento: 0,
+        moneda: "ARS",
+        consultarPrecio: true,
+      },
+    })
+
+    expect(obtenerVariantesPromocion(producto)).toEqual([])
+  })
+
+  it("excluye variantes que requieren consultar precio aunque tengan promoción", () => {
+    const consultar = crearVariante({
+      id: "var-consultar",
+      aplicaDescuento: true,
+      consultarPrecio: true,
+    })
+    const publicada = crearVariante({
+      id: "var-publicada",
+      aplicaDescuento: true,
+    })
+    const producto = crearProductoConVariantes([consultar, publicada], {
+      descuento: crearDescuento(),
+    })
+
+    expect(obtenerVariantesPromocion(producto).map((variante) => variante.id)).toEqual([
+      "var-publicada",
+    ])
+  })
 })
 
 describe("resumirPromocionProducto", () => {

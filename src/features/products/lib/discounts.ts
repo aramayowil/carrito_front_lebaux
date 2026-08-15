@@ -39,7 +39,12 @@ export function calcularPrecioPromocional(
   variante: VarianteProducto | undefined,
   precioOriginal: number,
 ): PrecioPromocional | null {
-  if (!participaDelDescuento(producto, variante) || precioOriginal <= 0) {
+  if (
+    producto.precios.consultarPrecio ||
+    variante?.consultarPrecio === true ||
+    !participaDelDescuento(producto, variante) ||
+    precioOriginal <= 0
+  ) {
     return null
   }
 
@@ -71,11 +76,14 @@ export function calcularPrecioPromocional(
 export function obtenerVariantesPromocion(
   producto: Producto,
 ): VarianteProducto[] {
-  if (!descuentoProductoActivo(producto)) return []
+  if (producto.precios.consultarPrecio || !descuentoProductoActivo(producto)) {
+    return []
+  }
 
   return producto.variantes.filter(
     (variante) =>
       variante.aplicaDescuento &&
+      !variante.consultarPrecio &&
       variante.visibilidad !== "oculto" &&
       hayStock(variante.stock),
   )
@@ -153,7 +161,10 @@ export function etiquetaPromocionCard(producto: Producto): string {
   if (producto.variantes.length === 0) return valor
 
   const variantesVendibles = producto.variantes.filter(
-    (variante) => variante.visibilidad !== "oculto" && hayStock(variante.stock),
+    (variante) =>
+      !variante.consultarPrecio &&
+      variante.visibilidad !== "oculto" &&
+      hayStock(variante.stock),
   )
   const promocionParcial = variantesVendibles.some(
     (variante) => !variante.aplicaDescuento,

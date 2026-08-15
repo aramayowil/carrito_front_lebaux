@@ -5,6 +5,7 @@ import {
   actualizarCantidadDesglose,
   buscarVariante,
   calcularPrecioProducto,
+  debeConsultarPrecio,
 } from "@/features/products/lib/pricing"
 import { cantidadMaximaDeStock, hayStock } from "@/features/products/lib/stock"
 import type {
@@ -134,6 +135,7 @@ function sincronizarItem(
   if (!producto) return null
 
   const variante = buscarVariante(producto, item.seleccion)
+  if (debeConsultarPrecio(producto, variante)) return null
   if (
     producto.variantes.length > 0 &&
     (!variante || !hayStock(variante.stock))
@@ -213,6 +215,9 @@ export const useCartStore = create<CartState>()(
       items: [],
       agregarItem: (producto, seleccion, cantidad, catalogoAccesorios) =>
         set((state) => {
+          const variante = buscarVariante(producto, seleccion)
+          if (debeConsultarPrecio(producto, variante)) return state
+
           const existingIndex = state.items.findIndex(
             (item) =>
               item.producto.id === producto.id &&

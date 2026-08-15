@@ -41,6 +41,7 @@ import {
 } from "@/features/products/lib/discounts"
 import { formatProductPrice } from "@/features/products/lib/product-card-formatters"
 import { buildConfiguredProductMessage } from "@/features/products/lib/product-inquiry"
+import { debeConsultarPrecio } from "@/features/products/lib/pricing"
 import { completarTextoPublico } from "@/lib/public-text"
 import { buildWhatsAppUrl } from "@/lib/whatsapp"
 import { cn } from "@/lib/utils"
@@ -130,6 +131,7 @@ export function ProductConfigurator({
     (item) => item.slug === seleccion.vidrioSlug,
   )
   const cantidadAccesoriosSeleccionados = seleccion.accesoriosSlug.length
+  const consultarPrecio = debeConsultarPrecio(product, varianteActual)
   const handleColorChange = (value: unknown) => {
     if (esColorDisponible(product, value)) setColor(value)
   }
@@ -156,7 +158,11 @@ export function ProductConfigurator({
     seleccion.vidrioSlug === null
   const faltaElegirMano =
     Boolean(product.manoApertura) && seleccion.manoApertura === null
-  const puedeAgregar = !faltaElegirVidrio && !faltaElegirMano && disponible
+  const puedeAgregar =
+    !consultarPrecio &&
+    !faltaElegirVidrio &&
+    !faltaElegirMano &&
+    disponible
 
   const handleAgregarAlCarrito = () => {
     if (!puedeAgregar) return
@@ -206,7 +212,7 @@ export function ProductConfigurator({
         </div>
 
         <div className="space-y-5 p-4 sm:p-5">
-          {variantesPromocion.length > 0 && (
+          {!consultarPrecio && variantesPromocion.length > 0 && (
             <div className="rounded-2xl border border-success/25 bg-success/5 p-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <Badge className="rounded-full bg-success text-success-foreground">
@@ -479,9 +485,11 @@ export function ProductConfigurator({
                             )}
                           </span>
                           <span className="shrink-0 text-xs text-muted-foreground">
-                            {precio !== null
-                              ? "+ " + formatProductPrice(precio)
-                              : "No disponible"}
+                            {precio === null
+                              ? "No disponible"
+                              : consultarPrecio
+                                ? "Consultar"
+                                : "+ " + formatProductPrice(precio)}
                           </span>
                         </Label>
                       )
@@ -510,47 +518,58 @@ export function ProductConfigurator({
           </div>
           <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
             <div>
-              {desglose.descuentoAplicado && (
-                <div className="mb-2 flex flex-wrap items-center gap-2">
-                  <Badge className="rounded-full bg-success text-success-foreground">
-                    {etiquetaDescuento(desglose.descuentoAplicado)}
-                  </Badge>
-                  <span className="text-xs font-medium text-success">
-                    {completarTextoPublico("Ahorrás {monto}", {
-                      monto: formatProductPrice(desglose.ahorroTotal),
-                    })}
-                  </span>
-                </div>
-              )}
-              <div className="flex flex-wrap items-end gap-x-5 gap-y-2">
-                <div>
-                  <p className="text-xs text-muted-foreground">
-                    {"Contado / transferencia"}
+              {consultarPrecio ? (
+                <div className="rounded-2xl border border-primary/20 bg-primary/5 p-3">
+                  <p className="text-base font-bold">{"Precio a consultar"}</p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                    {"Esta configuración se cotiza de forma personalizada. Consultanos por WhatsApp para recibir el precio."}
                   </p>
+                </div>
+              ) : (
+                <>
                   {desglose.descuentoAplicado && (
-                    <p className="text-sm text-muted-foreground line-through">
-                      {formatProductPrice(desglose.totalContadoOriginal)}
-                    </p>
+                    <div className="mb-2 flex flex-wrap items-center gap-2">
+                      <Badge className="rounded-full bg-success text-success-foreground">
+                        {etiquetaDescuento(desglose.descuentoAplicado)}
+                      </Badge>
+                      <span className="text-xs font-medium text-success">
+                        {completarTextoPublico("Ahorrás {monto}", {
+                          monto: formatProductPrice(desglose.ahorroTotal),
+                        })}
+                      </span>
+                    </div>
                   )}
-                  <p
-                    key={desglose.totalContado}
-                    className="text-2xl font-bold text-success transition-all duration-200"
-                  >
-                    {formatProductPrice(desglose.totalContado)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">
-                    {"Tarjeta"}
-                  </p>
-                  <p
-                    key={desglose.totalTarjeta}
-                    className="text-base font-semibold transition-all duration-200"
-                  >
-                    {formatProductPrice(desglose.totalTarjeta)}
-                  </p>
-                </div>
-              </div>
+                  <div className="flex flex-wrap items-end gap-x-5 gap-y-2">
+                    <div>
+                      <p className="text-xs text-muted-foreground">
+                        {"Contado / transferencia"}
+                      </p>
+                      {desglose.descuentoAplicado && (
+                        <p className="text-sm text-muted-foreground line-through">
+                          {formatProductPrice(desglose.totalContadoOriginal)}
+                        </p>
+                      )}
+                      <p
+                        key={desglose.totalContado}
+                        className="text-2xl font-bold text-success transition-all duration-200"
+                      >
+                        {formatProductPrice(desglose.totalContado)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">
+                        {"Tarjeta"}
+                      </p>
+                      <p
+                        key={desglose.totalTarjeta}
+                        className="text-base font-semibold transition-all duration-200"
+                      >
+                        {formatProductPrice(desglose.totalTarjeta)}
+                      </p>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
             <div className="flex items-center justify-between gap-3 rounded-2xl border bg-background p-1 sm:justify-start">
@@ -609,22 +628,26 @@ export function ProductConfigurator({
             </p>
           )}
 
-          <div className="grid gap-2 sm:grid-cols-2">
-            <Button
-              size="lg"
-              onClick={handleAgregarAlCarrito}
-              disabled={!puedeAgregar}
-            >
-              <ShoppingCart data-icon="inline-start" />
-              {"Agregar al carrito"}
-            </Button>
+          <div className={cn("grid gap-2", !consultarPrecio && "sm:grid-cols-2")}>
+            {!consultarPrecio && (
+              <Button
+                size="lg"
+                onClick={handleAgregarAlCarrito}
+                disabled={!puedeAgregar}
+              >
+                <ShoppingCart data-icon="inline-start" />
+                {"Agregar al carrito"}
+              </Button>
+            )}
             <Button
               variant="whatsapp"
               size="lg"
               render={
                 <a href={whatsappHref} target="_blank" rel="noreferrer">
                   <WhatsAppIcon data-icon="inline-start" />
-                  {"Consultar por WhatsApp"}
+                  {consultarPrecio
+                    ? "Consultar precio por WhatsApp"
+                    : "Consultar por WhatsApp"}
                 </a>
               }
             />
@@ -635,39 +658,53 @@ export function ProductConfigurator({
       <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 p-3 shadow-lg backdrop-blur-sm sm:hidden">
         <div className="container flex items-center gap-2 px-0">
           <div className="min-w-0 flex-1">
-            <p className="truncate text-[11px] text-muted-foreground">
-              {"Contado"}
-            </p>
-            {desglose.descuentoAplicado && (
-              <p className="truncate text-[10px] text-muted-foreground line-through">
-                {formatProductPrice(desglose.totalContadoOriginal)}
-              </p>
+            {consultarPrecio ? (
+              <>
+                <p className="truncate text-[11px] text-muted-foreground">
+                  {"Configuración seleccionada"}
+                </p>
+                <p className="truncate text-sm font-bold">{"Precio a consultar"}</p>
+              </>
+            ) : (
+              <>
+                <p className="truncate text-[11px] text-muted-foreground">
+                  {"Contado"}
+                </p>
+                {desglose.descuentoAplicado && (
+                  <p className="truncate text-[10px] text-muted-foreground line-through">
+                    {formatProductPrice(desglose.totalContadoOriginal)}
+                  </p>
+                )}
+                <p
+                  key={desglose.totalContado}
+                  className="truncate text-lg font-bold text-success"
+                >
+                  {formatProductPrice(desglose.totalContado)}
+                </p>
+              </>
             )}
-            <p
-              key={desglose.totalContado}
-              className="truncate text-lg font-bold text-success"
-            >
-              {formatProductPrice(desglose.totalContado)}
-            </p>
           </div>
           <Button
             variant="whatsapp"
-            size="icon-lg"
+            size={consultarPrecio ? "lg" : "icon-lg"}
             className="shrink-0"
             aria-label="Consultar por WhatsApp"
             render={<a href={whatsappHref} target="_blank" rel="noreferrer" />}
           >
             <WhatsAppIcon />
+            {consultarPrecio && "Consultar precio"}
           </Button>
-          <Button
-            size="lg"
-            className="shrink-0"
-            onClick={handleAgregarAlCarrito}
-            disabled={!puedeAgregar}
-          >
-            <ShoppingCart data-icon="inline-start" />
-            {"Agregar"}
-          </Button>
+          {!consultarPrecio && (
+            <Button
+              size="lg"
+              className="shrink-0"
+              onClick={handleAgregarAlCarrito}
+              disabled={!puedeAgregar}
+            >
+              <ShoppingCart data-icon="inline-start" />
+              {"Agregar"}
+            </Button>
+          )}
         </div>
       </div>
     </div>
