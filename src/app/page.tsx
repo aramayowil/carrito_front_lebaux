@@ -1,14 +1,14 @@
-import type { Metadata } from "next"
-import { Suspense } from "react"
+import type { Metadata } from 'next'
+import { Suspense } from 'react'
 
-import { HomePage } from "@/screens/home/HomePage"
-import { HomePageSkeleton } from "@/screens/home/HomePageSkeleton"
-import { cargarDatosHome } from "@/server/datos-publicos"
+import { HomePage } from '@/screens/home/HomePage'
+import { HomePageSkeleton } from '@/screens/home/HomePageSkeleton'
+import { cargarDatosHome } from '@/server/datos-publicos'
 
 export const metadata: Metadata = {
-  title: "Puertas y ventanas de aluminio a medida",
+  title: 'Lebaux Aberturas',
   description:
-    "Fábrica de aberturas de aluminio a medida en Tucumán. Líneas Herrero, Módena y A30.",
+    'Fábrica de aberturas de aluminio a medida en Tucumán. Líneas Herrero, Módena y A30.',
 }
 
 async function HomePageData() {
