@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { CatalogProductCard } from "@/features/products/components/CatalogProductCard"
+import { ProductCardSkeleton } from "@/features/products/components/ProductCardSkeleton"
 import { cn } from "@/lib/utils"
 import type { Producto, TipoAperturaProducto, TipologiaProducto } from "@/types"
 
@@ -31,7 +31,7 @@ export function ProductGrid({
     return (
       <div className={gridClassName}>
         {Array.from({ length: 8 }).map((_, index) => (
-          <Skeleton key={index} className="h-112 rounded-2xl xs:h-80 sm:h-96" />
+          <ProductCardSkeleton key={index} />
         ))}
       </div>
     )

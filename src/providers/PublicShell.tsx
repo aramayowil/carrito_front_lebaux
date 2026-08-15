@@ -2,6 +2,7 @@ import { Suspense, type ReactNode } from "react"
 
 import { Footer } from "@/components/layout/Footer"
 import { Navbar } from "@/components/layout/Navbar"
+import { NavbarSkeleton } from "@/components/layout/NavbarSkeleton"
 import { CarritoGlobal } from "@/features/cart/components/CarritoGlobal"
 import { cargarDatosLayout } from "@/server/datos-publicos"
 
@@ -21,7 +22,7 @@ export async function PublicShell({ children }: { children: ReactNode }) {
         >
           Saltar al contenido
         </a>
-        <Suspense fallback={null}>
+        <Suspense fallback={<NavbarSkeleton cantidadLineas={lineas.length} />}>
           <Navbar
             lineas={lineas}
             telefonoWhatsapp={sitio.contacto.telefonoWhatsapp}

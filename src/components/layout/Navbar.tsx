@@ -66,7 +66,7 @@ export function Navbar({
   const whatsappHref = buildWhatsAppUrl(DEFAULT_WHATSAPP_MESSAGE, telefonoWhatsapp)
 
   return (
-    <header className="sticky top-0 z-50 h-navbar border-b border-white/10 bg-brand-black/95 shadow-md backdrop-blur supports-backdrop-filter:bg-brand-black/90">
+    <header className="sticky top-0 z-50 h-navbar shrink-0 border-b border-white/10 bg-brand-black/95 shadow-md backdrop-blur supports-backdrop-filter:bg-brand-black/90">
       <div className="mx-auto flex h-full max-w-screen-2xl items-center gap-3 px-4 sm:px-6">
         <div className="shrink-0">
           <Logo nombreSitio={nombreSitio} />
