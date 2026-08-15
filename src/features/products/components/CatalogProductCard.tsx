@@ -28,6 +28,8 @@ interface CatalogProductCardProps {
   product: Producto
   tipologiaNombre?: string
   aperturaNombre?: string
+  /** Marca la imagen como prioritaria (LCP) para las primeras cards visibles sin scroll. */
+  priority?: boolean
 }
 
 /** Card de catálogo optimizada para comparar precio, opciones y promociones. */
@@ -35,6 +37,7 @@ export function CatalogProductCard({
   product,
   tipologiaNombre,
   aperturaNombre,
+  priority = false,
 }: CatalogProductCardProps) {
   const primaryImage = getPrimaryProductImage(product)
   const startingPrice = obtenerPrecioInicial(product)
@@ -58,6 +61,7 @@ export function CatalogProductCard({
           alt={primaryImage?.textoAlternativo ?? product.nombre}
           className="aspect-square w-full rounded-xl sm:rounded-2xl"
           imgClassName="transition-transform duration-300 motion-safe:group-hover:scale-[1.03]"
+          priority={priority}
         />
         {promotion && (
           <Badge className="absolute top-2 left-2 max-w-[calc(100%-1rem)] truncate bg-success px-2 py-1 text-[0.625rem] text-success-foreground shadow-sm sm:top-4 sm:left-4 sm:max-w-[calc(100%-2rem)] sm:text-xs">

@@ -3,12 +3,15 @@ import { notFound } from "next/navigation"
 import { Suspense } from "react"
 
 import { CatalogLinePage } from "@/screens/catalog/CatalogLinePage"
+import { CatalogLinePageSkeleton } from "@/screens/catalog/CatalogLinePageSkeleton"
 import { cargarDatosCatalogoLinea } from "@/server/datos-publicos"
+
+type ParamsPromise = Promise<{ lineaSlug: string }>
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ lineaSlug: string }>
+  params: ParamsPromise
 }): Promise<Metadata> {
   const { lineaSlug } = await params
   const datos = await cargarDatosCatalogoLinea(lineaSlug)
@@ -16,17 +19,17 @@ export async function generateMetadata({
   return { title: datos.linea.nombre, description: datos.linea.descripcion }
 }
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ lineaSlug: string }>
-}) {
+async function CatalogLinePageData({ params }: { params: ParamsPromise }) {
   const { lineaSlug } = await params
   const datos = await cargarDatosCatalogoLinea(lineaSlug)
   if (!datos) notFound()
+  return <CatalogLinePage key={lineaSlug} datos={datos} />
+}
+
+export default function Page({ params }: { params: ParamsPromise }) {
   return (
-    <Suspense fallback={null}>
-      <CatalogLinePage datos={datos} />
+    <Suspense fallback={<CatalogLinePageSkeleton />}>
+      <CatalogLinePageData params={params} />
     </Suspense>
   )
 }

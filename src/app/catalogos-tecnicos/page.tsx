@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
+import { Suspense } from "react"
 
 import { TechnicalCatalogsPage } from "@/screens/technical-catalogs/TechnicalCatalogsPage"
+import { TechnicalCatalogsPageSkeleton } from "@/screens/technical-catalogs/TechnicalCatalogsPageSkeleton"
 import { cargarDatosCatalogosTecnicos } from "@/server/datos-publicos"
 
 export const metadata: Metadata = {
@@ -9,7 +11,15 @@ export const metadata: Metadata = {
     "Documentación técnica y catálogos de las líneas de aberturas Lebaux.",
 }
 
-export default async function Page() {
+async function TechnicalCatalogsPageData() {
   const { lineas, banner } = await cargarDatosCatalogosTecnicos()
   return <TechnicalCatalogsPage lines={lineas} banner={banner} />
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<TechnicalCatalogsPageSkeleton />}>
+      <TechnicalCatalogsPageData />
+    </Suspense>
+  )
 }

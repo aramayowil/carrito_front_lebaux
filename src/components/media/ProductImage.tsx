@@ -80,7 +80,7 @@ export function ProductImage({
         alt={alt}
         fill
         sizes={sizes}
-        preload={priority}
+        priority={priority}
         className={cn("object-contain", imgClassName)}
       />
     </div>

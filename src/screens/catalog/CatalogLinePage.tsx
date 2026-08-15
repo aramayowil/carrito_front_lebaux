@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import {
   ArrowDownUp,
   Download,
@@ -39,14 +39,20 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ProductGrid } from "@/features/products/components/ProductGrid"
 import { resumirPromocionProducto } from "@/features/products/lib/discounts"
+import { TIPOLOGIA_TODAS } from "@/features/products/lib/facets"
 import { obtenerPrecioInicial } from "@/features/products/lib/pricing"
 import { normalizarUrlCatalogoTecnico } from "@/features/products/lib/technical-catalog"
 import { CatalogLineMoreContent } from "@/screens/catalog/sections/CatalogLineMoreContent"
 import type { Producto } from "@/types"
-import type { DatosCatalogoLineaPublica } from "@/server/datos-publicos"
+import type {
+  DatosCatalogoLineaPublica,
+  PaginaProductosLinea,
+} from "@/server/datos-publicos"
+import type { OpcionFiltro } from "@/features/products/lib/facets"
 
 const PARAMS = {
   typology: "tipologia",
@@ -57,7 +63,7 @@ const PARAMS = {
   promotion: "promocion",
   order: "orden",
 } as const
-const ALL = "todas"
+const ALL = TIPOLOGIA_TODAS
 const FILTER_PARAMS = [
   PARAMS.tag,
   PARAMS.opening,
@@ -108,23 +114,7 @@ function completarPlantilla(
   )
 }
 
-interface FilterOption {
-  value: string
-  label: string
-  count: number
-}
-
-function buildOptions(values: Array<{ value: string; label: string }>) {
-  const options = new Map<string, FilterOption>()
-  values.forEach(({ value, label }) => {
-    if (!value) return
-    const current = options.get(value)
-    options.set(value, { value, label, count: (current?.count ?? 0) + 1 })
-  })
-  return Array.from(options.values()).sort((a, b) =>
-    a.label.localeCompare(b.label, "es"),
-  )
-}
+type FilterOption = OpcionFiltro
 
 function FilterGroup({
   title,
@@ -254,22 +244,102 @@ function sortProducts(products: Producto[], order: CatalogOrder) {
   })
 }
 
-/** Catálogo editorial por línea con filtros responsive y estado en la URL. */
+/** Catálogo editorial por línea con filtros responsive, estado en la URL y scroll infinito. */
 export function CatalogLinePage({ datos }: { datos: DatosCatalogoLineaPublica }) {
   const lineaSlug = datos.linea.slug
   const searchParams = useSearchParams() ?? EMPTY_SEARCH_PARAMS
   const router = useRouter()
   const pathname = usePathname() ?? ""
   const [filtersOpen, setFiltersOpen] = useState(false)
-  const { productos, lineas, tipologias, tiposApertura } = datos
+  const { lineas, tipologias, tiposApertura } = datos
   const lineInfo = datos.linea
+
+  // --- Carga bajo demanda -------------------------------------------------
+  // `datos.productos` trae únicamente la primera tanda (ver PRODUCTOS_POR_TANDA
+  // en datos-publicos.ts). El resto se pide a /api/productos-linea/[lineaSlug]
+  // a medida que hace falta: por scroll infinito en la vista sin filtrar, o
+  // de una sola vez cuando el usuario activa un filtro/tipología/orden que
+  // necesita el catálogo completo para dar resultados correctos.
+  const [products, setProducts] = useState<Producto[]>(datos.productos)
+  const [offset, setOffset] = useState(datos.productos.length)
+  const [hasMore, setHasMore] = useState(
+    datos.productos.length < datos.totalProductos,
+  )
+  const [loadingMore, setLoadingMore] = useState(false)
+  const loadingRef = useRef(false)
+  const sentinelRef = useRef<HTMLDivElement>(null)
+
+  const cargarSiguienteTanda = useCallback(async () => {
+    if (loadingRef.current || !hasMore) return
+    loadingRef.current = true
+    setLoadingMore(true)
+    try {
+      const respuesta = await fetch(
+        `/api/productos-linea/${lineaSlug}?offset=${offset}`,
+      )
+      if (!respuesta.ok) return
+      const pagina = (await respuesta.json()) as PaginaProductosLinea
+      setProducts((actual) => {
+        const idsActuales = new Set(actual.map((item) => item.id))
+        const nuevos = pagina.productos.filter(
+          (item) => !idsActuales.has(item.id),
+        )
+        return [...actual, ...nuevos]
+      })
+      setOffset((actual) => actual + pagina.productos.length)
+      setHasMore(pagina.hasMore)
+    } catch {
+      // Si falla, dejamos hasMore como está para permitir reintentar.
+    } finally {
+      loadingRef.current = false
+      setLoadingMore(false)
+    }
+  }, [hasMore, lineaSlug, offset])
+
+  // A diferencia del scroll infinito (que pide de a una tanda), acá hace
+  // falta el catálogo completo cuanto antes, así que se repite el pedido
+  // hasta agotar `hasMore` en vez de esperar a que el usuario haga scroll.
+  const cargarTodoElResto = useCallback(async () => {
+    if (loadingRef.current) return
+    loadingRef.current = true
+    setLoadingMore(true)
+    try {
+      let cursor = offset
+      let sigue = hasMore
+      while (sigue) {
+        const respuesta = await fetch(
+          `/api/productos-linea/${lineaSlug}?offset=${cursor}&limit=100`,
+        )
+        if (!respuesta.ok) break
+        const pagina = (await respuesta.json()) as PaginaProductosLinea
+        setProducts((actual) => {
+          const idsActuales = new Set(actual.map((item) => item.id))
+          const nuevos = pagina.productos.filter(
+            (item) => !idsActuales.has(item.id),
+          )
+          return [...actual, ...nuevos]
+        })
+        cursor += pagina.productos.length
+        sigue = pagina.hasMore
+        setOffset(cursor)
+        setHasMore(sigue)
+        if (pagina.productos.length === 0) break
+      }
+    } catch {
+      // Si falla, dejamos hasMore como está para permitir reintentar.
+    } finally {
+      loadingRef.current = false
+      setLoadingMore(false)
+    }
+  }, [hasMore, lineaSlug, offset])
+
   const lineProducts = useMemo(
     () =>
-      productos.filter(
+      products.filter(
         (product) =>
           product.linea === lineaSlug && product.visibilidad === "visible",
       ),
-    [lineaSlug, productos],
+    [lineaSlug, products],
   )
   const presentTypologyIds = useMemo(
     () => new Set(lineProducts.map((product) => product.tipologiaId)),
@@ -303,44 +373,14 @@ export function CatalogLinePage({ datos }: { datos: DatosCatalogoLineaPublica })
           (product) => product.tipologiaId === activeTypologyId,
         )
 
-  const openingOptions = buildOptions(
-    typologyProducts.flatMap((product) => {
-      if (!product.tipoApertura) return []
-      const opening = tiposApertura.find(
-        (item) => item.slug === product.tipoApertura,
-      )
-      return [
-        {
-          value: product.tipoApertura,
-          label: opening?.nombre ?? product.tipoApertura,
-        },
-      ]
-    }),
-  )
-  const colorOptions = buildOptions(
-    typologyProducts.flatMap((product) =>
-      product.coloresDisponibles.map((color) => ({
-        value: color.slug,
-        label: color.etiqueta,
-      })),
-    ),
-  )
-  const sizeOptions = buildOptions(
-    typologyProducts.flatMap((product) =>
-      product.medidasDisponibles.map((size) => ({
-        value: size.etiqueta,
-        label: size.etiqueta,
-      })),
-    ),
-  )
-  const tagOptions = buildOptions(
-    typologyProducts.flatMap((product) =>
-      product.etiquetas.map((tag) => ({ value: tag, label: tag })),
-    ),
-  )
-  const promotionCount = typologyProducts.filter((product) =>
-    resumirPromocionProducto(product),
-  ).length
+  // Las opciones de filtro (con sus conteos) ya vienen calculadas del
+  // servidor sobre el catálogo completo de la línea, así que están
+  // disponibles y son correctas incluso antes de terminar de cargar todos
+  // los productos en el cliente.
+  const facetasActivas =
+    datos.facetas[activeTypologyId] ?? datos.facetas[TIPOLOGIA_TODAS]
+  const { openingOptions, colorOptions, sizeOptions, tagOptions, promotionCount } =
+    facetasActivas
 
   function validValue(name: string, options: FilterOption[]) {
     const value = searchParams.get(name)
@@ -367,6 +407,39 @@ export function CatalogLinePage({ datos }: { datos: DatosCatalogoLineaPublica })
     ? (orderParam as CatalogOrder)
     : "relevancia"
 
+  // Filtrar por tipología, algún filtro puntual, u ordenar por precio solo
+  // da resultados correctos con el catálogo completo de la línea en memoria
+  // (no podemos pedirle a Supabase esas combinaciones por tanda porque esos
+  // campos viven dentro del payload del producto, no en columnas propias).
+  // Por eso, apenas se activa alguno de estos, disparamos la carga del resto
+  // en el momento, en vez de esperar a que el usuario llegue al final de la
+  // grilla.
+  const necesitaCatalogoCompleto =
+    activeTypologyId !== ALL || activeFilterCount > 0 || order !== "relevancia"
+
+  useEffect(() => {
+    if (necesitaCatalogoCompleto && hasMore && !loadingRef.current) {
+      void cargarTodoElResto()
+    }
+  }, [necesitaCatalogoCompleto, hasMore, cargarTodoElResto])
+
+  // Scroll infinito: solo mientras se navega el catálogo sin filtrar, que es
+  // el caso en el que sí podemos pedir tandas sucesivas directo a Supabase.
+  useEffect(() => {
+    if (necesitaCatalogoCompleto || !hasMore) return
+    const nodo = sentinelRef.current
+    if (!nodo) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) void cargarSiguienteTanda()
+      },
+      { rootMargin: "600px" },
+    )
+    observer.observe(nodo)
+    return () => observer.disconnect()
+  }, [necesitaCatalogoCompleto, hasMore, cargarSiguienteTanda])
+
   const filteredProducts = typologyProducts.filter((product) => {
     if (selected.opening && product.tipoApertura !== selected.opening)
       return false
@@ -389,6 +462,10 @@ export function CatalogLinePage({ datos }: { datos: DatosCatalogoLineaPublica })
     return true
   })
   const visibleProducts = sortProducts(filteredProducts, order)
+  const totalCatalogo =
+    activeTypologyId === ALL && activeFilterCount === 0
+      ? Math.max(datos.totalProductos, typologyProducts.length)
+      : typologyProducts.length
 
   function updateParam(name: string, value: string | null) {
     const next = new URLSearchParams(searchParams)
@@ -649,7 +726,7 @@ export function CatalogLinePage({ datos }: { datos: DatosCatalogoLineaPublica })
               <p className="text-sm text-muted-foreground">
                 {completarPlantilla(TEXTOS_CATALOGO.contadorProductos, {
                   visibles: visibleProducts.length,
-                  total: typologyProducts.length,
+                  total: totalCatalogo,
                 })}
               </p>
               <h2 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
@@ -736,6 +813,25 @@ export function CatalogLinePage({ datos }: { datos: DatosCatalogoLineaPublica })
                   activeFilterCount > 0 ? clearFilters : undefined
                 }
               />
+
+              {!necesitaCatalogoCompleto && hasMore && (
+                <div
+                  ref={sentinelRef}
+                  aria-hidden="true"
+                  className="h-1 w-full"
+                />
+              )}
+
+              {loadingMore && (
+                <div className="mt-5 grid grid-cols-1 gap-4 xs:grid-cols-2 xs:gap-3 sm:gap-5 md:grid-cols-2 xl:grid-cols-3">
+                  {Array.from({ length: 3 }).map((_, index) => (
+                    <Skeleton
+                      key={index}
+                      className="h-112 rounded-2xl xs:h-80 sm:h-96"
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 

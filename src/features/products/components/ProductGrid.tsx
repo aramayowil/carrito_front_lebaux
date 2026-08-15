@@ -55,12 +55,13 @@ export function ProductGrid({
 
   return (
     <div className={gridClassName}>
-      {products.map((product) => (
+      {products.map((product, index) => (
         <CatalogProductCard
           key={product.id}
           product={product}
           tipologiaNombre={tipologias.find((item) => item.id === product.tipologiaId)?.nombre}
           aperturaNombre={tiposApertura.find((item) => item.slug === product.tipoApertura)?.nombre}
+          priority={index < 4}
         />
       ))}
     </div>

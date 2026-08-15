@@ -83,6 +83,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
               src={activeImage?.url ?? ""}
               alt={activeImage?.textoAlternativo ?? productName}
               className="h-96 w-full sm:h-128 lg:h-144"
+              priority={currentIndex === 0}
             />
             <span className="absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-full bg-brand-black/80 px-3 py-2 text-xs font-medium text-white backdrop-blur-sm">
               <Expand className="size-4" /> Ampliar

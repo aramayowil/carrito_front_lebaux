@@ -1,5 +1,6 @@
 import { cacheLife, cacheTag } from "next/cache"
 
+import { calcularFacetasPorTipologia } from "@/features/products/lib/facets"
 import { crearClienteSupabaseServidor } from "@/services/supabase/server"
 import type {
   AccesorioLinea,
@@ -14,6 +15,7 @@ import type {
   TipoAperturaProducto,
   TipologiaProducto,
 } from "@/types"
+import type { FacetasCatalogo } from "@/features/products/lib/facets"
 
 type ClaveDocumento = "sitio" | "inicio" | "experiencia"
 type KindCatalogo =
@@ -256,6 +258,44 @@ async function cargarProductosLinea(lineaSlug: string): Promise<Producto[]> {
   return (data ?? []).map((fila) => fila.payload as Producto)
 }
 
+/** Cantidad de productos que se envían al cliente por tanda en el catálogo por línea. */
+export const PRODUCTOS_POR_TANDA = 24
+
+export interface PaginaProductosLinea {
+  productos: Producto[]
+  total: number
+  hasMore: boolean
+}
+
+/**
+ * Igual que `cargarProductosLinea`, pero pide a Supabase una sola tanda de
+ * productos (por `line_slug`/`visibility`, columnas reales de la tabla).
+ * Se usa para el primer render y para el scroll infinito del catálogo.
+ */
+export async function cargarProductosLineaPagina(
+  lineaSlug: string,
+  offset: number,
+  limite: number = PRODUCTOS_POR_TANDA,
+): Promise<PaginaProductosLinea> {
+  "use cache"
+  cacheLife({ stale: 60, revalidate: 60, expire: 3600 })
+  cacheTag("productos", `productos-linea:${lineaSlug}`)
+
+  const supabase = crearClienteSupabaseServidor()
+  const { data, error, count } = await supabase
+    .from("products")
+    .select("payload", { count: "exact" })
+    .eq("line_slug", lineaSlug)
+    .eq("visibility", "visible")
+    .order("updated_at", { ascending: false })
+    .range(offset, offset + limite - 1)
+
+  if (error) throw new Error(`No se pudo cargar ${lineaSlug}: ${error.message}`)
+  const productos = (data ?? []).map((fila) => fila.payload as Producto)
+  const total = count ?? offset + productos.length
+  return { productos, total, hasMore: offset + productos.length < total }
+}
+
 async function cargarProductosPorIds(ids: string[]): Promise<Producto[]> {
   "use cache"
   cacheLife({ stale: 60, revalidate: 60, expire: 3600 })
@@ -310,6 +350,10 @@ export interface DatosLayoutPublico {
 }
 
 export async function cargarDatosLayout(): Promise<DatosLayoutPublico> {
+  "use cache"
+  cacheLife({ stale: 60, revalidate: 60, expire: 3600 })
+  cacheTag("sitio", "lineas", "tipologias", "experiencia")
+
   const [sitio, lineas, tipologias, experiencia] = await Promise.all([
     cargarSitio(),
     cargarLineas(),
@@ -331,6 +375,19 @@ export interface DatosHomePublica {
 }
 
 export async function cargarDatosHome(): Promise<DatosHomePublica> {
+  "use cache"
+  cacheLife({ stale: 60, revalidate: 60, expire: 3600 })
+  cacheTag(
+    "productos",
+    "lineas",
+    "obras",
+    "beneficios",
+    "inicio",
+    "experiencia",
+    "sitio",
+    "tipologias",
+  )
+
   const [productos, lineas, obras, beneficios, inicioCrudo, experiencia, sitio, tipologias] =
     await Promise.all([
       cargarProductosVisibles(),
@@ -362,6 +419,8 @@ export interface DatosCatalogoLineaPublica {
   linea: LineaProducto
   lineas: LineaProducto[]
   productos: Producto[]
+  totalProductos: number
+  facetas: Record<string, FacetasCatalogo>
   tipologias: TipologiaProducto[]
   tiposApertura: TipoAperturaProducto[]
   mensajeWhatsapp: string
@@ -371,7 +430,19 @@ export interface DatosCatalogoLineaPublica {
 export async function cargarDatosCatalogoLinea(
   lineaSlug: string,
 ): Promise<DatosCatalogoLineaPublica | null> {
-  const [lineas, productos, tipologiasTodas, tiposApertura, experiencia, sitio] =
+  "use cache"
+  cacheLife({ stale: 60, revalidate: 60, expire: 3600 })
+  cacheTag(
+    "lineas",
+    "productos",
+    `productos-linea:${lineaSlug}`,
+    "tipologias",
+    "aperturas",
+    "experiencia",
+    "sitio",
+  )
+
+  const [lineas, todosLosProductos, tipologiasTodas, tiposApertura, experiencia, sitio] =
     await Promise.all([
       cargarLineas(),
       cargarProductosLinea(lineaSlug),
@@ -383,10 +454,18 @@ export async function cargarDatosCatalogoLinea(
   const linea = lineas.find((item) => item.slug === lineaSlug)
   if (!linea) return null
 
+  // Las facetas (opciones de filtro con conteos) se calculan acá, sobre el
+  // dataset completo cargado en el servidor, para no tener que enviarle al
+  // cliente todos los productos solo para poder armar los filtros.
+  const facetas = calcularFacetasPorTipologia(todosLosProductos, tiposApertura)
+  const primeraTanda = todosLosProductos.slice(0, PRODUCTOS_POR_TANDA)
+
   return {
     linea,
     lineas,
-    productos,
+    productos: primeraTanda,
+    totalProductos: todosLosProductos.length,
+    facetas,
     tipologias: tipologiasTodas.filter((item) => item.lineaSlug === lineaSlug),
     tiposApertura,
     mensajeWhatsapp: experiencia.catalogoLinea.asesoramientoMensajeWhatsapp,
@@ -408,10 +487,18 @@ export interface DatosProductoPublico {
 export async function cargarDatosProducto(
   slug: string,
 ): Promise<DatosProductoPublico | null> {
+  "use cache"
+  cacheLife({ stale: 60, revalidate: 60, expire: 3600 })
+  cacheTag("productos", `producto:${slug}`, "lineas", "tipologias", "aperturas", "accesorios", "sitio")
+
   const producto = await cargarProductoPorSlug(slug)
   if (!producto) return null
 
   const usaRelacionadosManuales = producto.productosRelacionadosIds.length > 0
+  if (!usaRelacionadosManuales) {
+    cacheTag(`productos-linea:${producto.linea}`)
+  }
+
   const [lineas, tipologias, tiposApertura, candidatosRelacionados, accesorios, sitio] =
     await Promise.all([
       cargarLineas(),
@@ -456,6 +543,10 @@ export async function cargarDatosProducto(
 }
 
 export async function cargarDatosCatalogosTecnicos() {
+  "use cache"
+  cacheLife({ stale: 60, revalidate: 60, expire: 3600 })
+  cacheTag("lineas", "experiencia")
+
   const [lineas, experiencia] = await Promise.all([
     cargarLineas(),
     cargarExperiencia(),
