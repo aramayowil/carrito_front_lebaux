@@ -1,9 +1,10 @@
-import { CalendarDays, Clock, MapPin } from "lucide-react"
+import { CalendarDays, Clock, ExternalLink, MapPin } from "lucide-react"
 import Link from "next/link"
 
 import { BackToTopButton } from "@/components/layout/BackToTopButton"
 import { Logo } from "@/components/layout/Logo"
 import { Button } from "@/components/ui/button"
+import { obtenerUrlGoogleMaps, obtenerUrlMapaEmbebido } from "@/lib/google-maps"
 import { IconoRedSocial, obtenerDatosRedSocial } from "@/components/ui/icons/social-icons"
 import type { ConfiguracionSitio, LineaProducto, TipologiaProducto } from "@/types"
 
@@ -22,6 +23,16 @@ export function Footer({
   tipologias: TipologiaProducto[]
 }) {
   const { contacto } = sitio
+  const urlMapaEmbebido = obtenerUrlMapaEmbebido({
+    urlConfigurada: contacto.urlMapaEmbebido,
+    direccion: contacto.direccion,
+    ciudad: contacto.ciudad,
+  })
+  const urlGoogleMaps = obtenerUrlGoogleMaps({
+    urlConfigurada: contacto.urlMapaEmbebido,
+    direccion: contacto.direccion,
+    ciudad: contacto.ciudad,
+  })
   const tipologiasUnicas = Array.from(
     tipologias
       .reduce((mapa, tipologia) => {
@@ -116,16 +127,31 @@ export function Footer({
               {horario.etiqueta}: {horario.valor}
             </p>
           ))}
-          {contacto.urlMapaEmbebido && (
-            <div className="corner-marks mt-4 overflow-hidden rounded-2xl border border-white/10">
+          {urlMapaEmbebido && (
+            <div className="mt-4 overflow-hidden rounded-2xl border border-white/10 bg-white/5">
               <iframe
-                src={contacto.urlMapaEmbebido}
-                title="Ubicación de Lebaux Aberturas"
+                src={urlMapaEmbebido}
+                title={`Ubicación de ${sitio.nombre}`}
                 className="h-40 w-full border-0 sm:h-48"
                 loading="lazy"
                 referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
               />
+              <Button
+                variant="ghost"
+                className="h-10 w-full rounded-none border-t border-white/10 text-xs text-white/70 hover:bg-white/10 hover:text-white"
+                render={
+                  <a
+                    href={urlGoogleMaps}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`Abrir ubicación de ${sitio.nombre} en Google Maps`}
+                  />
+                }
+              >
+                Ver en Google Maps
+                <ExternalLink data-icon="inline-end" className="size-3.5" />
+              </Button>
             </div>
           )}
         </div>
