@@ -121,6 +121,14 @@ export function ProductConfigurator({
         )
     : []
   const variantesPromocion = obtenerVariantesPromocion(product)
+  const opcionesVariantesPromocion = variantesPromocion.map((variante) => ({
+    value: variante.id,
+    label: etiquetaCombinacion(product, variante),
+  }))
+  const opcionesVidrioSelect = product.opcionesVidrio.map((vidrio) => ({
+    value: vidrio.slug,
+    label: vidrio.etiqueta,
+  }))
   const medidaSeleccionada = product.medidasDisponibles.find(
     (item) => item.id === seleccion.medidaId,
   )
@@ -226,6 +234,7 @@ export function ProductConfigurator({
                 </span>
               </div>
               <Select
+                items={opcionesVariantesPromocion}
                 value={
                   desglose.descuentoAplicado && varianteActual
                     ? varianteActual.id
@@ -324,6 +333,7 @@ export function ProductConfigurator({
                 </div>
                 {product.opcionesVidrio.length > 0 ? (
                   <Select
+                    items={opcionesVidrioSelect}
                     value={seleccion.vidrioSlug ?? ""}
                     onValueChange={(value) =>
                       value && setVidrio(value as SlugOpcionVidrio)

@@ -104,6 +104,12 @@ const TEXTOS_CATALOGO = {
   filtrosPanelTitulo: "Filtros",
 } as const
 
+const OPCIONES_ORDEN: Array<{ value: CatalogOrder; label: string }> = [
+  { value: "relevancia", label: TEXTOS_CATALOGO.ordenRelevancia },
+  { value: "precio-asc", label: TEXTOS_CATALOGO.ordenMenorPrecio },
+  { value: "precio-desc", label: TEXTOS_CATALOGO.ordenMayorPrecio },
+]
+
 function completarPlantilla(
   texto: string,
   valores: Record<string, string | number>,
@@ -693,6 +699,7 @@ export function CatalogLinePage({ datos }: { datos: DatosCatalogoLineaPublica })
           <div className="hidden shrink-0 items-center gap-2 sm:flex">
             <ArrowDownUp className="size-4 text-muted-foreground" />
             <Select
+              items={OPCIONES_ORDEN}
               value={order}
               onValueChange={(value) =>
                 value && updateParam(PARAMS.order, String(value))
@@ -739,6 +746,7 @@ export function CatalogLinePage({ datos }: { datos: DatosCatalogoLineaPublica })
             </div>
             <div className="sm:hidden">
               <Select
+                items={OPCIONES_ORDEN}
                 value={order}
                 onValueChange={(value) =>
                   value && updateParam(PARAMS.order, String(value))
