@@ -2,19 +2,19 @@ import {
   DynamicIcon,
   dynamicIconImports,
   type IconName,
-} from "lucide-react/dynamic.mjs"
+} from 'lucide-react/dynamic.mjs'
 
-import { RichTextContent } from "@/components/content/RichTextContent"
-import { ProductImage } from "@/components/media/ProductImage"
-import { Card, CardContent } from "@/components/ui/card"
+import { RichTextContent } from '@/components/content/RichTextContent'
+import { ProductImage } from '@/components/media/ProductImage'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   crearSrcSetCloudinary,
   crearUrlCloudinaryOptimizada,
-} from "@/services/cloudinary/imagen-entrega"
-import type { AcercaDeNosotrosInicio } from "@/types"
+} from '@/services/cloudinary/imagen-entrega'
+import type { AcercaDeNosotrosInicio } from '@/types'
 
 function iconoSeguro(nombre: string): IconName {
-  return nombre in dynamicIconImports ? (nombre as IconName) : "sparkles"
+  return nombre in dynamicIconImports ? (nombre as IconName) : 'sparkles'
 }
 
 /** Presentación institucional completamente administrable de la fábrica. */
@@ -25,13 +25,15 @@ export function AboutSection({
 }) {
   const imagenOptimizada = crearUrlCloudinaryOptimizada(contenido.imagenUrl, {
     ancho: 1200,
-    recorte: "limit",
+    recorte: 'limit',
   })
+
   const imagenSrcSet = crearSrcSetCloudinary(
     contenido.imagenUrl,
     [480, 640, 800, 960, 1200],
-    { recorte: "limit" },
+    { recorte: 'limit' },
   )
+
   const fortalezasActivas = contenido.fortalezas.filter(
     (fortaleza) => fortaleza.activo,
   )
@@ -42,28 +44,30 @@ export function AboutSection({
       className="bg-background py-16 sm:py-20"
       aria-labelledby="about-title"
     >
-      <div className="container grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
-        <div>
+      <div className="container grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
+        <div className="w-full lg:max-w-155">
           <ProductImage
             src={imagenOptimizada}
             srcSet={imagenSrcSet}
-            sizes="(min-width: 1024px) 52vw, (min-width: 640px) 90vw, 100vw"
+            sizes="(min-width: 1024px) 50vw, 100vw"
             alt={contenido.imagenAlt}
-            className="corner-marks-static relative aspect-[4/3] w-full rounded-3xl bg-white shadow-xl"
+            className="corner-marks-static relative aspect-4/3 w-full overflow-hidden rounded-2xl bg-white shadow-lg"
             imgClassName="object-cover"
           />
         </div>
 
-        <div>
+        <div className="min-w-0">
           {contenido.antetitulo && (
             <p className="eyebrow mb-2">{contenido.antetitulo}</p>
           )}
+
           <h2
             id="about-title"
             className="section-title section-title-left mb-6"
           >
             {contenido.titulo}
           </h2>
+
           {contenido.textoDescriptivo && (
             <RichTextContent
               html={contenido.textoDescriptivo}
@@ -87,8 +91,10 @@ export function AboutSection({
                         aria-hidden="true"
                       />
                     </span>
-                    <div>
+
+                    <div className="min-w-0">
                       <h3 className="font-bold">{fortaleza.titulo}</h3>
+
                       <p className="mt-1 text-sm leading-6 text-muted-foreground">
                         {fortaleza.descripcion}
                       </p>

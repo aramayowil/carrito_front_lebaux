@@ -1,12 +1,12 @@
-import { Quote } from "lucide-react"
+import { Quote } from 'lucide-react'
 
-import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon"
-import { ProductImage } from "@/components/media/ProductImage"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { buildWhatsAppUrl } from "@/lib/whatsapp"
-import type { Obra } from "@/types"
+import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon'
+import { ProductImage } from '@/components/media/ProductImage'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { buildWhatsAppUrl } from '@/lib/whatsapp'
+import type { Obra } from '@/types'
 
 interface ObrasSectionProps {
   obras: Obra[]
@@ -14,7 +14,7 @@ interface ObrasSectionProps {
   telefonoWhatsapp: string
 }
 
-/** Galería editorial de proyectos realizados con testimonios siempre visibles. */
+/** Galería editorial de proyectos realizados con imágenes uniformes en relación 4:3. */
 export function ObrasSection({
   obras,
   mensajeWhatsapp,
@@ -22,10 +22,6 @@ export function ObrasSection({
 }: ObrasSectionProps) {
   if (obras.length === 0) return null
 
-  const obraPrincipal = obras.find((obra) => obra.esPrincipal) ?? obras[0]
-  const obrasSecundarias = obras
-    .filter((obra) => obra.id !== obraPrincipal.id)
-    .slice(0, 2)
   const whatsappHref = buildWhatsAppUrl(mensajeWhatsapp, telefonoWhatsapp)
 
   return (
@@ -45,73 +41,50 @@ export function ObrasSection({
               Aberturas que ya son parte de otros hogares
             </h2>
           </div>
+
           <p className="max-w-xl leading-7 text-muted-foreground md:justify-self-end">
-            Conocé algunos proyectos realizados por Lebaux y la experiencia de quienes nos eligieron para transformar sus espacios.
+            Conocé algunos proyectos realizados por Lebaux y la experiencia de
+            quienes nos eligieron para transformar sus espacios.
           </p>
         </div>
 
-        <div className="grid gap-5 lg:grid-cols-[1.12fr_0.88fr]">
-          <article>
-            <Card className="group h-full gap-0 border border-border/70 py-0 shadow-lg">
-              <ProductImage
-                src={obraPrincipal.imagen}
-                alt={obraPrincipal.titulo}
-                className="aspect-[16/10] w-full border-b bg-white"
-                imgClassName="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-              />
-              <CardContent className="flex flex-1 flex-col px-6 py-6 sm:px-8 sm:py-7">
-                <div className="mb-4 flex flex-wrap gap-2">
-                  <Badge variant="secondary">{obraPrincipal.tipo}</Badge>
-                  <Badge variant="outline">
-                    {obraPrincipal.especificacion}
-                  </Badge>
-                </div>
-                <h3 className="text-2xl font-bold tracking-tight">
-                  {obraPrincipal.titulo}
-                </h3>
-                <Quote
-                  className="mt-6 size-7 text-primary"
-                  aria-hidden="true"
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {obras.map((obra) => (
+            <article key={obra.id} className="min-w-0">
+              <Card className="group flex h-full flex-col rounded-lg gap-0 overflow-hidden border border-border/70 py-0 shadow-sm transition-shadow duration-300 hover:shadow-lg">
+                <ProductImage
+                  src={obra.imagen}
+                  alt={obra.titulo}
+                  className="aspect-4/3 w-full border-b bg-white"
+                  imgClassName="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                 />
-                <blockquote className="mt-3 text-base leading-7 text-muted-foreground sm:text-lg">
-                  “{obraPrincipal.testimonio}”
-                </blockquote>
-                <p className="mt-5 text-sm font-semibold uppercase tracking-widest text-foreground">
-                  — {obraPrincipal.autor}
-                </p>
-              </CardContent>
-            </Card>
-          </article>
 
-          <div className="grid gap-5">
-            {obrasSecundarias.slice(0, 2).map((obra) => (
-              <article key={obra.id}>
-                <Card className="group h-full gap-0 border border-border/70 py-0 sm:grid sm:grid-cols-[0.8fr_1.2fr]">
-                  <ProductImage
-                    src={obra.imagen}
-                    alt={obra.titulo}
-                    className="h-56 w-full border-b bg-white sm:h-full sm:min-h-72 sm:border-b-0 sm:border-r"
-                    imgClassName="object-cover transition-transform duration-500 group-hover:scale-105"
+                <CardContent className="flex flex-1 flex-col px-5 py-5 sm:px-6 sm:py-6">
+                  <div className="mb-3 flex flex-wrap gap-2">
+                    <Badge variant="secondary">{obra.tipo}</Badge>
+                    <Badge variant="outline">{obra.especificacion}</Badge>
+                  </div>
+
+                  <h3 className="text-xl font-bold tracking-tight">
+                    {obra.titulo}
+                  </h3>
+
+                  <Quote
+                    className="mt-5 size-6 text-primary"
+                    aria-hidden="true"
                   />
-                  <CardContent className="flex min-w-0 flex-col px-5 py-5 sm:py-6">
-                    <div className="mb-3 flex flex-wrap gap-2">
-                      <Badge variant="secondary">{obra.tipo}</Badge>
-                      <Badge variant="outline">{obra.especificacion}</Badge>
-                    </div>
-                    <h3 className="text-lg font-bold tracking-tight">
-                      {obra.titulo}
-                    </h3>
-                    <blockquote className="mt-3 line-clamp-4 leading-6 text-muted-foreground">
-                      “{obra.testimonio}”
-                    </blockquote>
-                    <p className="mt-auto pt-4 text-xs font-semibold uppercase tracking-widest text-foreground">
-                      — {obra.autor}
-                    </p>
-                  </CardContent>
-                </Card>
-              </article>
-            ))}
-          </div>
+
+                  <blockquote className="mt-3 line-clamp-4 leading-6 text-muted-foreground">
+                    “{obra.testimonio}”
+                  </blockquote>
+
+                  <p className="mt-auto pt-5 text-xs font-semibold uppercase tracking-widest text-foreground">
+                    — {obra.autor}
+                  </p>
+                </CardContent>
+              </Card>
+            </article>
+          ))}
         </div>
 
         <Card className="mt-8 gap-0 border border-primary/20 bg-brand-graphite py-0 text-white shadow-lg ring-0">
@@ -119,9 +92,11 @@ export function ObrasSection({
             <div>
               <p className="text-lg font-bold">¿Tenés un proyecto en mente?</p>
               <p className="mt-1 text-sm leading-6 text-white/65">
-                Contanos qué necesitás y te ayudamos a elegir la abertura adecuada.
+                Contanos qué necesitás y te ayudamos a elegir la abertura
+                adecuada.
               </p>
             </div>
+
             <Button
               variant="whatsapp"
               size="lg"

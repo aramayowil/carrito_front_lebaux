@@ -1,8 +1,8 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
+import { useEffect, useState } from 'react'
 
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button'
 import {
   Carousel,
   type CarouselApi,
@@ -10,9 +10,9 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel"
-import { cn } from "@/lib/utils"
-import type { BannerInicio } from "@/types"
+} from '@/components/ui/carousel'
+import { cn } from '@/lib/utils'
+import type { BannerInicio } from '@/types'
 
 function ImagenBanner({
   banner,
@@ -27,10 +27,10 @@ function ImagenBanner({
       <img
         src={banner.imagenMovilUrl}
         alt={banner.textoAlternativo}
-        className="aspect-[4/3] max-h-128 w-full object-cover md:aspect-[16/5]"
-        loading={prioridad ? "eager" : "lazy"}
+        className="block aspect-4/5 max-h-[70vh] w-full object-cover md:aspect-21/9"
+        loading={prioridad ? 'eager' : 'lazy'}
         decoding="async"
-        fetchPriority={prioridad ? "high" : "auto"}
+        fetchPriority={prioridad ? 'high' : 'auto'}
       />
     </picture>
   )
@@ -75,18 +75,18 @@ export function Hero({ banners }: { banners: BannerInicio[] }) {
     const actualizarSeleccion = () => setSeleccionado(api.selectedScrollSnap())
 
     actualizarSeleccion()
-    api.on("select", actualizarSeleccion)
-    api.on("reInit", actualizarSeleccion)
+    api.on('select', actualizarSeleccion)
+    api.on('reInit', actualizarSeleccion)
 
     return () => {
-      api.off("select", actualizarSeleccion)
-      api.off("reInit", actualizarSeleccion)
+      api.off('select', actualizarSeleccion)
+      api.off('reInit', actualizarSeleccion)
     }
   }, [api])
 
   useEffect(() => {
     if (!api || activos.length < 2) return
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     const intervalo = window.setInterval(() => api.scrollNext(), 7000)
     return () => window.clearInterval(intervalo)
@@ -137,13 +137,13 @@ export function Hero({ banners }: { banners: BannerInicio[] }) {
               variant="secondary"
               size="icon-xs"
               className={cn(
-                "size-2 rounded-full border-0 p-0 shadow-sm transition-all",
+                'size-2 rounded-full border-0 p-0 shadow-sm transition-all',
                 index === seleccionado
-                  ? "w-6 bg-primary hover:bg-primary"
-                  : "bg-white/65 hover:bg-white",
+                  ? 'w-6 bg-primary hover:bg-primary'
+                  : 'bg-white/65 hover:bg-white',
               )}
               aria-label={`Mostrar banner ${index + 1}`}
-              aria-current={index === seleccionado ? "true" : undefined}
+              aria-current={index === seleccionado ? 'true' : undefined}
               onClick={() => api?.scrollTo(index)}
             />
           ))}
