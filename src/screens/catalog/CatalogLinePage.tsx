@@ -41,6 +41,7 @@ import {
 } from "@/components/ui/sheet"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { CatalogSizeFilter } from "@/features/products/components/CatalogSizeFilter"
 import { ProductGrid } from "@/features/products/components/ProductGrid"
 import { resumirPromocionProducto } from "@/features/products/lib/discounts"
 import { TIPOLOGIA_TODAS } from "@/features/products/lib/facets"
@@ -194,7 +195,7 @@ function CatalogFilters(props: FiltersProps) {
         value={selected.opening}
         onChange={(value) => props.onChange(PARAMS.opening, value)}
       />
-      <FilterGroup
+      <CatalogSizeFilter
         title={TEXTOS_CATALOGO.filtroMedida}
         options={props.sizeOptions}
         value={selected.size}
@@ -791,14 +792,14 @@ export function CatalogLinePage({ datos }: { datos: DatosCatalogoLineaPublica })
 
           <div className="grid gap-8 lg:grid-cols-4">
             <aside className="hidden lg:block">
-              <Card className="sticky top-36 gap-0 py-0">
-                <CardHeader className="border-b py-5">
+              <Card className="sticky top-36 max-h-[calc(100dvh-10rem)] gap-0 overflow-hidden py-0">
+                <CardHeader className="shrink-0 border-b py-5">
                   <CardTitle className="flex items-center gap-2 text-base">
                     <SlidersHorizontal className="size-4 text-primary" />
                     {TEXTOS_CATALOGO.filtrosPanelTitulo}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="py-5">
+                <CardContent className="min-h-0 flex-1 overflow-y-auto overscroll-contain py-5">
                   <CatalogFilters {...filtersProps} />
                 </CardContent>
               </Card>

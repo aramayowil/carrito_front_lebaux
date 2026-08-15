@@ -2,12 +2,10 @@ import type { Metadata } from "next"
 import type { ReactNode } from "react"
 
 import "@/index.css"
-import { obtenerUrlSitio } from "@/lib/site-url"
 import { PublicShell } from "@/providers/PublicShell"
 
 
 export const metadata: Metadata = {
-  metadataBase: new URL(obtenerUrlSitio()),
   title: {
     default: "Aberturas Lebaux",
     template: "%s | Aberturas Lebaux",
