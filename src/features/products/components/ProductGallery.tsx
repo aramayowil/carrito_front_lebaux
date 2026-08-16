@@ -1,20 +1,20 @@
-"use client"
+'use client'
 
-import { useCallback, useEffect, useState } from "react"
-import { ChevronLeft, ChevronRight, Expand } from "lucide-react"
+import { useCallback, useEffect, useState } from 'react'
+import { ChevronLeft, ChevronRight, Expand } from 'lucide-react'
 
-import { ProductImage } from "@/components/media/ProductImage"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { ProductImage } from '@/components/media/ProductImage'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   type CarouselApi,
-} from "@/components/ui/carousel"
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
-import { cn } from "@/lib/utils"
-import type { ImagenProducto } from "@/types"
+} from '@/components/ui/carousel'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
+import { cn } from '@/lib/utils'
+import type { ImagenProducto } from '@/types'
 
 interface ProductGalleryProps {
   images: ImagenProducto[]
@@ -49,10 +49,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
   const goToLightbox = useCallback(
     (index: number) => {
       if (orderedImages.length === 0) return
-      const nextIndex = Math.max(
-        0,
-        Math.min(index, orderedImages.length - 1),
-      )
+      const nextIndex = Math.max(0, Math.min(index, orderedImages.length - 1))
       setActiveIndex(nextIndex)
       lightboxApi?.scrollTo(nextIndex)
     },
@@ -67,12 +64,12 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
     }
 
     syncSelectedImage()
-    lightboxApi.on("select", syncSelectedImage)
-    lightboxApi.on("reInit", syncSelectedImage)
+    lightboxApi.on('select', syncSelectedImage)
+    lightboxApi.on('reInit', syncSelectedImage)
 
     return () => {
-      lightboxApi.off("select", syncSelectedImage)
-      lightboxApi.off("reInit", syncSelectedImage)
+      lightboxApi.off('select', syncSelectedImage)
+      lightboxApi.off('reInit', syncSelectedImage)
     }
   }, [lightboxApi])
 
@@ -94,10 +91,10 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
               aria-label={`Ver imagen ${index + 1}`}
               aria-pressed={index === currentIndex}
               className={cn(
-                "size-18 shrink-0 overflow-hidden rounded-2xl bg-white p-1",
+                'size-18 shrink-0 overflow-hidden rounded-2xl bg-white p-1',
                 index === currentIndex
-                  ? "border-primary ring-2 ring-primary/25"
-                  : "border-border/70 hover:border-primary/50",
+                  ? 'border-primary ring-2 ring-primary/25'
+                  : 'border-border/70 hover:border-primary/50',
               )}
             >
               <ProductImage
@@ -113,13 +110,13 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
 
       <div
         className={cn(
-          "order-1 min-w-0 md:order-2",
-          !hasMultiple && "md:col-span-2",
+          'order-1 min-w-0 md:order-2',
+          !hasMultiple && 'md:col-span-2',
         )}
       >
         <div className="corner-marks relative overflow-hidden rounded-3xl border border-border/70 bg-white">
           <ProductImage
-            src={activeImage?.url ?? ""}
+            src={activeImage?.url ?? ''}
             alt={activeImage?.textoAlternativo ?? productName}
             className="h-96 w-full sm:h-128 lg:h-144"
             priority={currentIndex === 0}
@@ -201,8 +198,8 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
           <div className="relative min-h-0 flex-1 overflow-hidden">
             <Carousel
               opts={{
-                align: "start",
-                containScroll: "trimSnaps",
+                align: 'start',
+                containScroll: 'trimSnaps',
                 dragFree: false,
                 loop: false,
                 startIndex: currentIndex,
@@ -270,10 +267,10 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                     aria-label={`Ir a imagen ${index + 1}`}
                     aria-pressed={index === currentIndex}
                     className={cn(
-                      "size-14 shrink-0 snap-start overflow-hidden rounded-xl border p-1 sm:size-16",
+                      'size-14 shrink-0 snap-start overflow-hidden rounded-xl border p-1 sm:size-16',
                       index === currentIndex
-                        ? "border-white bg-white/15 ring-2 ring-white/25"
-                        : "border-white/15 bg-white/5 hover:bg-white/10",
+                        ? 'border-white bg-white/15 ring-2 ring-white/25'
+                        : 'border-white/15 bg-white/5 hover:bg-white/10',
                     )}
                   >
                     <ProductImage

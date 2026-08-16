@@ -1,15 +1,22 @@
 "use client"
 
+import { useEffect } from "react"
+import * as Sentry from "@sentry/nextjs"
 import { AlertTriangle, RotateCcw } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 
 export default function Error({
+  error,
   reset,
 }: {
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  useEffect(() => {
+    Sentry.captureException(error)
+  }, [error])
+
   return (
     <section className="container flex min-h-[60svh] items-center justify-center py-16">
       <div className="mx-auto max-w-lg text-center">

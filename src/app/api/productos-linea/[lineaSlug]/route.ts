@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 
+import { respuestaLimiteExcedido, verificarLimite } from "@/lib/rate-limit"
 import {
   PRODUCTOS_POR_TANDA,
   cargarProductosLineaPagina,
@@ -9,6 +10,15 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ lineaSlug: string }> },
 ) {
+  const limite = verificarLimite(request, {
+    ruta: "productos-linea",
+    limite: 60,
+    ventanaMs: 60_000,
+  })
+  if (!limite.permitido) {
+    return respuestaLimiteExcedido(limite.reintentarEnSegundos)
+  }
+
   const { lineaSlug } = await params
   const { searchParams } = new URL(request.url)
 

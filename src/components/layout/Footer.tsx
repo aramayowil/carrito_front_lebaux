@@ -1,16 +1,21 @@
-import { CalendarDays, Clock, ExternalLink, MapPin } from "lucide-react"
-import Link from "next/link"
+import { CalendarDays, Clock, ExternalLink, MapPin } from 'lucide-react'
+import Link from 'next/link'
 
-import { BackToTopButton } from "@/components/layout/BackToTopButton"
-import { Logo } from "@/components/layout/Logo"
-import { Button } from "@/components/ui/button"
-import { obtenerUrlGoogleMaps, obtenerUrlMapaEmbebido } from "@/lib/google-maps"
-import { IconoRedSocial, obtenerDatosRedSocial } from "@/components/ui/icons/social-icons"
-import type { ConfiguracionSitio, LineaProducto, TipologiaProducto } from "@/types"
+import { BackToTopButton } from '@/components/layout/BackToTopButton'
+import { Logo } from '@/components/layout/Logo'
+import { Button } from '@/components/ui/button'
+import { obtenerUrlGoogleMaps, obtenerUrlMapaEmbebido } from '@/lib/google-maps'
+import {
+  IconoRedSocial,
+  obtenerDatosRedSocial,
+} from '@/components/ui/icons/social-icons'
+import type {
+  ConfiguracionSitio,
+  LineaProducto,
+  TipologiaProducto,
+} from '@/types'
 
-const URL_ADMIN =
-  process.env.ADMIN_URL?.trim() || "http://localhost:5173/admin/login"
-const COPYRIGHT_YEAR = "2026"
+const COPYRIGHT_YEAR = '2026'
 
 /** Pie global renderizado en servidor. Solo el botón de volver arriba hidrata JS. */
 export function Footer({
@@ -46,7 +51,11 @@ export function Footer({
     <footer className="bg-brand-black text-white">
       <div className="container grid grid-cols-2 gap-x-6 gap-y-9 py-10 sm:gap-x-8 sm:gap-y-10 sm:py-12 md:grid-cols-2 lg:grid-cols-4 lg:py-14">
         <div className="col-span-2 md:col-span-1">
-          <Logo variant="cropped" nombreSitio={sitio.nombre} className="mb-4 sm:mb-5" />
+          <Logo
+            variant="cropped"
+            nombreSitio={sitio.nombre}
+            className="mb-4 sm:mb-5"
+          />
           <p className="mb-5 max-w-md text-sm leading-6 text-white/60 sm:leading-7">
             {sitio.descripcion}
           </p>
@@ -70,7 +79,10 @@ export function Footer({
                       />
                     }
                   >
-                    <IconoRedSocial plataforma={social.plataforma} aria-hidden="true" />
+                    <IconoRedSocial
+                      plataforma={social.plataforma}
+                      aria-hidden="true"
+                    />
                   </Button>
                 )
               })}
@@ -82,13 +94,19 @@ export function Footer({
           <ul className="space-y-1.5 text-sm text-white/70 sm:space-y-2.5">
             {lineas.map((linea) => (
               <li key={linea.slug}>
-                <Link href={`/${linea.slug}`} className="inline-block py-1 hover:text-primary">
+                <Link
+                  href={`/${linea.slug}`}
+                  className="inline-block py-1 hover:text-primary"
+                >
                   {linea.nombre}
                 </Link>
               </li>
             ))}
             <li className="mt-2 border-t border-white/10 pt-3">
-              <Link href="/catalogos-tecnicos" className="inline-block py-1 font-semibold text-primary hover:text-primary/80">
+              <Link
+                href="/catalogos-tecnicos"
+                className="inline-block py-1 font-semibold text-primary hover:text-primary/80"
+              >
                 Catálogos técnicos
               </Link>
             </li>
@@ -118,7 +136,10 @@ export function Footer({
             {contacto.direccion}, {contacto.ciudad}
           </p>
           {contacto.horarios.map((horario, index) => (
-            <p key={`${horario.etiqueta}-${index}`} className="mb-3 flex items-start gap-3 text-sm text-white/80">
+            <p
+              key={`${horario.etiqueta}-${index}`}
+              className="mb-3 flex items-start gap-3 text-sm text-white/80"
+            >
               {index === 0 ? (
                 <Clock className="mt-0.5 size-4 shrink-0 text-primary" />
               ) : (
@@ -160,10 +181,8 @@ export function Footer({
       <div className="border-t border-white/10 py-4 sm:py-5">
         <div className="container flex flex-col items-center gap-3 sm:flex-row sm:justify-between sm:gap-4">
           <p className="text-center text-xs uppercase tracking-wide text-white/40 sm:text-left">
-            © {COPYRIGHT_YEAR} {sitio.nombreLegal}. Todos los derechos reservados.{" "}
-            <Link href={URL_ADMIN} className="text-white/10 no-underline hover:text-white/30" aria-label="Acceso administrador">
-              ·
-            </Link>
+            © {COPYRIGHT_YEAR} {sitio.nombreLegal}. Todos los derechos
+            reservados.{' '}
           </p>
           <BackToTopButton />
         </div>

@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 
+import { withSentryConfig } from "@sentry/nextjs"
+
 const esDesarrollo = process.env.NODE_ENV !== "production"
 
 // Next.js necesita 'unsafe-inline' en script-src porque inyecta el payload
@@ -14,6 +16,10 @@ const csp = [
   "img-src 'self' data: https://res.cloudinary.com",
   "font-src 'self' data:",
   "connect-src 'self'",
+  // Mapa embebido del footer (contacto.urlMapaEmbebido, cargado desde el
+  // panel admin). Sin esto, el iframe de Google Maps queda bloqueado por
+  // el default-src 'self'.
+  "frame-src 'self' https://www.google.com https://maps.google.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -56,4 +62,24 @@ const nextConfig = {
   },
 }
 
-export default nextConfig
+export default withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  // El token solo hace falta para subir source maps en el build; sin él,
+  // el build sigue funcionando pero los stack traces de Sentry se ven
+  // minificados.
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+
+  // Silencia el output del CLI de Sentry salvo en CI.
+  silent: !process.env.CI,
+  widenClientFileUpload: true,
+  hideSourceMaps: true,
+  disableLogger: true,
+  reactComponentAnnotation: { enabled: true },
+
+  // Los reportes de error del navegador salen por /monitoring (nuestro
+  // propio dominio) en vez de pegarle directo a *.sentry.io: evita tocar
+  // la Content-Security-Policy (connect-src sigue en 'self') y esquiva
+  // bloqueadores de publicidad que filtran dominios de telemetría.
+  tunnelRoute: "/monitoring",
+})
