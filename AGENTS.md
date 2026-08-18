@@ -234,6 +234,9 @@ src/
 - [x] Componentes y contratos públicos de Obras organizados como capacidad en
       `features/works`, desacoplados del JSON mock (ver
       `docs/2026-08-18-feature-works.md`).
+- [x] Obras incorporada a la navegación principal y mobile, con el grupo de
+      enlaces centrado respecto al Navbar completo (ver
+      `docs/2026-08-18-navbar-obras-centrado.md`).
 - [x] Galería inmersiva responsive en las fichas de obras, con Dialog, carrusel,
       navegación gestual/teclado y zoom desplazable (ver
       `docs/2026-08-18-galeria-inmersiva-obras.md` y corrección de ancho/galería

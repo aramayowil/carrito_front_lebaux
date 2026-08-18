@@ -1,27 +1,24 @@
-"use client"
+"use client";
 
-import { useState, type ReactNode } from "react"
-import { Menu, X } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { useState, type ReactNode } from "react";
+import { Menu, X } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon"
-import { Logo } from "@/components/layout/Logo"
-import { Button } from "@/components/ui/button"
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import { Logo } from "@/components/layout/Logo";
+import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetClose,
   SheetContent,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet"
-import { ProductSearchDialog } from "@/features/products/components/ProductSearchDialog"
-import {
-  buildWhatsAppUrl,
-  DEFAULT_WHATSAPP_MESSAGE,
-} from "@/lib/whatsapp"
-import { cn } from "@/lib/utils"
-import type { LineaProducto } from "@/types"
+} from "@/components/ui/sheet";
+import { ProductSearchDialog } from "@/features/products/components/ProductSearchDialog";
+import { buildWhatsAppUrl, DEFAULT_WHATSAPP_MESSAGE } from "@/lib/whatsapp";
+import { cn } from "@/lib/utils";
+import type { LineaProducto } from "@/types";
 
 function EnlaceNavegacion({
   href,
@@ -31,12 +28,12 @@ function EnlaceNavegacion({
   onClick,
   title,
 }: {
-  href: string
-  children: ReactNode
-  className?: string
-  activo: boolean
-  onClick?: () => void
-  title?: string
+  href: string;
+  children: ReactNode;
+  className?: string;
+  activo: boolean;
+  onClick?: () => void;
+  title?: string;
 }) {
   return (
     <Link
@@ -48,7 +45,7 @@ function EnlaceNavegacion({
     >
       {children}
     </Link>
-  )
+  );
 }
 
 /** Header sticky, compacto y estable con búsqueda y navegación de catálogo. */
@@ -57,17 +54,21 @@ export function Navbar({
   telefonoWhatsapp,
   nombreSitio,
 }: {
-  lineas: LineaProducto[]
-  telefonoWhatsapp: string
-  nombreSitio: string
+  lineas: LineaProducto[];
+  telefonoWhatsapp: string;
+  nombreSitio: string;
 }) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const pathname = usePathname()
-  const whatsappHref = buildWhatsAppUrl(DEFAULT_WHATSAPP_MESSAGE, telefonoWhatsapp)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const obrasActivo = pathname === "/obras" || pathname.startsWith("/obras/");
+  const whatsappHref = buildWhatsAppUrl(
+    DEFAULT_WHATSAPP_MESSAGE,
+    telefonoWhatsapp,
+  );
 
   return (
     <header className="sticky top-0 z-50 h-navbar shrink-0 border-b border-white/10 bg-brand-black/95 shadow-md backdrop-blur supports-backdrop-filter:bg-brand-black/90">
-      <div className="mx-auto flex h-full max-w-screen-2xl items-center gap-3 px-4 sm:px-6">
+      <div className="relative mx-auto flex h-full max-w-screen-2xl items-center gap-3 px-4 sm:px-6">
         <div className="shrink-0">
           <Logo nombreSitio={nombreSitio} />
         </div>
@@ -77,11 +78,11 @@ export function Navbar({
 
           <nav
             aria-label="Navegación principal"
-            className="flex min-w-0 flex-1 items-center justify-center gap-1 xl:gap-2"
+            className="absolute left-1/2 flex min-w-0 -translate-x-1/2 items-center justify-center gap-1 xl:gap-2"
           >
             {lineas.map((linea) => {
-              const href = `/${linea.slug}`
-              const activo = pathname === href
+              const href = `/${linea.slug}`;
+              const activo = pathname === href;
               return (
                 <EnlaceNavegacion
                   key={linea.slug}
@@ -89,7 +90,7 @@ export function Navbar({
                   title={linea.nombre}
                   activo={activo}
                   className={cn(
-                    "min-w-0 max-w-32 truncate rounded-full px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors 2xl:max-w-44 2xl:px-4",
+                    "inline-flex min-w-0 max-w-32 items-center justify-center truncate rounded-full px-3 py-2 text-center text-sm font-medium whitespace-nowrap transition-colors 2xl:max-w-44 2xl:px-4",
                     activo
                       ? "bg-primary/10 text-primary"
                       : "text-white/75 hover:bg-white/10 hover:text-white",
@@ -97,15 +98,28 @@ export function Navbar({
                 >
                   {linea.nombre.replace("Línea ", "")}
                 </EnlaceNavegacion>
-              )
+              );
             })}
+
+            <EnlaceNavegacion
+              href="/obras"
+              activo={obrasActivo}
+              className={cn(
+                "inline-flex shrink-0 items-center justify-center rounded-full px-2.5 py-2 text-center text-sm font-medium whitespace-nowrap transition-colors 2xl:px-4",
+                obrasActivo
+                  ? "bg-primary/10 text-primary"
+                  : "text-white/75 hover:bg-white/10 hover:text-white",
+              )}
+            >
+              Obras
+            </EnlaceNavegacion>
 
             <EnlaceNavegacion
               href="/catalogos-tecnicos"
               title="Documentación técnica"
               activo={pathname === "/catalogos-tecnicos"}
               className={cn(
-                "hidden shrink-0 rounded-full px-2.5 py-2 text-sm font-medium whitespace-nowrap transition-colors lg:inline-flex 2xl:px-4",
+                "hidden shrink-0 items-center justify-center rounded-full px-2.5 py-2 text-center text-sm font-medium whitespace-nowrap transition-colors lg:inline-flex 2xl:px-4",
                 pathname === "/catalogos-tecnicos"
                   ? "bg-primary/10 text-primary"
                   : "text-white/75 hover:bg-white/10 hover:text-white",
@@ -118,7 +132,7 @@ export function Navbar({
           <Button
             variant="whatsapp"
             size="lg"
-            className="size-11 shrink-0 rounded-full px-0 xl:w-auto xl:px-4"
+            className="ml-auto size-11 shrink-0 rounded-full px-0 xl:w-auto xl:px-4"
             render={
               <a
                 href={whatsappHref}
@@ -204,8 +218,8 @@ export function Navbar({
 
                 <div className="grid gap-2">
                   {lineas.map((linea) => {
-                    const href = `/${linea.slug}`
-                    const activo = pathname === href
+                    const href = `/${linea.slug}`;
+                    const activo = pathname === href;
                     return (
                       <EnlaceNavegacion
                         key={linea.slug}
@@ -221,11 +235,25 @@ export function Navbar({
                         {linea.nombre}
                         <span aria-hidden="true">→</span>
                       </EnlaceNavegacion>
-                    )
+                    );
                   })}
                 </div>
 
                 <div className="mt-5 border-t border-white/10 pt-5">
+                  <EnlaceNavegacion
+                    href="/obras"
+                    activo={obrasActivo}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={cn(
+                      "mb-2 flex items-center justify-between rounded-xl border border-white/10 px-4 py-3 text-sm font-medium text-white/80 transition-colors hover:border-primary/30 hover:bg-primary/10 hover:text-white",
+                      obrasActivo &&
+                        "border-primary/30 bg-primary/10 text-primary",
+                    )}
+                  >
+                    Nuestras obras
+                    <span aria-hidden="true">→</span>
+                  </EnlaceNavegacion>
+
                   <EnlaceNavegacion
                     href="/catalogos-tecnicos"
                     activo={pathname === "/catalogos-tecnicos"}
@@ -272,5 +300,5 @@ export function Navbar({
         </div>
       </div>
     </header>
-  )
+  );
 }
