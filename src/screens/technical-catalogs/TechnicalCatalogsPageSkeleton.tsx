@@ -1,68 +1,64 @@
-import { Skeleton } from "@/components/ui/skeleton"
-import { TechnicalCatalogCardSkeleton } from "@/screens/technical-catalogs/components/TechnicalCatalogCardSkeleton"
+import { Skeleton } from "@/components/ui/skeleton";
+import { TechnicalCatalogCardSkeleton } from "@/screens/technical-catalogs/components/TechnicalCatalogCardSkeleton";
 
-/** Fallback estructural de la biblioteca técnica con hero, navegación sticky y cards reales. */
+/** Fallback estructural de la biblioteca técnica compacta. */
 export function TechnicalCatalogsPageSkeleton() {
   return (
     <div className="bg-background">
-      <section
+      <header
         aria-hidden="true"
-        className="relative isolate overflow-hidden bg-brand-black text-white"
+        className="border-b border-white/10 bg-brand-black"
       >
-        <div className="container flex min-h-72 flex-col justify-between py-4 md:min-h-80 md:py-5">
-          <div className="flex items-center gap-2">
-            <Skeleton className="h-4 w-12 rounded-full bg-white/15" />
-            <Skeleton className="size-3 rounded-full bg-white/10" />
-            <Skeleton className="h-4 w-32 rounded-full bg-white/15" />
-          </div>
-
-          <div className="max-w-2xl pt-4 md:pt-3">
-            <Skeleton className="h-4 w-36 rounded-full bg-white/15" />
-            <Skeleton className="mt-3 h-11 w-full max-w-lg rounded-md bg-white/15 sm:h-14" />
-            <Skeleton className="mt-4 h-5 w-full max-w-md rounded-md bg-white/15" />
-            <div className="mt-4 space-y-2">
-              <Skeleton className="h-4 w-full max-w-xl rounded-md bg-white/10" />
-              <Skeleton className="h-4 w-4/5 max-w-lg rounded-md bg-white/10" />
-            </div>
-            <Skeleton className="mt-7 h-11 w-48 rounded-xl bg-white/15" />
-          </div>
-        </div>
-      </section>
-
-      <div
-        aria-hidden="true"
-        className="sticky top-navbar z-30 border-y border-border/70 bg-background/95 backdrop-blur"
-      >
-        <div className="container flex min-w-0 items-center gap-3 py-3">
-          <Skeleton className="hidden h-3 w-24 shrink-0 rounded-full sm:block" />
-          <div className="flex min-w-0 flex-1 gap-2 overflow-hidden">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <Skeleton key={index} className="h-8 w-20 shrink-0 rounded-full" />
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <main aria-hidden="true" className="bg-muted/25 py-8 sm:py-10">
-        <div className="container">
-          <div className="mb-7 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="container py-10 sm:py-12 lg:py-14">
+          <div className="grid gap-9 lg:grid-cols-[minmax(0,1.05fr)_minmax(22rem,0.95fr)] lg:items-center lg:gap-14">
             <div>
-              <Skeleton className="h-4 w-40 rounded-full" />
-              <Skeleton className="mt-2 h-8 w-72 max-w-full rounded-md" />
+              <Skeleton className="h-4 w-36 rounded-full bg-white/15" />
+              <Skeleton className="mt-4 h-11 w-full max-w-lg rounded-md bg-white/15 sm:h-14" />
+              <div className="mt-5 max-w-xl space-y-2">
+                <Skeleton className="h-5 w-full rounded-md bg-white/10" />
+                <Skeleton className="h-5 w-4/5 rounded-md bg-white/10" />
+              </div>
             </div>
-            <div className="w-full max-w-lg space-y-2">
+
+            <div className="space-y-4 border-t border-white/10 pt-6 lg:border-t-0 lg:border-l lg:py-2 lg:pl-10">
+              <Skeleton className="h-3 w-40 rounded-full bg-white/15" />
+              {Array.from({ length: 3 }).map((_, index) => (
+                <div key={index} className="flex items-center gap-3">
+                  <Skeleton className="size-1.5 rounded-full bg-white/15" />
+                  <Skeleton className="h-4 w-52 bg-white/10" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main aria-hidden="true" className="bg-muted/20 py-10 sm:py-14">
+        <div className="container">
+          <div className="mb-7 max-w-2xl sm:mb-9">
+            <Skeleton className="h-4 w-40 rounded-full" />
+            <Skeleton className="mt-3 h-8 w-full max-w-md rounded-md" />
+            <div className="mt-3 space-y-2">
               <Skeleton className="h-4 w-full rounded-md" />
-              <Skeleton className="h-4 w-4/5 rounded-md sm:ml-auto" />
+              <Skeleton className="h-4 w-4/5 rounded-md" />
             </div>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <div className="mx-auto grid max-w-6xl gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-5">
             {Array.from({ length: 3 }).map((_, index) => (
               <TechnicalCatalogCardSkeleton key={index} />
             ))}
           </div>
+
+          <div className="mt-10 flex flex-col gap-5 rounded-xl bg-brand-black px-5 py-6 sm:mt-12 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+            <div className="w-full max-w-xl space-y-2">
+              <Skeleton className="h-5 w-72 max-w-full bg-white/15" />
+              <Skeleton className="h-4 w-full bg-white/10" />
+            </div>
+            <Skeleton className="h-11 w-full shrink-0 bg-white/15 sm:w-52" />
+          </div>
         </div>
       </main>
     </div>
-  )
+  );
 }

@@ -160,7 +160,8 @@ src/
 - [x] Catálogos técnicos externos administrables por línea, con acceso
       compacto en Home, biblioteca pública dedicada, enlace en Footer y
       descarga contextual por línea (ver
-      `docs/2026-08-10-catalogos-tecnicos-por-linea.md`).
+      `docs/2026-08-10-catalogos-tecnicos-por-linea.md` y
+      `docs/2026-08-18-redisenio-biblioteca-catalogos-tecnicos.md`).
 - [x] Jerarquía v2 sin entidad Categoría, catálogos globales de colores,
       vidrios, accesorios y tipos de apertura, altas rápidas, matriz de variantes
       Medida × Color × Vidrio y mano de apertura (ver

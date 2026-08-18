@@ -609,13 +609,13 @@ export async function cargarDatosProducto(
 export async function cargarDatosCatalogosTecnicos() {
   "use cache";
   cacheLife({ stale: 60, revalidate: 60, expire: 3600 });
-  cacheTag("lineas", "experiencia");
+  cacheTag("lineas", "sitio");
 
-  const [lineas, experiencia] = await Promise.all([
-    cargarLineas(),
-    cargarExperiencia(),
-  ]);
-  return { lineas, banner: experiencia.catalogosTecnicos };
+  const [lineas, sitio] = await Promise.all([cargarLineas(), cargarSitio()]);
+  return {
+    lineas,
+    telefonoWhatsapp: sitio.contacto.telefonoWhatsapp,
+  };
 }
 
 export async function cargarDatosSincronizacionCarrito(ids: string[]) {
