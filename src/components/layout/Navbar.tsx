@@ -116,7 +116,7 @@ export function Navbar({
 
             <EnlaceNavegacion
               href="/catalogos-tecnicos"
-              title="Documentación técnica"
+              title="Catálogos"
               activo={pathname === "/catalogos-tecnicos"}
               className={cn(
                 "hidden shrink-0 items-center justify-center rounded-full px-2.5 py-2 text-center text-sm font-medium whitespace-nowrap transition-colors lg:inline-flex 2xl:px-4",
@@ -125,7 +125,7 @@ export function Navbar({
                   : "text-white/75 hover:bg-white/10 hover:text-white",
               )}
             >
-              Catálogos técnicos
+              Catálogos
             </EnlaceNavegacion>
           </nav>
 
@@ -269,7 +269,7 @@ export function Navbar({
                         Recursos para profesionales
                       </span>
                       <span className="mt-1 block text-sm font-semibold">
-                        Catálogos técnicos
+                        Catálogos
                       </span>
                     </span>
                     <span aria-hidden="true">→</span>

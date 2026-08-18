@@ -132,6 +132,15 @@ export interface LineaProducto {
 
   /** Fecha ISO (AAAA-MM-DD) de la última actualización publicada. */
   catalogoTecnicoActualizadoEn: string
+
+  /** PDF o visor externo con especificaciones técnicas de la línea. */
+  especificacionesTecnicasUrl?: string
+
+  /** Identificador editorial opcional del documento de especificaciones. */
+  especificacionesTecnicasVersion?: string
+
+  /** Fecha ISO (AAAA-MM-DD) de actualización de las especificaciones. */
+  especificacionesTecnicasActualizadoEn?: string
 }
 
 /* --------------------------------------------------------------------------

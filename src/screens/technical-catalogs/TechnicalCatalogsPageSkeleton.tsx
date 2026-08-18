@@ -10,24 +10,12 @@ export function TechnicalCatalogsPageSkeleton() {
         className="border-b border-white/10 bg-brand-black"
       >
         <div className="container py-10 sm:py-12 lg:py-14">
-          <div className="grid gap-9 lg:grid-cols-[minmax(0,1.05fr)_minmax(22rem,0.95fr)] lg:items-center lg:gap-14">
-            <div>
-              <Skeleton className="h-4 w-36 rounded-full bg-white/15" />
-              <Skeleton className="mt-4 h-11 w-full max-w-lg rounded-md bg-white/15 sm:h-14" />
-              <div className="mt-5 max-w-xl space-y-2">
-                <Skeleton className="h-5 w-full rounded-md bg-white/10" />
-                <Skeleton className="h-5 w-4/5 rounded-md bg-white/10" />
-              </div>
-            </div>
-
-            <div className="space-y-4 border-t border-white/10 pt-6 lg:border-t-0 lg:border-l lg:py-2 lg:pl-10">
-              <Skeleton className="h-3 w-40 rounded-full bg-white/15" />
-              {Array.from({ length: 3 }).map((_, index) => (
-                <div key={index} className="flex items-center gap-3">
-                  <Skeleton className="size-1.5 rounded-full bg-white/15" />
-                  <Skeleton className="h-4 w-52 bg-white/10" />
-                </div>
-              ))}
+          <div className="max-w-3xl">
+            <Skeleton className="h-4 w-36 rounded-full bg-white/15" />
+            <Skeleton className="mt-4 h-11 w-full max-w-lg rounded-md bg-white/15 sm:h-14" />
+            <div className="mt-5 max-w-2xl space-y-2">
+              <Skeleton className="h-5 w-full rounded-md bg-white/10" />
+              <Skeleton className="h-5 w-4/5 rounded-md bg-white/10" />
             </div>
           </div>
         </div>
@@ -35,6 +23,10 @@ export function TechnicalCatalogsPageSkeleton() {
 
       <main aria-hidden="true" className="bg-muted/20 py-10 sm:py-14">
         <div className="container">
+          <div className="mb-8 flex justify-center">
+            <Skeleton className="h-12 w-full max-w-md rounded-xl" />
+          </div>
+
           <div className="mb-7 max-w-2xl sm:mb-9">
             <Skeleton className="h-4 w-40 rounded-full" />
             <Skeleton className="mt-3 h-8 w-full max-w-md rounded-md" />
@@ -42,11 +34,6 @@ export function TechnicalCatalogsPageSkeleton() {
               <Skeleton className="h-4 w-full rounded-md" />
               <Skeleton className="h-4 w-4/5 rounded-md" />
             </div>
-          </div>
-
-          <div className="mb-7 flex flex-col gap-4 border-y border-border/70 py-4 sm:flex-row sm:items-center sm:justify-between">
-            <Skeleton className="h-8 w-64 max-w-full" />
-            <Skeleton className="h-10 w-full sm:max-w-xs" />
           </div>
 
           <div className="mx-auto grid max-w-6xl gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-5">

@@ -9,10 +9,7 @@ export function TechnicalCatalogCardSkeleton() {
       className="h-full gap-0 rounded-xl border-border/80 bg-background py-0 shadow-none"
     >
       <CardContent className="flex flex-1 flex-col p-5 sm:p-6">
-        <div className="flex items-start justify-between gap-4">
-          <Skeleton className="size-10 rounded-lg" />
-          <Skeleton className="h-6 w-20 rounded-full" />
-        </div>
+        <Skeleton className="size-10 rounded-lg" />
 
         <Skeleton className="mt-5 h-3 w-28 rounded-full" />
         <Skeleton className="mt-2 h-6 w-3/5 rounded-md" />

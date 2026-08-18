@@ -163,7 +163,9 @@ src/
       `docs/2026-08-10-catalogos-tecnicos-por-linea.md` y
       `docs/2026-08-18-redisenio-biblioteca-catalogos-tecnicos.md` y
       `docs/2026-08-18-exploracion-documental-catalogos-tecnicos.md` y
-      `docs/2026-08-18-accion-unica-catalogos-tecnicos.md`).
+      `docs/2026-08-18-accion-unica-catalogos-tecnicos.md` y
+      `docs/2026-08-18-catalogos-y-especificaciones-tecnicas.md` y
+      `docs/2026-08-18-biblioteca-tecnica-sin-filtros.md`).
 - [x] Jerarquía v2 sin entidad Categoría, catálogos globales de colores,
       vidrios, accesorios y tipos de apertura, altas rápidas, matriz de variantes
       Medida × Color × Vidrio y mano de apertura (ver
