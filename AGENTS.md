@@ -140,7 +140,10 @@ src/
       `docs/2026-08-10-redisenio-catalogo-por-linea.md` y
       `docs/2026-08-18-introduccion-compacta-catalogo-linea.md` y
       `docs/2026-08-18-introduccion-tipografica-catalogo-linea.md` y
-      `docs/2026-08-18-tipologias-confiables-y-toolbar-catalogo.md`).
+      `docs/2026-08-18-tipologias-confiables-y-toolbar-catalogo.md` y
+      `docs/2026-08-18-filtros-y-resultados-catalogo-linea.md` y
+      `docs/2026-08-18-buscador-medidas-y-filtro-vidrios.md` y
+      `docs/2026-08-18-contraste-sidebar-filtros-catalogo.md`).
 - [x] Beneficios e indicaciones “Ideal para” administrables por línea, sin
       mapas editoriales cerrados en la vista pública (ver
       `docs/2026-08-11-contenido-editorial-lineas-administrable.md`).

@@ -11,6 +11,7 @@ export interface FacetasCatalogo {
   totalProductos: number;
   openingOptions: OpcionFiltro[];
   colorOptions: OpcionFiltro[];
+  glassOptions: OpcionFiltro[];
   sizeOptions: OpcionFiltro[];
   tagOptions: OpcionFiltro[];
   promotionCount: number;
@@ -56,6 +57,14 @@ function calcularFacetasDeGrupo(
         product.coloresDisponibles.map((color) => ({
           value: color.slug,
           label: color.etiqueta,
+        })),
+      ),
+    ),
+    glassOptions: buildOptions(
+      productos.flatMap((product) =>
+        product.opcionesVidrio.map((glass) => ({
+          value: glass.slug,
+          label: glass.etiqueta,
         })),
       ),
     ),

@@ -48,21 +48,21 @@ export function CatalogLinePageSkeleton() {
 
       <main className="bg-muted/25 py-8 sm:py-10">
         <div className="container">
-          <div className="mb-7">
-            <Skeleton className="h-4 w-36 rounded-full" />
-            <Skeleton className="mt-2 h-8 w-64 max-w-full rounded-lg" />
+          <div className="mb-7 border-b border-border/70 pb-5 sm:mb-8 sm:pb-6">
+            <Skeleton className="h-8 w-64 max-w-full rounded-lg" />
+            <Skeleton className="mt-2 h-4 w-36 rounded-full" />
           </div>
 
           <div className="grid gap-8 lg:grid-cols-4">
             <aside className="hidden lg:block">
-              <Card className="sticky top-36 max-h-[calc(100dvh-10rem)] gap-0 overflow-hidden py-0">
-                <CardHeader className="shrink-0 border-b py-5">
+              <Card className="sticky top-32 mt-3 max-h-[calc(100dvh-9rem)] gap-0 overflow-hidden rounded-md! border border-border bg-background py-0 shadow-none ring-0">
+                <CardHeader className="shrink-0 rounded-t-none! border-b border-white/10 bg-brand-black/95 px-5 py-4 backdrop-blur supports-backdrop-filter:bg-brand-black/90">
                   <div className="flex items-center gap-2">
-                    <Skeleton className="size-4 rounded-md" />
-                    <Skeleton className="h-5 w-16 rounded-md" />
+                    <Skeleton className="size-4 rounded-md bg-white/20" />
+                    <Skeleton className="h-5 w-16 rounded-md bg-white/20" />
                   </div>
                 </CardHeader>
-                <CardContent className="min-h-0 flex-1 overflow-hidden py-5">
+                <CardContent className="min-h-0 flex-1 overflow-hidden px-5 py-5">
                   <CatalogFiltersSkeleton />
                 </CardContent>
               </Card>

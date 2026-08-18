@@ -1,35 +1,39 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Download, SlidersHorizontal, X } from "lucide-react";
+import { Download, SlidersHorizontal } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CatalogSizeFilter } from "@/features/products/components/CatalogSizeFilter";
 import { ProductGrid } from "@/features/products/components/ProductGrid";
 import { resumirPromocionProducto } from "@/features/products/lib/discounts";
-import { TIPOLOGIA_TODAS } from "@/features/products/lib/facets";
+import {
+  TIPOLOGIA_TODAS,
+  type OpcionFiltro,
+} from "@/features/products/lib/facets";
 import { obtenerPrecioInicial } from "@/features/products/lib/pricing";
 import { normalizarUrlCatalogoTecnico } from "@/features/products/lib/technical-catalog";
 import {
   CatalogLineToolbar,
   type CatalogOrder,
 } from "@/screens/catalog/components/CatalogLineToolbar";
+import { CatalogFiltersPanel } from "@/screens/catalog/components/CatalogFiltersPanel";
+import { CatalogResultsHeader } from "@/screens/catalog/components/CatalogResultsHeader";
 import { CatalogLineMoreContent } from "@/screens/catalog/sections/CatalogLineMoreContent";
 import type { Producto } from "@/types";
 import type {
   DatosCatalogoLineaPublica,
   PaginaProductosLinea,
 } from "@/server/datos-publicos";
-import type { OpcionFiltro } from "@/features/products/lib/facets";
 
 const PARAMS = {
   typology: "tipologia",
   tag: "etiqueta",
   opening: "apertura",
   color: "color",
+  glass: "vidrio",
   size: "medida",
   promotion: "promocion",
   order: "orden",
@@ -39,6 +43,7 @@ const FILTER_PARAMS = [
   PARAMS.tag,
   PARAMS.opening,
   PARAMS.color,
+  PARAMS.glass,
   PARAMS.size,
   PARAMS.promotion,
 ];
@@ -47,19 +52,8 @@ const EMPTY_SEARCH_PARAMS = new URLSearchParams();
 const TEXTOS_CATALOGO = {
   sobrelineaHero: "Línea de fabricación",
   botonCatalogoTecnico: "Descargar catálogo técnico",
-  filtrosTitulo: "Afiná tu búsqueda",
-  filtrosDescripcion: "Combiná las opciones disponibles.",
-  filtrosLimpiar: "Limpiar",
-  filtroApertura: "Tipo de apertura",
-  filtroMedida: "Medida",
-  filtroColor: "Color",
-  filtroCaracteristicas: "Características",
-  filtroOportunidades: "Oportunidades",
   promocionEtiqueta: "Con promoción",
-  contadorProductos: "{visibles} de {total} productos",
   tituloTodosModelos: "Todos los modelos {linea}",
-  filtrosActivos: "Filtros activos",
-  limpiarTodo: "Limpiar todo",
   filtrosPanelTitulo: "Filtros",
 } as const;
 
@@ -71,122 +65,6 @@ function completarPlantilla(
     (resultado, [clave, valor]) =>
       resultado.replaceAll("{" + clave + "}", String(valor)),
     texto,
-  );
-}
-
-type FilterOption = OpcionFiltro;
-
-function FilterGroup({
-  title,
-  options,
-  value,
-  onChange,
-}: {
-  title: string;
-  options: FilterOption[];
-  value: string | null;
-  onChange: (value: string | null) => void;
-}) {
-  if (options.length === 0) return null;
-
-  return (
-    <div className="border-t border-border/70 pt-5 first:border-t-0 first:pt-0">
-      <h3 className="text-sm font-semibold">{title}</h3>
-      <div className="mt-3 flex flex-wrap gap-2">
-        {options.map((option) => {
-          const active = option.value === value;
-          return (
-            <Button
-              key={option.value}
-              type="button"
-              size="sm"
-              variant={active ? "default" : "outline"}
-              className="h-auto min-h-8 rounded-full px-3 py-1.5 whitespace-normal"
-              aria-pressed={active}
-              onClick={() => onChange(active ? null : option.value)}
-            >
-              {option.label}
-              <span className={active ? "opacity-70" : "text-muted-foreground"}>
-                {option.count}
-              </span>
-            </Button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-interface FiltersProps {
-  openingOptions: FilterOption[];
-  colorOptions: FilterOption[];
-  sizeOptions: FilterOption[];
-  tagOptions: FilterOption[];
-  promotionCount: number;
-  selected: Record<"opening" | "color" | "size" | "tag", string | null> & {
-    promotion: boolean;
-  };
-  activeCount: number;
-  onChange: (key: string, value: string | null) => void;
-  onClear: () => void;
-}
-
-function CatalogFilters(props: FiltersProps) {
-  const { selected } = props;
-  return (
-    <div className="space-y-5">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <p className="font-semibold">{TEXTOS_CATALOGO.filtrosTitulo}</p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {TEXTOS_CATALOGO.filtrosDescripcion}
-          </p>
-        </div>
-        {props.activeCount > 0 && (
-          <Button variant="ghost" size="sm" onClick={props.onClear}>
-            {TEXTOS_CATALOGO.filtrosLimpiar}
-          </Button>
-        )}
-      </div>
-      <FilterGroup
-        title={TEXTOS_CATALOGO.filtroApertura}
-        options={props.openingOptions}
-        value={selected.opening}
-        onChange={(value) => props.onChange(PARAMS.opening, value)}
-      />
-      <CatalogSizeFilter
-        title={TEXTOS_CATALOGO.filtroMedida}
-        options={props.sizeOptions}
-        value={selected.size}
-        onChange={(value) => props.onChange(PARAMS.size, value)}
-      />
-      <FilterGroup
-        title={TEXTOS_CATALOGO.filtroColor}
-        options={props.colorOptions}
-        value={selected.color}
-        onChange={(value) => props.onChange(PARAMS.color, value)}
-      />
-      <FilterGroup
-        title={TEXTOS_CATALOGO.filtroCaracteristicas}
-        options={props.tagOptions}
-        value={selected.tag}
-        onChange={(value) => props.onChange(PARAMS.tag, value)}
-      />
-      {props.promotionCount > 0 && (
-        <FilterGroup
-          title={TEXTOS_CATALOGO.filtroOportunidades}
-          options={[
-            {
-              value: "si",
-              label: TEXTOS_CATALOGO.promocionEtiqueta,
-              count: props.promotionCount,
-            },
-          ]}
-          value={selected.promotion ? "si" : null}
-          onChange={(value) => props.onChange(PARAMS.promotion, value)}
-        />
-      )}
-    </div>
   );
 }
 
@@ -339,12 +217,13 @@ export function CatalogLinePage({
     totalProductos: totalProductosTipologia,
     openingOptions,
     colorOptions,
+    glassOptions,
     sizeOptions,
     tagOptions,
     promotionCount,
   } = facetasActivas;
 
-  function validValue(name: string, options: FilterOption[]) {
+  function validValue(name: string, options: OpcionFiltro[]) {
     const value = searchParams.get(name);
     return value && options.some((option) => option.value === value)
       ? value
@@ -354,6 +233,7 @@ export function CatalogLinePage({
   const selected = {
     opening: validValue(PARAMS.opening, openingOptions),
     color: validValue(PARAMS.color, colorOptions),
+    glass: validValue(PARAMS.glass, glassOptions),
     size: validValue(PARAMS.size, sizeOptions),
     tag: validValue(PARAMS.tag, tagOptions),
     promotion:
@@ -419,6 +299,12 @@ export function CatalogLinePage({
     ) {
       return false;
     }
+    if (
+      selected.glass &&
+      !product.opcionesVidrio.some((glass) => glass.slug === selected.glass)
+    ) {
+      return false;
+    }
     if (selected.tag && !product.etiquetas.includes(selected.tag)) return false;
     if (selected.promotion && !resumirPromocionProducto(product)) return false;
     return true;
@@ -470,6 +356,9 @@ export function CatalogLinePage({
   const activeColor = colorOptions.find(
     (item) => item.value === selected.color,
   )?.label;
+  const activeGlass = glassOptions.find(
+    (item) => item.value === selected.glass,
+  )?.label;
   if (selected.opening && activeOpening) {
     activeFilters.push({ key: PARAMS.opening, label: activeOpening });
   }
@@ -478,6 +367,9 @@ export function CatalogLinePage({
   }
   if (selected.color && activeColor) {
     activeFilters.push({ key: PARAMS.color, label: activeColor });
+  }
+  if (selected.glass && activeGlass) {
+    activeFilters.push({ key: PARAMS.glass, label: activeGlass });
   }
   if (selected.tag)
     activeFilters.push({ key: PARAMS.tag, label: selected.tag });
@@ -488,9 +380,10 @@ export function CatalogLinePage({
     });
   }
 
-  const filtersProps: FiltersProps = {
+  const filtersProps = {
     openingOptions,
     colorOptions,
+    glassOptions,
     sizeOptions,
     tagOptions,
     promotionCount,
@@ -554,7 +447,7 @@ export function CatalogLinePage({
         visibleProductsCount={visibleProducts.length}
         resultsPending={necesitaCatalogoCompleto && hasMore}
         filtersOpen={filtersOpen}
-        filters={<CatalogFilters {...filtersProps} />}
+        filters={<CatalogFiltersPanel {...filtersProps} />}
         onFiltersOpenChange={setFiltersOpen}
         onTypologyChange={selectTypology}
         onOrderChange={(value) => updateParam(PARAMS.order, value)}
@@ -565,63 +458,32 @@ export function CatalogLinePage({
         className="scroll-mt-36 bg-muted/25 py-8 sm:py-10"
       >
         <div className="container">
-          <div className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">
-                {necesitaCatalogoCompleto && hasMore
-                  ? "Actualizando resultados…"
-                  : completarPlantilla(TEXTOS_CATALOGO.contadorProductos, {
-                      visibles: visibleProducts.length,
-                      total: totalCatalogo,
-                    })}
-              </p>
-              <h2 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
-                {activeTypology?.nombre ??
-                  completarPlantilla(TEXTOS_CATALOGO.tituloTodosModelos, {
-                    linea: lineInfo.nombre,
-                  })}
-              </h2>
-            </div>
-          </div>
-
-          {activeFilters.length > 0 && (
-            <div
-              className="mb-7 flex flex-wrap items-center gap-2"
-              aria-label="Filtros aplicados"
-            >
-              <span className="mr-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                {TEXTOS_CATALOGO.filtrosActivos}
-              </span>
-              {activeFilters.map((filter) => (
-                <Button
-                  key={filter.key}
-                  type="button"
-                  size="sm"
-                  variant="secondary"
-                  className="rounded-full"
-                  onClick={() => updateParam(filter.key, null)}
-                >
-                  {filter.label}
-                  <X data-icon="inline-end" />
-                </Button>
-              ))}
-              <Button variant="ghost" size="sm" onClick={clearFilters}>
-                {TEXTOS_CATALOGO.limpiarTodo}
-              </Button>
-            </div>
-          )}
+          <CatalogResultsHeader
+            title={
+              activeTypology?.nombre ??
+              completarPlantilla(TEXTOS_CATALOGO.tituloTodosModelos, {
+                linea: lineInfo.nombre,
+              })
+            }
+            visibleCount={visibleProducts.length}
+            totalCount={totalCatalogo}
+            pending={necesitaCatalogoCompleto && hasMore}
+            activeFilters={activeFilters}
+            onRemoveFilter={(key) => updateParam(key, null)}
+            onClearFilters={clearFilters}
+          />
 
           <div className="grid gap-8 lg:grid-cols-4">
             <aside className="hidden lg:block">
-              <Card className="sticky top-36 max-h-[calc(100dvh-10rem)] gap-0 overflow-hidden py-0">
-                <CardHeader className="shrink-0 border-b py-5">
-                  <CardTitle className="flex items-center gap-2 text-base">
+              <Card className="sticky top-32 mt-3 max-h-[calc(100dvh-9rem)] gap-0 overflow-hidden rounded-md! border border-border bg-background py-0 shadow-none ring-0">
+                <CardHeader className="shrink-0 rounded-t-none! border-b border-white/10 bg-brand-black/95 px-5 py-4 text-white backdrop-blur supports-backdrop-filter:bg-brand-black/90">
+                  <CardTitle className="flex items-center gap-2 text-sm text-white">
                     <SlidersHorizontal className="size-4 text-primary" />
                     {TEXTOS_CATALOGO.filtrosPanelTitulo}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="min-h-0 flex-1 overflow-y-auto overscroll-contain py-5">
-                  <CatalogFilters {...filtersProps} />
+                <CardContent className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5">
+                  <CatalogFiltersPanel {...filtersProps} />
                 </CardContent>
               </Card>
             </aside>
