@@ -1,10 +1,21 @@
-import { ArrowRight, Download, FileText } from "lucide-react";
+"use client";
+
+import { ArrowRight, ExternalLink, FileText, Search } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   formatearFechaCatalogoTecnico,
   normalizarUrlCatalogoTecnico,
@@ -18,6 +29,8 @@ interface CatalogoTecnicoVista {
   url: string | null;
   fecha: string | null;
 }
+
+type FiltroCatalogo = "todos" | "disponibles" | "pendientes";
 
 const TEXTOS_CATALOGOS_TECNICOS = {
   sobrelinea: "Biblioteca profesional",
@@ -34,13 +47,20 @@ const TEXTOS_CATALOGOS_TECNICOS = {
   listadoTitulo: "Elegí el sistema que necesitás consultar",
   listadoDescripcion:
     "Abrí cada documento para revisarlo, guardarlo o compartirlo con tu equipo.",
+  buscarPlaceholder: "Buscar por línea",
+  filtroTodos: "Todos",
+  filtroDisponibles: "Disponibles",
+  filtroPendientes: "En preparación",
+  sinResultadosTitulo: "No encontramos documentos",
+  sinResultadosDescripcion:
+    "Probá con otra búsqueda o cambiá el filtro seleccionado.",
   estadoDisponible: "Disponible",
   estadoPendiente: "En preparación",
   etiquetaDocumento: "Documento técnico",
   descripcionFallback: "Información técnica y especificaciones de esta línea.",
   fechaPrefijo: "Actualizado en",
   preparacionTexto: "Estamos preparando la documentación de esta línea.",
-  botonDescargar: "Abrir catálogo",
+  botonDescargar: "Ver catálogo",
   botonPendiente: "Próximamente",
   vacioTitulo: "No hay líneas publicadas",
   vacioDescripcion:
@@ -51,6 +71,25 @@ const TEXTOS_CATALOGOS_TECNICOS = {
   ayudaBoton: "Consultar por WhatsApp",
   ayudaMensaje:
     "Hola! Estoy revisando los catálogos técnicos y necesito asesoramiento para mi proyecto.",
+  preguntasSobrelinea: "Ayuda rápida",
+  preguntasTitulo: "Preguntas frecuentes",
+  preguntas: [
+    {
+      pregunta: "¿Cómo puedo guardar un catálogo?",
+      respuesta:
+        "Abrí el documento en una pestaña nueva y utilizá la opción de descarga de tu navegador o visor de PDF.",
+    },
+    {
+      pregunta: "¿Qué significa que un documento está en preparación?",
+      respuesta:
+        "La línea ya está publicada, pero su documentación técnica todavía no se encuentra disponible para descargar.",
+    },
+    {
+      pregunta: "¿Puedo solicitar información que no aparece en el catálogo?",
+      respuesta:
+        "Sí. Escribinos por WhatsApp con los datos de tu proyecto y nuestro equipo podrá orientarte.",
+    },
+  ],
 } as const;
 
 function nombreCortoLinea(nombre: string): string {
@@ -126,12 +165,12 @@ function TechnicalCatalogCard({ catalog }: { catalog: CatalogoTecnicoVista }) {
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={`Abrir catálogo técnico ${line.nombre} en una pestaña nueva`}
+                aria-label={`Ver catálogo técnico ${line.nombre} en una pestaña nueva`}
               />
             }
           >
-            <Download data-icon="inline-start" />
             {TEXTOS_CATALOGOS_TECNICOS.botonDescargar}
+            <ExternalLink data-icon="inline-end" />
           </Button>
         ) : (
           <Button size="lg" variant="outline" className="w-full" disabled>
@@ -160,6 +199,9 @@ export function TechnicalCatalogsPage({
   lines: LineaProducto[];
   telefonoWhatsapp: string;
 }) {
+  const [busqueda, setBusqueda] = useState("");
+  const [filtro, setFiltro] = useState<FiltroCatalogo>("todos");
+
   const catalogs: CatalogoTecnicoVista[] = lines
     .map((line) => ({
       line,
@@ -167,6 +209,21 @@ export function TechnicalCatalogsPage({
       fecha: formatearFechaCatalogoTecnico(line.catalogoTecnicoActualizadoEn),
     }))
     .sort((a, b) => Number(Boolean(b.url)) - Number(Boolean(a.url)));
+
+  const terminoBusqueda = busqueda.trim().toLocaleLowerCase("es");
+  const catalogsFiltrados = catalogs.filter((catalog) => {
+    const coincideBusqueda = [
+      catalog.line.nombre,
+      catalog.line.subtitulo,
+      catalog.line.catalogoTecnicoVersion,
+    ].some((texto) => texto.toLocaleLowerCase("es").includes(terminoBusqueda));
+    const coincideFiltro =
+      filtro === "todos" ||
+      (filtro === "disponibles" && Boolean(catalog.url)) ||
+      (filtro === "pendientes" && !catalog.url);
+
+    return coincideBusqueda && coincideFiltro;
+  });
 
   const whatsappHref = buildWhatsAppUrl(
     TEXTOS_CATALOGOS_TECNICOS.ayudaMensaje,
@@ -224,20 +281,75 @@ export function TechnicalCatalogsPage({
             </p>
           </div>
 
-          {catalogs.length > 0 ? (
-            <div
-              className={cn(
-                "grid gap-4 lg:gap-5",
-                catalogs.length === 1 && "max-w-lg",
-                catalogs.length === 2 && "mx-auto max-w-4xl md:grid-cols-2",
-                catalogs.length >= 3 &&
-                  "mx-auto max-w-6xl md:grid-cols-2 lg:grid-cols-3",
-              )}
-            >
-              {catalogs.map((catalog) => (
-                <TechnicalCatalogCard key={catalog.line.id} catalog={catalog} />
-              ))}
+          {catalogs.length > 0 && (
+            <div className="mb-7 flex flex-col gap-4 border-y border-border/70 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <Tabs
+                value={filtro}
+                onValueChange={(value) => setFiltro(value as FiltroCatalogo)}
+              >
+                <div className="overflow-x-auto pb-1">
+                  <TabsList variant="line">
+                    <TabsTrigger value="todos">
+                      {TEXTOS_CATALOGOS_TECNICOS.filtroTodos}
+                    </TabsTrigger>
+                    <TabsTrigger value="disponibles">
+                      {TEXTOS_CATALOGOS_TECNICOS.filtroDisponibles}
+                    </TabsTrigger>
+                    <TabsTrigger value="pendientes">
+                      {TEXTOS_CATALOGOS_TECNICOS.filtroPendientes}
+                    </TabsTrigger>
+                  </TabsList>
+                </div>
+              </Tabs>
+
+              <div className="relative w-full sm:max-w-xs">
+                <Search
+                  className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+                  aria-hidden="true"
+                />
+                <Input
+                  type="search"
+                  value={busqueda}
+                  onChange={(event) => setBusqueda(event.target.value)}
+                  placeholder={TEXTOS_CATALOGOS_TECNICOS.buscarPlaceholder}
+                  aria-label={TEXTOS_CATALOGOS_TECNICOS.buscarPlaceholder}
+                  className="h-10 border-border bg-background pl-9"
+                />
+              </div>
             </div>
+          )}
+
+          {catalogs.length > 0 ? (
+            catalogsFiltrados.length > 0 ? (
+              <div
+                className={cn(
+                  "grid gap-4 lg:gap-5",
+                  catalogsFiltrados.length === 1 && "max-w-lg",
+                  catalogsFiltrados.length === 2 &&
+                    "mx-auto max-w-4xl md:grid-cols-2",
+                  catalogsFiltrados.length >= 3 &&
+                    "mx-auto max-w-6xl md:grid-cols-2 lg:grid-cols-3",
+                )}
+              >
+                {catalogsFiltrados.map((catalog) => (
+                  <TechnicalCatalogCard
+                    key={catalog.line.id}
+                    catalog={catalog}
+                  />
+                ))}
+              </div>
+            ) : (
+              <Card className="border-dashed bg-background shadow-none">
+                <CardContent className="py-10 text-center">
+                  <p className="font-semibold">
+                    {TEXTOS_CATALOGOS_TECNICOS.sinResultadosTitulo}
+                  </p>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    {TEXTOS_CATALOGOS_TECNICOS.sinResultadosDescripcion}
+                  </p>
+                </CardContent>
+              </Card>
+            )
           ) : (
             <Card className="border-dashed bg-background shadow-none">
               <CardContent className="py-12 text-center">
@@ -250,6 +362,34 @@ export function TechnicalCatalogsPage({
               </CardContent>
             </Card>
           )}
+
+          <section
+            aria-labelledby="technical-catalogs-faq-title"
+            className="mx-auto mt-12 max-w-3xl sm:mt-16"
+          >
+            <div className="mb-6 text-center">
+              <p className="eyebrow mb-3 justify-center">
+                {TEXTOS_CATALOGOS_TECNICOS.preguntasSobrelinea}
+              </p>
+              <h2
+                id="technical-catalogs-faq-title"
+                className="text-2xl font-bold tracking-tight sm:text-3xl"
+              >
+                {TEXTOS_CATALOGOS_TECNICOS.preguntasTitulo}
+              </h2>
+            </div>
+
+            <Accordion>
+              {TEXTOS_CATALOGOS_TECNICOS.preguntas.map((item, index) => (
+                <AccordionItem key={item.pregunta} value={`pregunta-${index}`}>
+                  <AccordionTrigger>{item.pregunta}</AccordionTrigger>
+                  <AccordionContent className="leading-6 text-muted-foreground">
+                    {item.respuesta}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </section>
 
           <section className="mt-10 flex flex-col items-start justify-between gap-5 rounded-xl bg-brand-black px-5 py-6 text-white sm:mt-12 sm:flex-row sm:items-center sm:px-7">
             <div>

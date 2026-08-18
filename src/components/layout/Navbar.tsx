@@ -125,7 +125,7 @@ export function Navbar({
                   : "text-white/75 hover:bg-white/10 hover:text-white",
               )}
             >
-              Documentación
+              Catálogos técnicos
             </EnlaceNavegacion>
           </nav>
 
@@ -269,7 +269,7 @@ export function Navbar({
                         Recursos para profesionales
                       </span>
                       <span className="mt-1 block text-sm font-semibold">
-                        Documentación técnica
+                        Catálogos técnicos
                       </span>
                     </span>
                     <span aria-hidden="true">→</span>

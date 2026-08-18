@@ -44,10 +44,33 @@ export function TechnicalCatalogsPageSkeleton() {
             </div>
           </div>
 
+          <div className="mb-7 flex flex-col gap-4 border-y border-border/70 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <Skeleton className="h-8 w-64 max-w-full" />
+            <Skeleton className="h-10 w-full sm:max-w-xs" />
+          </div>
+
           <div className="mx-auto grid max-w-6xl gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-5">
             {Array.from({ length: 3 }).map((_, index) => (
               <TechnicalCatalogCardSkeleton key={index} />
             ))}
+          </div>
+
+          <div className="mx-auto mt-12 max-w-3xl sm:mt-16">
+            <div className="mb-6 flex flex-col items-center gap-3">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-8 w-64 max-w-full" />
+            </div>
+            <div className="overflow-hidden rounded-2xl border">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between border-b p-4 last:border-b-0"
+                >
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="size-4 shrink-0" />
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="mt-10 flex flex-col gap-5 rounded-xl bg-brand-black px-5 py-6 sm:mt-12 sm:flex-row sm:items-center sm:justify-between sm:px-7">
