@@ -3,8 +3,8 @@
 import { useMemo, useState } from "react";
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { WorkCard } from "@/features/site-content/components/WorkCard";
-import type { CategoriaObraMock, ObraMock } from "@/data/mock/obras";
+import { WorkCard } from "@/features/works/components/WorkCard";
+import type { WorkCategory, WorkGalleryItem } from "@/features/works/types";
 
 const TODAS_LAS_CATEGORIAS = "todas";
 
@@ -13,8 +13,8 @@ export function WorksGallery({
   categorias,
   obras,
 }: {
-  categorias: CategoriaObraMock[];
-  obras: ObraMock[];
+  categorias: WorkCategory[];
+  obras: WorkGalleryItem[];
 }) {
   const [categoriaActiva, setCategoriaActiva] = useState(TODAS_LAS_CATEGORIAS);
   const obrasVisibles = useMemo(
@@ -34,13 +34,11 @@ export function WorksGallery({
         }}
         className="works-reveal-soft mb-6 min-w-0 gap-0 sm:mb-7"
       >
-        <div
-          className="works-category-scroll -mx-4 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0"
-          aria-label="Filtrar obras por categoría"
-        >
+        <div className="works-category-scroll w-full overflow-x-auto pb-1">
           <TabsList
             variant="line"
             className="h-11 min-w-max justify-start gap-3 p-0 sm:gap-5"
+            aria-label="Filtrar obras por categoría"
           >
             <TabsTrigger
               value={TODAS_LAS_CATEGORIAS}

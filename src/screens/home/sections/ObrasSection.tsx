@@ -1,17 +1,17 @@
-import { ArrowRight } from 'lucide-react'
-import Link from 'next/link'
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
-import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { WorkCard } from '@/features/site-content/components/WorkCard'
-import { buildWhatsAppUrl } from '@/lib/whatsapp'
-import type { Obra } from '@/types'
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { WorkCard } from "@/features/works/components/WorkCard";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import type { Obra } from "@/types";
 
 interface ObrasSectionProps {
-  obras: Obra[]
-  mensajeWhatsapp: string
-  telefonoWhatsapp: string
+  obras: Obra[];
+  mensajeWhatsapp: string;
+  telefonoWhatsapp: string;
 }
 
 /** Galería editorial de proyectos realizados con imágenes uniformes en relación 4:3. */
@@ -20,10 +20,10 @@ export function ObrasSection({
   mensajeWhatsapp,
   telefonoWhatsapp,
 }: ObrasSectionProps) {
-  if (obras.length === 0) return null
+  if (obras.length === 0) return null;
 
-  const whatsappHref = buildWhatsAppUrl(mensajeWhatsapp, telefonoWhatsapp)
-  const obrasPrincipales = obras.slice(0, 3)
+  const whatsappHref = buildWhatsAppUrl(mensajeWhatsapp, telefonoWhatsapp);
+  const obrasPrincipales = obras.slice(0, 3);
 
   return (
     <section
@@ -92,5 +92,5 @@ export function ObrasSection({
         </Card>
       </div>
     </section>
-  )
+  );
 }

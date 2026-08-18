@@ -3,17 +3,17 @@ import Link from "next/link";
 
 import { ProductImage } from "@/components/media/ProductImage";
 import { Card, CardContent } from "@/components/ui/card";
+import type { WorkCardData } from "@/features/works/types";
 import { cn } from "@/lib/utils";
-import type { Obra } from "@/types";
 
-/** Presenta una obra publicada con su ficha breve y testimonio. */
+/** Presenta el resumen visual de una obra y permite enlazar a su ficha. */
 export function WorkCard({
   obra,
   priority = false,
   className,
   href,
 }: {
-  obra: Obra & { detalleEspecial?: string; ubicacion?: string };
+  obra: WorkCardData;
   priority?: boolean;
   className?: string;
   href?: string;

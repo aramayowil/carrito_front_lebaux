@@ -20,7 +20,7 @@ import {
   REMODELACIONES_OBRAS_MOCK,
   SEDES_OBRAS_MOCK,
 } from "@/data/mock/obras";
-import { WorksGallery } from "@/features/site-content/components/WorksGallery";
+import { WorksGallery } from "@/features/works/components/WorksGallery";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 const PASOS = [

@@ -231,6 +231,9 @@ src/
 - [x] Fichas individuales mock de obras con galería, desafío, solución,
       materiales, testimonio, CTA contextual y animaciones editoriales variadas
       (ver `docs/2026-08-18-fichas-individuales-y-animacion-obras.md`).
+- [x] Componentes y contratos públicos de Obras organizados como capacidad en
+      `features/works`, desacoplados del JSON mock (ver
+      `docs/2026-08-18-feature-works.md`).
 - [x] Galería inmersiva responsive en las fichas de obras, con Dialog, carrusel,
       navegación gestual/teclado y zoom desplazable (ver
       `docs/2026-08-18-galeria-inmersiva-obras.md` y corrección de ancho/galería
