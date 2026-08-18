@@ -1,48 +1,48 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
-import { CatalogFiltersSkeleton } from "@/features/products/components/CatalogFiltersSkeleton"
-import { ProductGrid } from "@/features/products/components/ProductGrid"
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { CatalogFiltersSkeleton } from "@/features/products/components/CatalogFiltersSkeleton";
+import { ProductGrid } from "@/features/products/components/ProductGrid";
 
 /** Aproximación visual de CatalogLinePage mientras se resuelve `cargarDatosCatalogoLinea`. */
 export function CatalogLinePageSkeleton() {
   return (
     <div className="bg-background">
-      <section className="relative isolate overflow-hidden bg-brand-black text-white">
-        <div className="container flex min-h-128 flex-col justify-between py-6 md:min-h-112 md:py-8">
-          <div className="flex items-center gap-2">
-            <Skeleton className="h-4 w-12 rounded-full bg-white/15" />
-            <Skeleton className="size-3 rounded-full bg-white/10" />
-            <Skeleton className="h-4 w-24 rounded-full bg-white/15" />
+      <section className="border-b border-border/70 bg-muted/30 py-8 sm:py-10 lg:py-12">
+        <div className="container grid items-end gap-7 lg:grid-cols-[1fr_0.8fr] lg:gap-14">
+          <div className="max-w-2xl">
+            <Skeleton className="h-3 w-36 rounded-full" />
+            <Skeleton className="mt-4 h-12 w-full max-w-md rounded-lg sm:h-14" />
+            <Skeleton className="mt-4 h-5 w-full max-w-sm rounded-lg" />
           </div>
 
-          <div className="max-w-2xl pb-2 pt-16 md:pb-4 md:pt-12">
-            <Skeleton className="h-3 w-36 rounded-full bg-white/15" />
-            <Skeleton className="mt-4 h-12 w-full max-w-md rounded-lg bg-white/15 sm:h-14" />
-            <Skeleton className="mt-4 h-5 w-full max-w-sm rounded-lg bg-white/15" />
-            <div className="mt-4 space-y-2">
-              <Skeleton className="h-4 w-full max-w-xl rounded-lg bg-white/10" />
-              <Skeleton className="h-4 w-4/5 max-w-xl rounded-lg bg-white/10" />
+          <div className="max-w-xl border-l-2 border-primary pl-5 sm:pl-6 lg:justify-self-end">
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-full max-w-xl rounded-lg" />
+              <Skeleton className="h-4 w-4/5 max-w-xl rounded-lg" />
             </div>
-            <div className="mt-7 flex gap-3">
-              <Skeleton className="h-9 w-36 rounded-2xl bg-white/15" />
-              <Skeleton className="h-9 w-48 rounded-2xl bg-white/10" />
-            </div>
+            <Skeleton className="mt-6 h-10 w-52 rounded-2xl" />
           </div>
         </div>
       </section>
 
-      <div className="sticky top-navbar z-30 border-y border-border/70 bg-background/95">
-        <div className="container flex items-center gap-3 py-3">
-          <Skeleton className="h-10 w-24 shrink-0 rounded-2xl lg:hidden" />
-          <div className="flex min-w-0 flex-1 gap-2 overflow-hidden">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <Skeleton
-                key={index}
-                className="h-9 w-24 shrink-0 rounded-xl"
-              />
-            ))}
+      <div className="sticky top-navbar z-30 border-b border-border/70 bg-background/95">
+        <div className="container">
+          <div className="flex items-center gap-3 py-2">
+            <div className="flex min-w-0 flex-1 gap-2 overflow-hidden">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <Skeleton
+                  key={index}
+                  className="h-8 w-24 shrink-0 rounded-lg"
+                />
+              ))}
+            </div>
+            <Skeleton className="hidden h-9 w-24 shrink-0 rounded-2xl sm:block lg:hidden" />
+            <Skeleton className="hidden h-9 w-40 shrink-0 rounded-2xl sm:block" />
           </div>
-          <Skeleton className="hidden h-10 w-40 shrink-0 rounded-2xl sm:block" />
+          <div className="flex gap-2 border-t border-border/60 py-2 sm:hidden">
+            <Skeleton className="h-8 flex-1 rounded-2xl" />
+            <Skeleton className="h-8 flex-1 rounded-2xl" />
+          </div>
         </div>
       </div>
 
@@ -79,5 +79,5 @@ export function CatalogLinePageSkeleton() {
         </div>
       </main>
     </div>
-  )
+  );
 }

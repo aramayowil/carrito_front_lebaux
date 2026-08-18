@@ -137,7 +137,10 @@ src/
       (ver `docs/2026-08-10-redisenio-home-ecommerce-y-navbar-sticky.md`).
 - [x] Catálogo por línea rediseñado con hero editorial, filtros derivados con
       estado en URL, toolbar sticky, Sheet mobile y cards comparativas (ver
-      `docs/2026-08-10-redisenio-catalogo-por-linea.md`).
+      `docs/2026-08-10-redisenio-catalogo-por-linea.md` y
+      `docs/2026-08-18-introduccion-compacta-catalogo-linea.md` y
+      `docs/2026-08-18-introduccion-tipografica-catalogo-linea.md` y
+      `docs/2026-08-18-tipologias-confiables-y-toolbar-catalogo.md`).
 - [x] Beneficios e indicaciones “Ideal para” administrables por línea, sin
       mapas editoriales cerrados en la vista pública (ver
       `docs/2026-08-11-contenido-editorial-lineas-administrable.md`).
@@ -189,7 +192,8 @@ src/
       `docs/2026-08-10-home-administrable-y-buscador-navbar.md`).
 - [x] Nuestras obras limitada a tres proyectos, con selección exclusiva de la
       obra principal y representación destacada en la Home (ver
-      `docs/2026-08-10-obras-home-seleccion-principal.md`).
+      `docs/2026-08-10-obras-home-seleccion-principal.md` y
+      `docs/2026-08-18-card-obras-destacadas-home.md`).
 - [x] Catálogos completos de la Home generados desde todas las líneas del
       store, con conteos públicos y grilla adaptable a su cantidad (ver
       `docs/2026-08-10-home-catalogos-dinamicos.md`).
@@ -234,6 +238,9 @@ src/
 - [x] Componentes y contratos públicos de Obras organizados como capacidad en
       `features/works`, desacoplados del JSON mock (ver
       `docs/2026-08-18-feature-works.md`).
+- [x] Obras destacadas de la Home con composición editorial 1+2, carrusel mobile
+      y CTA único hacia el portfolio (ver
+      `docs/2026-08-18-home-obras-editorial.md`).
 - [x] Obras incorporada a la navegación principal y mobile, con el grupo de
       enlaces centrado respecto al Navbar completo (ver
       `docs/2026-08-18-navbar-obras-centrado.md`).

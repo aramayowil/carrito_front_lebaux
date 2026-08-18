@@ -1,33 +1,34 @@
-import { resumirPromocionProducto } from "@/features/products/lib/discounts"
-import type { Producto, TipoAperturaProducto } from "@/types"
+import { resumirPromocionProducto } from "@/features/products/lib/discounts";
+import type { Producto, TipoAperturaProducto } from "@/types";
 
 export interface OpcionFiltro {
-  value: string
-  label: string
-  count: number
+  value: string;
+  label: string;
+  count: number;
 }
 
 export interface FacetasCatalogo {
-  openingOptions: OpcionFiltro[]
-  colorOptions: OpcionFiltro[]
-  sizeOptions: OpcionFiltro[]
-  tagOptions: OpcionFiltro[]
-  promotionCount: number
+  totalProductos: number;
+  openingOptions: OpcionFiltro[];
+  colorOptions: OpcionFiltro[];
+  sizeOptions: OpcionFiltro[];
+  tagOptions: OpcionFiltro[];
+  promotionCount: number;
 }
 
 /** Clave usada para el grupo de facetas que agrega todas las tipologías. */
-export const TIPOLOGIA_TODAS = "todas"
+export const TIPOLOGIA_TODAS = "todas";
 
 function buildOptions(values: Array<{ value: string; label: string }>) {
-  const options = new Map<string, OpcionFiltro>()
+  const options = new Map<string, OpcionFiltro>();
   values.forEach(({ value, label }) => {
-    if (!value) return
-    const current = options.get(value)
-    options.set(value, { value, label, count: (current?.count ?? 0) + 1 })
-  })
+    if (!value) return;
+    const current = options.get(value);
+    options.set(value, { value, label, count: (current?.count ?? 0) + 1 });
+  });
   return Array.from(options.values()).sort((a, b) =>
     a.label.localeCompare(b.label, "es"),
-  )
+  );
 }
 
 function calcularFacetasDeGrupo(
@@ -35,18 +36,19 @@ function calcularFacetasDeGrupo(
   tiposApertura: TipoAperturaProducto[],
 ): FacetasCatalogo {
   return {
+    totalProductos: productos.length,
     openingOptions: buildOptions(
       productos.flatMap((product) => {
-        if (!product.tipoApertura) return []
+        if (!product.tipoApertura) return [];
         const opening = tiposApertura.find(
           (item) => item.slug === product.tipoApertura,
-        )
+        );
         return [
           {
             value: product.tipoApertura,
             label: opening?.nombre ?? product.tipoApertura,
           },
-        ]
+        ];
       }),
     ),
     colorOptions: buildOptions(
@@ -73,7 +75,7 @@ function calcularFacetasDeGrupo(
     promotionCount: productos.filter((product) =>
       resumirPromocionProducto(product),
     ).length,
-  }
+  };
 }
 
 /**
@@ -89,16 +91,16 @@ export function calcularFacetasPorTipologia(
 ): Record<string, FacetasCatalogo> {
   const porTipologia: Record<string, FacetasCatalogo> = {
     [TIPOLOGIA_TODAS]: calcularFacetasDeGrupo(productos, tiposApertura),
-  }
+  };
 
-  const tipologiaIds = new Set(productos.map((product) => product.tipologiaId))
+  const tipologiaIds = new Set(productos.map((product) => product.tipologiaId));
   tipologiaIds.forEach((tipologiaId) => {
-    if (!tipologiaId) return
+    if (!tipologiaId) return;
     porTipologia[tipologiaId] = calcularFacetasDeGrupo(
       productos.filter((product) => product.tipologiaId === tipologiaId),
       tiposApertura,
-    )
-  })
+    );
+  });
 
-  return porTipologia
+  return porTipologia;
 }

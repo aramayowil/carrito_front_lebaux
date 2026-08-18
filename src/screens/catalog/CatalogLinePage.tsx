@@ -1,59 +1,29 @@
-"use client"
+"use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import {
-  ArrowDownUp,
-  Download,
-  Filter,
-  SlidersHorizontal,
-  X,
-} from "lucide-react"
-import Link from "next/link"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Download, SlidersHorizontal, X } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { CatalogSizeFilter } from "@/features/products/components/CatalogSizeFilter";
+import { ProductGrid } from "@/features/products/components/ProductGrid";
+import { resumirPromocionProducto } from "@/features/products/lib/discounts";
+import { TIPOLOGIA_TODAS } from "@/features/products/lib/facets";
+import { obtenerPrecioInicial } from "@/features/products/lib/pricing";
+import { normalizarUrlCatalogoTecnico } from "@/features/products/lib/technical-catalog";
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { CatalogSizeFilter } from "@/features/products/components/CatalogSizeFilter"
-import { ProductGrid } from "@/features/products/components/ProductGrid"
-import { resumirPromocionProducto } from "@/features/products/lib/discounts"
-import { TIPOLOGIA_TODAS } from "@/features/products/lib/facets"
-import { obtenerPrecioInicial } from "@/features/products/lib/pricing"
-import { normalizarUrlCatalogoTecnico } from "@/features/products/lib/technical-catalog"
-import { CatalogLineMoreContent } from "@/screens/catalog/sections/CatalogLineMoreContent"
-import type { Producto } from "@/types"
+  CatalogLineToolbar,
+  type CatalogOrder,
+} from "@/screens/catalog/components/CatalogLineToolbar";
+import { CatalogLineMoreContent } from "@/screens/catalog/sections/CatalogLineMoreContent";
+import type { Producto } from "@/types";
 import type {
   DatosCatalogoLineaPublica,
   PaginaProductosLinea,
-} from "@/server/datos-publicos"
-import type { OpcionFiltro } from "@/features/products/lib/facets"
+} from "@/server/datos-publicos";
+import type { OpcionFiltro } from "@/features/products/lib/facets";
 
 const PARAMS = {
   typology: "tipologia",
@@ -63,23 +33,20 @@ const PARAMS = {
   size: "medida",
   promotion: "promocion",
   order: "orden",
-} as const
-const ALL = TIPOLOGIA_TODAS
+} as const;
+const ALL = TIPOLOGIA_TODAS;
 const FILTER_PARAMS = [
   PARAMS.tag,
   PARAMS.opening,
   PARAMS.color,
   PARAMS.size,
   PARAMS.promotion,
-]
-type CatalogOrder = "relevancia" | "precio-asc" | "precio-desc"
-const EMPTY_SEARCH_PARAMS = new URLSearchParams()
+];
+const EMPTY_SEARCH_PARAMS = new URLSearchParams();
 
 const TEXTOS_CATALOGO = {
   sobrelineaHero: "Línea de fabricación",
-  botonExplorar: "Explorar productos",
   botonCatalogoTecnico: "Descargar catálogo técnico",
-  botonCatalogoTecnicoPendiente: "Catálogo técnico próximamente",
   filtrosTitulo: "Afiná tu búsqueda",
   filtrosDescripcion: "Combiná las opciones disponibles.",
   filtrosLimpiar: "Limpiar",
@@ -89,26 +56,12 @@ const TEXTOS_CATALOGO = {
   filtroCaracteristicas: "Características",
   filtroOportunidades: "Oportunidades",
   promocionEtiqueta: "Con promoción",
-  botonFiltrar: "Filtrar",
-  panelFiltrosTitulo: "Filtrar productos",
-  panelFiltrosDescripcion: "Elegí las características de tu abertura.",
-  botonVerProductos: "Ver {cantidad} productos",
-  tipologiasTodos: "Todos",
-  ordenRelevancia: "Relevancia",
-  ordenMenorPrecio: "Menor precio",
-  ordenMayorPrecio: "Mayor precio",
   contadorProductos: "{visibles} de {total} productos",
   tituloTodosModelos: "Todos los modelos {linea}",
   filtrosActivos: "Filtros activos",
   limpiarTodo: "Limpiar todo",
   filtrosPanelTitulo: "Filtros",
-} as const
-
-const OPCIONES_ORDEN: Array<{ value: CatalogOrder; label: string }> = [
-  { value: "relevancia", label: TEXTOS_CATALOGO.ordenRelevancia },
-  { value: "precio-asc", label: TEXTOS_CATALOGO.ordenMenorPrecio },
-  { value: "precio-desc", label: TEXTOS_CATALOGO.ordenMayorPrecio },
-]
+} as const;
 
 function completarPlantilla(
   texto: string,
@@ -118,10 +71,10 @@ function completarPlantilla(
     (resultado, [clave, valor]) =>
       resultado.replaceAll("{" + clave + "}", String(valor)),
     texto,
-  )
+  );
 }
 
-type FilterOption = OpcionFiltro
+type FilterOption = OpcionFiltro;
 
 function FilterGroup({
   title,
@@ -129,19 +82,19 @@ function FilterGroup({
   value,
   onChange,
 }: {
-  title: string
-  options: FilterOption[]
-  value: string | null
-  onChange: (value: string | null) => void
+  title: string;
+  options: FilterOption[];
+  value: string | null;
+  onChange: (value: string | null) => void;
 }) {
-  if (options.length === 0) return null
+  if (options.length === 0) return null;
 
   return (
     <div className="border-t border-border/70 pt-5 first:border-t-0 first:pt-0">
       <h3 className="text-sm font-semibold">{title}</h3>
       <div className="mt-3 flex flex-wrap gap-2">
         {options.map((option) => {
-          const active = option.value === value
+          const active = option.value === value;
           return (
             <Button
               key={option.value}
@@ -157,29 +110,29 @@ function FilterGroup({
                 {option.count}
               </span>
             </Button>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }
 
 interface FiltersProps {
-  openingOptions: FilterOption[]
-  colorOptions: FilterOption[]
-  sizeOptions: FilterOption[]
-  tagOptions: FilterOption[]
-  promotionCount: number
+  openingOptions: FilterOption[];
+  colorOptions: FilterOption[];
+  sizeOptions: FilterOption[];
+  tagOptions: FilterOption[];
+  promotionCount: number;
   selected: Record<"opening" | "color" | "size" | "tag", string | null> & {
-    promotion: boolean
-  }
-  activeCount: number
-  onChange: (key: string, value: string | null) => void
-  onClear: () => void
+    promotion: boolean;
+  };
+  activeCount: number;
+  onChange: (key: string, value: string | null) => void;
+  onClear: () => void;
 }
 
 function CatalogFilters(props: FiltersProps) {
-  const { selected } = props
+  const { selected } = props;
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between gap-3">
@@ -234,32 +187,36 @@ function CatalogFilters(props: FiltersProps) {
         />
       )}
     </div>
-  )
+  );
 }
 
 function sortProducts(products: Producto[], order: CatalogOrder) {
-  const result = [...products]
+  const result = [...products];
   if (order === "relevancia") {
-    return result.sort((a, b) => Number(b.destacado) - Number(a.destacado))
+    return result.sort((a, b) => Number(b.destacado) - Number(a.destacado));
   }
   return result.sort((a, b) => {
-    const priceA = obtenerPrecioInicial(a)?.contado ?? null
-    const priceB = obtenerPrecioInicial(b)?.contado ?? null
-    if (priceA === null) return 1
-    if (priceB === null) return -1
-    return order === "precio-asc" ? priceA - priceB : priceB - priceA
-  })
+    const priceA = obtenerPrecioInicial(a)?.contado ?? null;
+    const priceB = obtenerPrecioInicial(b)?.contado ?? null;
+    if (priceA === null) return 1;
+    if (priceB === null) return -1;
+    return order === "precio-asc" ? priceA - priceB : priceB - priceA;
+  });
 }
 
 /** Catálogo editorial por línea con filtros responsive, estado en la URL y scroll infinito. */
-export function CatalogLinePage({ datos }: { datos: DatosCatalogoLineaPublica }) {
-  const lineaSlug = datos.linea.slug
-  const searchParams = useSearchParams() ?? EMPTY_SEARCH_PARAMS
-  const router = useRouter()
-  const pathname = usePathname() ?? ""
-  const [filtersOpen, setFiltersOpen] = useState(false)
-  const { lineas, tipologias, tiposApertura } = datos
-  const lineInfo = datos.linea
+export function CatalogLinePage({
+  datos,
+}: {
+  datos: DatosCatalogoLineaPublica;
+}) {
+  const lineaSlug = datos.linea.slug;
+  const searchParams = useSearchParams() ?? EMPTY_SEARCH_PARAMS;
+  const router = useRouter();
+  const pathname = usePathname() ?? "";
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const { lineas, tipologias, tiposApertura } = datos;
+  const lineInfo = datos.linea;
 
   // --- Carga bajo demanda -------------------------------------------------
   // `datos.productos` trae únicamente la primera tanda (ver PRODUCTOS_POR_TANDA
@@ -267,78 +224,78 @@ export function CatalogLinePage({ datos }: { datos: DatosCatalogoLineaPublica })
   // a medida que hace falta: por scroll infinito en la vista sin filtrar, o
   // de una sola vez cuando el usuario activa un filtro/tipología/orden que
   // necesita el catálogo completo para dar resultados correctos.
-  const [products, setProducts] = useState<Producto[]>(datos.productos)
-  const [offset, setOffset] = useState(datos.productos.length)
+  const [products, setProducts] = useState<Producto[]>(datos.productos);
+  const [offset, setOffset] = useState(datos.productos.length);
   const [hasMore, setHasMore] = useState(
     datos.productos.length < datos.totalProductos,
-  )
-  const [loadingMore, setLoadingMore] = useState(false)
-  const loadingRef = useRef(false)
-  const sentinelRef = useRef<HTMLDivElement>(null)
+  );
+  const [loadingMore, setLoadingMore] = useState(false);
+  const loadingRef = useRef(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   const cargarSiguienteTanda = useCallback(async () => {
-    if (loadingRef.current || !hasMore) return
-    loadingRef.current = true
-    setLoadingMore(true)
+    if (loadingRef.current || !hasMore) return;
+    loadingRef.current = true;
+    setLoadingMore(true);
     try {
       const respuesta = await fetch(
         `/api/productos-linea/${lineaSlug}?offset=${offset}`,
-      )
-      if (!respuesta.ok) return
-      const pagina = (await respuesta.json()) as PaginaProductosLinea
+      );
+      if (!respuesta.ok) return;
+      const pagina = (await respuesta.json()) as PaginaProductosLinea;
       setProducts((actual) => {
-        const idsActuales = new Set(actual.map((item) => item.id))
+        const idsActuales = new Set(actual.map((item) => item.id));
         const nuevos = pagina.productos.filter(
           (item) => !idsActuales.has(item.id),
-        )
-        return [...actual, ...nuevos]
-      })
-      setOffset((actual) => actual + pagina.productos.length)
-      setHasMore(pagina.hasMore)
+        );
+        return [...actual, ...nuevos];
+      });
+      setOffset((actual) => actual + pagina.productos.length);
+      setHasMore(pagina.hasMore);
     } catch {
       // Si falla, dejamos hasMore como está para permitir reintentar.
     } finally {
-      loadingRef.current = false
-      setLoadingMore(false)
+      loadingRef.current = false;
+      setLoadingMore(false);
     }
-  }, [hasMore, lineaSlug, offset])
+  }, [hasMore, lineaSlug, offset]);
 
   // A diferencia del scroll infinito (que pide de a una tanda), acá hace
   // falta el catálogo completo cuanto antes, así que se repite el pedido
   // hasta agotar `hasMore` en vez de esperar a que el usuario haga scroll.
   const cargarTodoElResto = useCallback(async () => {
-    if (loadingRef.current) return
-    loadingRef.current = true
-    setLoadingMore(true)
+    if (loadingRef.current) return;
+    loadingRef.current = true;
+    setLoadingMore(true);
     try {
-      let cursor = offset
-      let sigue = hasMore
+      let cursor = offset;
+      let sigue = hasMore;
       while (sigue) {
         const respuesta = await fetch(
           `/api/productos-linea/${lineaSlug}?offset=${cursor}&limit=100`,
-        )
-        if (!respuesta.ok) break
-        const pagina = (await respuesta.json()) as PaginaProductosLinea
+        );
+        if (!respuesta.ok) break;
+        const pagina = (await respuesta.json()) as PaginaProductosLinea;
         setProducts((actual) => {
-          const idsActuales = new Set(actual.map((item) => item.id))
+          const idsActuales = new Set(actual.map((item) => item.id));
           const nuevos = pagina.productos.filter(
             (item) => !idsActuales.has(item.id),
-          )
-          return [...actual, ...nuevos]
-        })
-        cursor += pagina.productos.length
-        sigue = pagina.hasMore
-        setOffset(cursor)
-        setHasMore(sigue)
-        if (pagina.productos.length === 0) break
+          );
+          return [...actual, ...nuevos];
+        });
+        cursor += pagina.productos.length;
+        sigue = pagina.hasMore;
+        setOffset(cursor);
+        setHasMore(sigue);
+        if (pagina.productos.length === 0) break;
       }
     } catch {
       // Si falla, dejamos hasMore como está para permitir reintentar.
     } finally {
-      loadingRef.current = false
-      setLoadingMore(false)
+      loadingRef.current = false;
+      setLoadingMore(false);
     }
-  }, [hasMore, lineaSlug, offset])
+  }, [hasMore, lineaSlug, offset]);
 
   const lineProducts = useMemo(
     () =>
@@ -347,53 +304,51 @@ export function CatalogLinePage({ datos }: { datos: DatosCatalogoLineaPublica })
           product.linea === lineaSlug && product.visibilidad === "visible",
       ),
     [lineaSlug, products],
-  )
-  const presentTypologyIds = useMemo(
-    () => new Set(lineProducts.map((product) => product.tipologiaId)),
-    [lineProducts],
-  )
+  );
   const lineTypologies = useMemo(
     () =>
-      tipologias
-        .filter(
-          (typology) =>
-            typology.lineaSlug === lineaSlug &&
-            presentTypologyIds.has(typology.id),
-        )
+      [...tipologias]
+        .filter((typology) => typology.lineaSlug === lineaSlug)
         .sort((a, b) => a.orden - b.orden),
-    [lineaSlug, presentTypologyIds, tipologias],
-  )
+    [lineaSlug, tipologias],
+  );
 
-  const typologyParam = searchParams.get(PARAMS.typology)
+  const typologyParam = searchParams.get(PARAMS.typology);
   const activeTypologyId = lineTypologies.some(
     (typology) => typology.id === typologyParam,
   )
     ? (typologyParam ?? ALL)
-    : ALL
+    : ALL;
   const activeTypology = lineTypologies.find(
     (typology) => typology.id === activeTypologyId,
-  )
+  );
   const typologyProducts =
     activeTypologyId === ALL
       ? lineProducts
       : lineProducts.filter(
           (product) => product.tipologiaId === activeTypologyId,
-        )
+        );
 
   // Las opciones de filtro (con sus conteos) ya vienen calculadas del
   // servidor sobre el catálogo completo de la línea, así que están
   // disponibles y son correctas incluso antes de terminar de cargar todos
   // los productos en el cliente.
   const facetasActivas =
-    datos.facetas[activeTypologyId] ?? datos.facetas[TIPOLOGIA_TODAS]
-  const { openingOptions, colorOptions, sizeOptions, tagOptions, promotionCount } =
-    facetasActivas
+    datos.facetas[activeTypologyId] ?? datos.facetas[TIPOLOGIA_TODAS];
+  const {
+    totalProductos: totalProductosTipologia,
+    openingOptions,
+    colorOptions,
+    sizeOptions,
+    tagOptions,
+    promotionCount,
+  } = facetasActivas;
 
   function validValue(name: string, options: FilterOption[]) {
-    const value = searchParams.get(name)
+    const value = searchParams.get(name);
     return value && options.some((option) => option.value === value)
       ? value
-      : null
+      : null;
   }
 
   const selected = {
@@ -403,16 +358,16 @@ export function CatalogLinePage({ datos }: { datos: DatosCatalogoLineaPublica })
     tag: validValue(PARAMS.tag, tagOptions),
     promotion:
       searchParams.get(PARAMS.promotion) === "si" && promotionCount > 0,
-  }
-  const activeFilterCount = Object.values(selected).filter(Boolean).length
-  const orderParam = searchParams.get(PARAMS.order)
+  };
+  const activeFilterCount = Object.values(selected).filter(Boolean).length;
+  const orderParam = searchParams.get(PARAMS.order);
   const order: CatalogOrder = [
     "relevancia",
     "precio-asc",
     "precio-desc",
   ].includes(orderParam ?? "")
     ? (orderParam as CatalogOrder)
-    : "relevancia"
+    : "relevancia";
 
   // Filtrar por tipología, algún filtro puntual, u ordenar por precio solo
   // da resultados correctos con el catálogo completo de la línea en memoria
@@ -422,39 +377,39 @@ export function CatalogLinePage({ datos }: { datos: DatosCatalogoLineaPublica })
   // en el momento, en vez de esperar a que el usuario llegue al final de la
   // grilla.
   const necesitaCatalogoCompleto =
-    activeTypologyId !== ALL || activeFilterCount > 0 || order !== "relevancia"
+    activeTypologyId !== ALL || activeFilterCount > 0 || order !== "relevancia";
 
   useEffect(() => {
     if (necesitaCatalogoCompleto && hasMore && !loadingRef.current) {
-      void cargarTodoElResto()
+      void cargarTodoElResto();
     }
-  }, [necesitaCatalogoCompleto, hasMore, cargarTodoElResto])
+  }, [necesitaCatalogoCompleto, hasMore, cargarTodoElResto]);
 
   // Scroll infinito: solo mientras se navega el catálogo sin filtrar, que es
   // el caso en el que sí podemos pedir tandas sucesivas directo a Supabase.
   useEffect(() => {
-    if (necesitaCatalogoCompleto || !hasMore) return
-    const nodo = sentinelRef.current
-    if (!nodo) return
+    if (necesitaCatalogoCompleto || !hasMore) return;
+    const nodo = sentinelRef.current;
+    if (!nodo) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0]?.isIntersecting) void cargarSiguienteTanda()
+        if (entries[0]?.isIntersecting) void cargarSiguienteTanda();
       },
       { rootMargin: "600px" },
-    )
-    observer.observe(nodo)
-    return () => observer.disconnect()
-  }, [necesitaCatalogoCompleto, hasMore, cargarSiguienteTanda])
+    );
+    observer.observe(nodo);
+    return () => observer.disconnect();
+  }, [necesitaCatalogoCompleto, hasMore, cargarSiguienteTanda]);
 
   const filteredProducts = typologyProducts.filter((product) => {
     if (selected.opening && product.tipoApertura !== selected.opening)
-      return false
+      return false;
     if (
       selected.color &&
       !product.coloresDisponibles.some((color) => color.slug === selected.color)
     ) {
-      return false
+      return false;
     }
     if (
       selected.size &&
@@ -462,73 +417,75 @@ export function CatalogLinePage({ datos }: { datos: DatosCatalogoLineaPublica })
         (size) => size.etiqueta === selected.size,
       )
     ) {
-      return false
+      return false;
     }
-    if (selected.tag && !product.etiquetas.includes(selected.tag)) return false
-    if (selected.promotion && !resumirPromocionProducto(product)) return false
-    return true
-  })
-  const visibleProducts = sortProducts(filteredProducts, order)
-  const totalCatalogo =
-    activeTypologyId === ALL && activeFilterCount === 0
-      ? Math.max(datos.totalProductos, typologyProducts.length)
-      : typologyProducts.length
+    if (selected.tag && !product.etiquetas.includes(selected.tag)) return false;
+    if (selected.promotion && !resumirPromocionProducto(product)) return false;
+    return true;
+  });
+  const visibleProducts = sortProducts(filteredProducts, order);
+  const totalCatalogo = totalProductosTipologia;
 
   function updateParam(name: string, value: string | null) {
-    const next = new URLSearchParams(searchParams)
-    if (!value || value === ALL) next.delete(name)
-    else next.set(name, value)
-    const query = next.toString()
-    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false })
+    const next = new URLSearchParams(searchParams);
+    if (!value || value === ALL) next.delete(name);
+    else next.set(name, value);
+    const query = next.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, {
+      scroll: false,
+    });
   }
 
   function selectTypology(value: string | number) {
-    const next = new URLSearchParams(searchParams)
-    const id = String(value)
-    if (id === ALL) next.delete(PARAMS.typology)
-    else next.set(PARAMS.typology, id)
-    FILTER_PARAMS.forEach((param) => next.delete(param))
-    const query = next.toString()
-    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false })
+    const next = new URLSearchParams(searchParams);
+    const id = String(value);
+    if (id === ALL) next.delete(PARAMS.typology);
+    else next.set(PARAMS.typology, id);
+    FILTER_PARAMS.forEach((param) => next.delete(param));
+    const query = next.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, {
+      scroll: false,
+    });
   }
 
   function clearFilters() {
-    const next = new URLSearchParams(searchParams)
-    FILTER_PARAMS.forEach((param) => next.delete(param))
-    const query = next.toString()
-    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false })
+    const next = new URLSearchParams(searchParams);
+    FILTER_PARAMS.forEach((param) => next.delete(param));
+    const query = next.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, {
+      scroll: false,
+    });
   }
 
-  if (!lineInfo) return null
+  if (!lineInfo) return null;
 
-  const imagenBannerEscritorio = lineInfo.imagenBannerEscritorio || ""
-  const imagenBannerMovil = lineInfo.imagenBannerMovil || imagenBannerEscritorio
   const catalogoTecnicoUrl = normalizarUrlCatalogoTecnico(
     lineInfo.catalogoTecnicoUrl,
-  )
+  );
 
-  const activeFilters: Array<{ key: string; label: string }> = []
+  const activeFilters: Array<{ key: string; label: string }> = [];
   const activeOpening = openingOptions.find(
     (item) => item.value === selected.opening,
-  )?.label
+  )?.label;
   const activeColor = colorOptions.find(
     (item) => item.value === selected.color,
-  )?.label
+  )?.label;
   if (selected.opening && activeOpening) {
-    activeFilters.push({ key: PARAMS.opening, label: activeOpening })
+    activeFilters.push({ key: PARAMS.opening, label: activeOpening });
   }
   if (selected.size) {
-    activeFilters.push({ key: PARAMS.size, label: selected.size })
+    activeFilters.push({ key: PARAMS.size, label: selected.size });
   }
   if (selected.color && activeColor) {
-    activeFilters.push({ key: PARAMS.color, label: activeColor })
+    activeFilters.push({ key: PARAMS.color, label: activeColor });
   }
-  if (selected.tag) activeFilters.push({ key: PARAMS.tag, label: selected.tag })
+  if (selected.tag)
+    activeFilters.push({ key: PARAMS.tag, label: selected.tag });
   if (selected.promotion) {
     activeFilters.push({
       key: PARAMS.promotion,
       label: TEXTOS_CATALOGO.promocionEtiqueta,
-    })
+    });
   }
 
   const filtersProps: FiltersProps = {
@@ -541,54 +498,16 @@ export function CatalogLinePage({ datos }: { datos: DatosCatalogoLineaPublica })
     activeCount: activeFilterCount,
     onChange: updateParam,
     onClear: clearFilters,
-  }
+  };
 
   return (
     <div className="bg-background">
       <section
         aria-labelledby="titulo-linea"
-        className="relative isolate overflow-hidden bg-brand-black text-white"
+        className="border-b border-border/70 bg-muted/30 py-8 sm:py-10 lg:py-12"
       >
-        {imagenBannerMovil && (
-          <picture className="absolute inset-0 -z-20">
-            <source
-              media="(min-width: 48rem)"
-              srcSet={imagenBannerEscritorio}
-            />
-            <img
-              src={imagenBannerMovil}
-              alt={lineInfo.textoAlternativoBanner}
-              className="h-full w-full object-cover"
-              loading="eager"
-              decoding="async"
-              fetchPriority="high"
-            />
-          </picture>
-        )}
-        <div className="absolute inset-0 -z-10 bg-linear-to-r from-brand-black via-brand-black/80 to-brand-black/15" />
-        <div className="absolute inset-0 -z-10 bg-linear-to-t from-brand-black/70 via-transparent to-brand-black/20 md:hidden" />
-
-        <div className="container flex min-h-128 flex-col justify-between py-6 md:min-h-112 md:py-8">
-          <Breadcrumb>
-            <BreadcrumbList className="text-white/65">
-              <BreadcrumbItem>
-                <BreadcrumbLink
-                  render={<Link href="/" />}
-                  className="hover:text-white"
-                >
-                  Inicio
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="text-white/40" />
-              <BreadcrumbItem>
-                <BreadcrumbPage className="text-white/90">
-                  {lineInfo.nombre}
-                </BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-
-          <div className="max-w-2xl pb-2 pt-16 md:pb-4 md:pt-12">
+        <div className="container grid items-end gap-7 lg:grid-cols-[1fr_0.8fr] lg:gap-14">
+          <div className="max-w-2xl">
             <p className="eyebrow mb-3">{TEXTOS_CATALOGO.sobrelineaHero}</p>
             <h1
               id="titulo-linea"
@@ -596,133 +515,50 @@ export function CatalogLinePage({ datos }: { datos: DatosCatalogoLineaPublica })
             >
               {lineInfo.nombre}
             </h1>
-            <p className="mt-4 text-lg font-medium text-white/85 sm:text-xl">
+            <p className="mt-4 text-lg font-medium text-foreground sm:text-xl">
               {lineInfo.subtitulo}
             </p>
-            <p className="mt-4 max-w-xl text-sm leading-7 text-white/70 sm:text-base">
+          </div>
+
+          <div className="max-w-xl border-l-2 border-primary pl-5 sm:pl-6 lg:justify-self-end">
+            <p className="text-sm leading-7 text-muted-foreground sm:text-base">
               {lineInfo.descripcion}
             </p>
-            <div className="mt-7 flex flex-wrap items-center gap-3">
-              <Button size="lg" render={<a href="#catalogo-productos" />}>
-                {TEXTOS_CATALOGO.botonExplorar}
+            {catalogoTecnicoUrl && (
+              <Button
+                size="lg"
+                variant="outline"
+                className="mt-6"
+                render={
+                  <a
+                    href={catalogoTecnicoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  />
+                }
+              >
+                <Download data-icon="inline-start" />
+                {TEXTOS_CATALOGO.botonCatalogoTecnico}
               </Button>
-              {catalogoTecnicoUrl ? (
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-white/25 bg-white/10 text-white backdrop-blur-sm hover:border-white hover:bg-white hover:text-brand-black"
-                  render={
-                    <a
-                      href={catalogoTecnicoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    />
-                  }
-                >
-                  <Download data-icon="inline-start" />
-                  {TEXTOS_CATALOGO.botonCatalogoTecnico}
-                </Button>
-              ) : (
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-white/20 bg-white/5 text-white"
-                  disabled
-                >
-                  {TEXTOS_CATALOGO.botonCatalogoTecnicoPendiente}
-                </Button>
-              )}
-            </div>
+            )}
           </div>
         </div>
       </section>
 
-      <div className="sticky top-navbar z-30 border-y border-border/70 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/90">
-        <div className="container flex items-center gap-3 py-3">
-          <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
-            <SheetTrigger
-              render={
-                <Button variant="outline" className="shrink-0 lg:hidden" />
-              }
-            >
-              <Filter data-icon="inline-start" />
-              {TEXTOS_CATALOGO.botonFiltrar}
-              {activeFilterCount > 0 && (
-                <Badge className="ml-1 size-5 justify-center rounded-full p-0 text-[0.625rem]">
-                  {activeFilterCount}
-                </Badge>
-              )}
-            </SheetTrigger>
-            <SheetContent side="left" className="w-11/12 max-w-sm">
-              <SheetHeader className="border-b">
-                <SheetTitle>{TEXTOS_CATALOGO.panelFiltrosTitulo}</SheetTitle>
-                <SheetDescription>
-                  {TEXTOS_CATALOGO.panelFiltrosDescripcion}
-                </SheetDescription>
-              </SheetHeader>
-              <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
-                <CatalogFilters {...filtersProps} />
-              </div>
-              <SheetFooter className="border-t">
-                <SheetClose render={<Button size="lg" className="w-full" />}>
-                  {completarPlantilla(TEXTOS_CATALOGO.botonVerProductos, {
-                    cantidad: visibleProducts.length,
-                  })}
-                </SheetClose>
-              </SheetFooter>
-            </SheetContent>
-          </Sheet>
-
-          <Tabs
-            value={activeTypologyId}
-            onValueChange={selectTypology}
-            className="min-w-0 flex-1"
-          >
-            <div className="overflow-x-auto pb-1">
-              <TabsList variant="line" className="h-10 min-w-max gap-2">
-                <TabsTrigger value={ALL} className="px-3">
-                  {TEXTOS_CATALOGO.tipologiasTodos}
-                </TabsTrigger>
-                {lineTypologies.map((typology) => (
-                  <TabsTrigger
-                    key={typology.id}
-                    value={typology.id}
-                    className="px-3"
-                  >
-                    {typology.nombre}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </div>
-          </Tabs>
-
-          <div className="hidden shrink-0 items-center gap-2 sm:flex">
-            <ArrowDownUp className="size-4 text-muted-foreground" />
-            <Select
-              items={OPCIONES_ORDEN}
-              value={order}
-              onValueChange={(value) =>
-                value && updateParam(PARAMS.order, String(value))
-              }
-            >
-              <SelectTrigger className="h-10 min-w-40 border-border bg-background">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent align="end">
-                <SelectItem value="relevancia">
-                  {TEXTOS_CATALOGO.ordenRelevancia}
-                </SelectItem>
-                <SelectItem value="precio-asc">
-                  {TEXTOS_CATALOGO.ordenMenorPrecio}
-                </SelectItem>
-                <SelectItem value="precio-desc">
-                  {TEXTOS_CATALOGO.ordenMayorPrecio}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
+      <CatalogLineToolbar
+        allValue={ALL}
+        activeTypologyId={activeTypologyId}
+        typologies={lineTypologies}
+        order={order}
+        activeFilterCount={activeFilterCount}
+        visibleProductsCount={visibleProducts.length}
+        resultsPending={necesitaCatalogoCompleto && hasMore}
+        filtersOpen={filtersOpen}
+        filters={<CatalogFilters {...filtersProps} />}
+        onFiltersOpenChange={setFiltersOpen}
+        onTypologyChange={selectTypology}
+        onOrderChange={(value) => updateParam(PARAMS.order, value)}
+      />
 
       <main
         id="catalogo-productos"
@@ -732,10 +568,12 @@ export function CatalogLinePage({ datos }: { datos: DatosCatalogoLineaPublica })
           <div className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-sm text-muted-foreground">
-                {completarPlantilla(TEXTOS_CATALOGO.contadorProductos, {
-                  visibles: visibleProducts.length,
-                  total: totalCatalogo,
-                })}
+                {necesitaCatalogoCompleto && hasMore
+                  ? "Actualizando resultados…"
+                  : completarPlantilla(TEXTOS_CATALOGO.contadorProductos, {
+                      visibles: visibleProducts.length,
+                      total: totalCatalogo,
+                    })}
               </p>
               <h2 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
                 {activeTypology?.nombre ??
@@ -743,31 +581,6 @@ export function CatalogLinePage({ datos }: { datos: DatosCatalogoLineaPublica })
                     linea: lineInfo.nombre,
                   })}
               </h2>
-            </div>
-            <div className="sm:hidden">
-              <Select
-                items={OPCIONES_ORDEN}
-                value={order}
-                onValueChange={(value) =>
-                  value && updateParam(PARAMS.order, String(value))
-                }
-              >
-                <SelectTrigger className="h-10 w-full border-border bg-background">
-                  <ArrowDownUp className="size-4 text-muted-foreground" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent align="start">
-                  <SelectItem value="relevancia">
-                    {TEXTOS_CATALOGO.ordenRelevancia}
-                  </SelectItem>
-                  <SelectItem value="precio-asc">
-                    {TEXTOS_CATALOGO.ordenMenorPrecio}
-                  </SelectItem>
-                  <SelectItem value="precio-desc">
-                    {TEXTOS_CATALOGO.ordenMayorPrecio}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
 
@@ -853,5 +666,5 @@ export function CatalogLinePage({ datos }: { datos: DatosCatalogoLineaPublica })
         </div>
       </main>
     </div>
-  )
+  );
 }

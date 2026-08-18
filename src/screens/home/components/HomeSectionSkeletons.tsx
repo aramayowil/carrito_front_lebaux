@@ -1,6 +1,6 @@
-import { Card, CardContent } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
-import { ProductCardSkeleton } from "@/features/products/components/ProductCardSkeleton"
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ProductCardSkeleton } from "@/features/products/components/ProductCardSkeleton";
 
 /** Mantiene exactamente la relación de aspecto del banner real de Home. */
 export function HomeHeroSkeleton() {
@@ -8,7 +8,7 @@ export function HomeHeroSkeleton() {
     <section aria-hidden="true" className="bg-brand-black">
       <Skeleton className="aspect-4/5 max-h-[70vh] w-full rounded-none bg-white/10 md:aspect-21/9" />
     </section>
-  )
+  );
 }
 
 /** Replica el bloque de navegación por líneas de fabricación. */
@@ -49,7 +49,7 @@ export function HomeCatalogsSectionSkeleton() {
         </div>
       </div>
     </section>
-  )
+  );
 }
 
 /** Replica la franja oscura que enlaza con la biblioteca técnica. */
@@ -80,7 +80,7 @@ export function HomeTechnicalCatalogsSectionSkeleton() {
         </div>
       </div>
     </section>
-  )
+  );
 }
 
 /** Sección comercial de promociones o destacados con cards de producto reales en geometría. */
@@ -88,8 +88,8 @@ export function HomeProductsSectionSkeleton({
   variante = "destacado",
   muted = false,
 }: {
-  variante?: "destacado" | "promocion"
-  muted?: boolean
+  variante?: "destacado" | "promocion";
+  muted?: boolean;
 }) {
   return (
     <section
@@ -134,7 +134,7 @@ export function HomeProductsSectionSkeleton({
         )}
       </div>
     </section>
-  )
+  );
 }
 
 /** Replica la sección negra de beneficios con distribución centrada. */
@@ -167,13 +167,13 @@ export function HomeBenefitsSectionSkeleton() {
         </div>
       </div>
     </section>
-  )
+  );
 }
 
-/** Replica las tarjetas 4:3 de obras y el CTA inferior. */
+/** Replica la composición editorial 1+2 de obras y su CTA inferior. */
 export function HomeWorksSectionSkeleton() {
   return (
-    <section aria-hidden="true" className="bg-muted/40 py-16 sm:py-20">
+    <section aria-hidden="true" className="bg-muted/40 py-14 sm:py-16 lg:py-20">
       <div className="container">
         <div className="mb-8 grid items-end gap-5 sm:mb-10 md:grid-cols-[1fr_0.75fr]">
           <div className="space-y-2">
@@ -187,45 +187,33 @@ export function HomeWorksSectionSkeleton() {
           </div>
         </div>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 3 }).map((_, index) => (
-            <Card
-              key={index}
-              className="h-full gap-0 overflow-hidden rounded-lg border border-border/70 py-0 shadow-sm"
-            >
-              <Skeleton className="aspect-4/3 w-full rounded-none" />
-              <CardContent className="px-5 py-5 sm:px-6 sm:py-6">
-                <div className="flex gap-2">
-                  <Skeleton className="h-5 w-20 rounded-full" />
-                  <Skeleton className="h-5 w-24 rounded-full" />
-                </div>
-                <Skeleton className="mt-4 h-6 w-3/4 rounded-md" />
-                <Skeleton className="mt-5 size-6 rounded-md" />
-                <div className="mt-3 space-y-2">
-                  <Skeleton className="h-4 w-full rounded-md" />
-                  <Skeleton className="h-4 w-5/6 rounded-md" />
-                  <Skeleton className="h-4 w-3/4 rounded-md" />
-                </div>
-                <Skeleton className="mt-5 h-3 w-24 rounded-full" />
-              </CardContent>
-            </Card>
-          ))}
+        <div className="lg:hidden">
+          <Skeleton className="aspect-4/3 w-full rounded-xl" />
+          <div className="mt-4 flex justify-center gap-2">
+            <Skeleton className="h-2 w-6 rounded-full" />
+            <Skeleton className="size-2 rounded-full" />
+            <Skeleton className="size-2 rounded-full" />
+          </div>
         </div>
 
-        <Skeleton className="mx-auto mt-8 h-11 w-full rounded-xl sm:w-44" />
+        <div className="hidden aspect-[16/7] grid-cols-[1.35fr_0.65fr] grid-rows-2 gap-4 lg:grid">
+          <Skeleton className="row-span-2 rounded-xl" />
+          <Skeleton className="rounded-xl" />
+          <Skeleton className="rounded-xl" />
+        </div>
 
-        <Card className="mt-6 gap-0 border border-primary/20 bg-brand-graphite py-0 text-white shadow-lg sm:mt-8">
-          <CardContent className="flex flex-col items-start justify-between gap-5 px-6 py-6 sm:flex-row sm:items-center sm:px-8">
+        <Card className="mt-6 gap-0 border-0 bg-brand-graphite py-0 text-white shadow-none sm:mt-8">
+          <CardContent className="flex flex-col items-start justify-between gap-6 px-6 py-7 sm:flex-row sm:items-center sm:px-8 lg:px-10">
             <div className="w-full max-w-xl space-y-2">
-              <Skeleton className="h-5 w-60 rounded-md bg-white/15" />
-              <Skeleton className="h-4 w-full rounded-md bg-white/10" />
+              <Skeleton className="h-6 w-4/5 rounded-md bg-white/15" />
+              <Skeleton className="h-4 w-full rounded-md bg-white/10 sm:w-3/4" />
             </div>
-            <Skeleton className="h-11 w-full rounded-xl bg-white/15 sm:w-48" />
+            <Skeleton className="h-20 w-full rounded-xl bg-primary/50 sm:w-80" />
           </CardContent>
         </Card>
       </div>
     </section>
-  )
+  );
 }
 
 /** Replica la composición 4:3 + contenido institucional de la sección Nosotros. */
@@ -266,5 +254,5 @@ export function HomeAboutSectionSkeleton() {
         </div>
       </div>
     </section>
-  )
+  );
 }
