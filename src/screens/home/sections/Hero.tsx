@@ -118,12 +118,10 @@ export function Hero({ banners }: { banners: BannerInicio[] }) {
         </CarouselContent>
 
         <CarouselPrevious
-          size="icon-sm"
-          className="left-3 border-white/20 bg-brand-black/55 text-white backdrop-blur-sm hover:bg-brand-black/75 hover:text-white md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100"
+          className="left-3 size-7 border-white/20 bg-brand-black/55 text-white backdrop-blur-sm hover:bg-brand-black/75 hover:text-white md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100"
         />
         <CarouselNext
-          size="icon-sm"
-          className="right-3 border-white/20 bg-brand-black/55 text-white backdrop-blur-sm hover:bg-brand-black/75 hover:text-white md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100"
+          className="right-3 size-7 border-white/20 bg-brand-black/55 text-white backdrop-blur-sm hover:bg-brand-black/75 hover:text-white md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100"
         />
 
         <div

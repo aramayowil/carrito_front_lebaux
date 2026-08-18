@@ -6,7 +6,6 @@ import useEmblaCarousel, {
 } from "embla-carousel-react"
 
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 
 type CarouselApi = UseEmblaCarouselType[1]
@@ -91,6 +90,11 @@ function Carousel({
   React.useEffect(() => {
     if (!api || !setApi) return
     setApi(api)
+    // Si no limpiamos esto, cuando el carrusel se desmonta (p. ej. un
+    // <Dialog> que lo saca del DOM al cerrarse) el padre se queda con una
+    // referencia a una instancia de embla ya destruida hasta que el nuevo
+    // <Carousel> vuelva a montarse y la reemplace.
+    return () => setApi(undefined)
   }, [api, setApi])
 
   React.useEffect(() => {
@@ -100,7 +104,8 @@ function Carousel({
     api.on("select", onSelect)
 
     return () => {
-      api?.off("select", onSelect)
+      api.off("select", onSelect)
+      api.off("reInit", onSelect)
     }
   }, [api, onSelect])
 
@@ -171,21 +176,26 @@ function CarouselItem({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+// Estos dos botones usan <button> nativo a propósito, NO el <Button> de
+// src/components/ui/button.tsx. Están posicionados sobre el mismo contenedor
+// que Embla usa para detectar drag/swipe, y apilar la lógica de puntero de
+// @base-ui/react/button encima de la de Embla causaba que los clicks a veces
+// no dispararan (intermitente, sin errores en consola). Si un control va a
+// vivir sobre/al lado de una superficie con gestos propios (drag, swipe,
+// pan), usá <button> nativo. Para todo lo demás en la app, seguí usando
+// <Button>.
 function CarouselPrevious({
   className,
-  variant = "outline",
-  size = "icon-sm",
   ...props
-}: React.ComponentProps<typeof Button>) {
+}: React.ComponentProps<"button">) {
   const { orientation, scrollPrev, canScrollPrev } = useCarousel()
 
   return (
-    <Button
+    <button
+      type="button"
       data-slot="carousel-previous"
-      variant={variant}
-      size={size}
       className={cn(
-        "absolute touch-manipulation rounded-2xl",
+        "absolute inline-flex touch-manipulation items-center justify-center rounded-2xl border border-transparent transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         orientation === "horizontal"
           ? "inset-y-0 -left-12 my-auto"
           : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
@@ -197,25 +207,22 @@ function CarouselPrevious({
     >
       <ChevronLeftIcon />
       <span className="sr-only">Previous slide</span>
-    </Button>
+    </button>
   )
 }
 
 function CarouselNext({
   className,
-  variant = "outline",
-  size = "icon-sm",
   ...props
-}: React.ComponentProps<typeof Button>) {
+}: React.ComponentProps<"button">) {
   const { orientation, scrollNext, canScrollNext } = useCarousel()
 
   return (
-    <Button
+    <button
+      type="button"
       data-slot="carousel-next"
-      variant={variant}
-      size={size}
       className={cn(
-        "absolute touch-manipulation rounded-2xl",
+        "absolute inline-flex touch-manipulation items-center justify-center rounded-2xl border border-transparent transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         orientation === "horizontal"
           ? "inset-y-0 -right-12 my-auto"
           : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
@@ -227,7 +234,7 @@ function CarouselNext({
     >
       <ChevronRightIcon />
       <span className="sr-only">Next slide</span>
-    </Button>
+    </button>
   )
 }
 

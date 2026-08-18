@@ -104,6 +104,13 @@ src/
   que la CLI de shadcn siga funcionando sin reconfigurar nada.
 - Cada componente de layout/feature lleva un comentario corto arriba explicando
   su propósito si no es autoevidente por el nombre.
+- Cualquier control clickeable que viva sobre o al lado de una superficie con
+  gestos propios (drag, swipe, pan — ej: flechas de un carrusel Embla) va con
+  `<button>` nativo, no con `<Button>` de `@/components/ui/button`. Apilar la
+  lógica de puntero de `@base-ui/react` sobre la de Embla causó clicks que a
+  veces no disparaban, de forma intermitente y sin errores en consola (ver
+  `src/components/ui/carousel.tsx`, `CarouselPrevious`/`CarouselNext`). Para
+  todo lo demás, `<Button>` sigue siendo lo correcto.
 
 ## Estado del proyecto (ir actualizando)
 

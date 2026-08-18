@@ -10,13 +10,13 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ lineaSlug: string }> },
 ) {
-  const limite = verificarLimite(request, {
+  const rateLimit = verificarLimite(request, {
     ruta: "productos-linea",
     limite: 60,
     ventanaMs: 60_000,
   })
-  if (!limite.permitido) {
-    return respuestaLimiteExcedido(limite.reintentarEnSegundos)
+  if (!rateLimit.permitido) {
+    return respuestaLimiteExcedido(rateLimit.reintentarEnSegundos)
   }
 
   const { lineaSlug } = await params

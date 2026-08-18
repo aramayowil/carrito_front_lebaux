@@ -1,17 +1,11 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
-import { ChevronLeft, ChevronRight, Expand } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { ChevronLeftIcon, ChevronRightIcon, Expand } from 'lucide-react'
 
 import { ProductImage } from '@/components/media/ProductImage'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  type CarouselApi,
-} from '@/components/ui/carousel'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
 import type { ImagenProducto } from '@/types'
@@ -21,90 +15,263 @@ interface ProductGalleryProps {
   productName: string
 }
 
-/** Galería responsive con miniaturas laterales y visor ampliado deslizable. */
-export function ProductGallery({ images, productName }: ProductGalleryProps) {
-  const [activeIndex, setActiveIndex] = useState(0)
-  const [lightboxOpen, setLightboxOpen] = useState(false)
-  const [lightboxApi, setLightboxApi] = useState<CarouselApi>()
-  const orderedImages = [...images].sort(
-    (a, b) => Number(Boolean(b.esPrincipal)) - Number(Boolean(a.esPrincipal)),
-  )
-  const currentIndex =
-    orderedImages.length === 0
-      ? 0
-      : Math.min(activeIndex, orderedImages.length - 1)
-  const activeImage = orderedImages[currentIndex] ?? orderedImages[0]
-  const hasMultiple = orderedImages.length > 1
-  const isFirstImage = currentIndex === 0
-  const isLastImage = currentIndex === orderedImages.length - 1
-
-  const goTo = useCallback(
-    (index: number) => {
-      if (orderedImages.length === 0) return
-      setActiveIndex(Math.max(0, Math.min(index, orderedImages.length - 1)))
-    },
-    [orderedImages.length],
-  )
-
-  const goToLightbox = useCallback(
-    (index: number) => {
-      if (orderedImages.length === 0) return
-      const nextIndex = Math.max(0, Math.min(index, orderedImages.length - 1))
-      setActiveIndex(nextIndex)
-      lightboxApi?.scrollTo(nextIndex)
-    },
-    [lightboxApi, orderedImages.length],
-  )
+/**
+ * Scroller horizontal con scroll-snap nativo del navegador: sin librería de
+ * carrusel y sin manejo de gestos propio. El navegador ya sabe hacer drag,
+ * inercia y touch mejor que cualquier JS que le pongamos encima, así que
+ * dejamos que lo haga él — esto es lo que evita de raíz la clase de bug que
+ * tuvimos (dos sistemas de pointer-events distintos compitiendo por el mismo
+ * click). `selectedIndex` se deriva siempre del `scrollLeft` real, nunca al
+ * revés, para que swipe, flechas y miniaturas queden consistentes entre sí.
+ */
+function useSnapCarousel(
+  containerRef: React.RefObject<HTMLDivElement | null>,
+  itemCount: number,
+) {
+  const [selectedIndex, setSelectedIndex] = useState(0)
 
   useEffect(() => {
-    if (!lightboxApi) return
+    const el = containerRef.current
+    if (!el || itemCount === 0) return
 
-    const syncSelectedImage = () => {
-      setActiveIndex(lightboxApi.selectedScrollSnap())
+    let frame = 0
+    const updateIndex = () => {
+      const width = el.clientWidth
+      if (!width) return
+      const raw = Math.round(el.scrollLeft / width)
+      const clamped = Math.min(Math.max(raw, 0), itemCount - 1)
+      setSelectedIndex((prev) => (prev === clamped ? prev : clamped))
     }
 
-    syncSelectedImage()
-    lightboxApi.on('select', syncSelectedImage)
-    lightboxApi.on('reInit', syncSelectedImage)
+    updateIndex()
+
+    const onScroll = () => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(updateIndex)
+    }
+    el.addEventListener('scroll', onScroll, { passive: true })
+
+    // Si el contenedor cambia de tamaño (resize, cambio de orientación),
+    // recalculamos el índice mostrado a partir del scroll real.
+    const resizeObserver = new ResizeObserver(updateIndex)
+    resizeObserver.observe(el)
 
     return () => {
-      lightboxApi.off('select', syncSelectedImage)
-      lightboxApi.off('reInit', syncSelectedImage)
+      cancelAnimationFrame(frame)
+      el.removeEventListener('scroll', onScroll)
+      resizeObserver.disconnect()
     }
-  }, [lightboxApi])
+  }, [containerRef, itemCount])
+
+  const scrollToIndex = useCallback(
+    (index: number, behavior: ScrollBehavior = 'smooth') => {
+      const el = containerRef.current
+      if (!el || itemCount === 0) return
+      const clamped = Math.min(Math.max(index, 0), itemCount - 1)
+      el.scrollTo({ left: clamped * el.clientWidth, behavior })
+    },
+    [containerRef, itemCount],
+  )
+
+  return {
+    selectedIndex,
+    scrollToIndex,
+    canScrollPrev: selectedIndex > 0,
+    canScrollNext: selectedIndex < itemCount - 1,
+  }
+}
+
+interface GalleryArrowButtonProps {
+  direction: 'prev' | 'next'
+  onClick: () => void
+  disabled: boolean
+  ariaLabel: string
+  className?: string
+  iconClassName?: string
+}
+
+/**
+ * <button> nativo a propósito, no el <Button> de @/components/ui/button: ver
+ * la nota en AGENTS.md sobre controles que viven encima de una superficie
+ * con scroll/drag propio.
+ */
+function GalleryArrowButton({
+  direction,
+  onClick,
+  disabled,
+  ariaLabel,
+  className,
+  iconClassName,
+}: GalleryArrowButtonProps) {
+  const Icon = direction === 'prev' ? ChevronLeftIcon : ChevronRightIcon
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={ariaLabel}
+      className={cn(
+        'absolute inline-flex touch-manipulation items-center justify-center rounded-full transition-all disabled:pointer-events-none disabled:opacity-40',
+        className,
+      )}
+    >
+      <Icon className={cn('size-4', iconClassName)} />
+    </button>
+  )
+}
+
+/** Galería responsive con miniaturas laterales y visor ampliado deslizable. */
+export function ProductGallery({ images, productName }: ProductGalleryProps) {
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+
+  const orderedImages = useMemo(
+    () =>
+      [...images].sort(
+        (a, b) => Number(Boolean(b.esPrincipal)) - Number(Boolean(a.esPrincipal)),
+      ),
+    [images],
+  )
+  const hasMultiple = orderedImages.length > 1
+  const itemCount = orderedImages.length
+
+  // Estilo Mercado Libre: hasta 7 miniaturas normales; si hay más, aparece
+  // un 8vo casillero mostrando esa imagen oscurecida con "+N" (las que
+  // quedan más allá de esas 8). Con exactamente 8 no tiene sentido mostrar
+  // "+0", así que ahí se muestran las 8 normales.
+  const MAX_VISIBLE_THUMBNAILS = 7
+  const thumbnailsToRender =
+    orderedImages.length > MAX_VISIBLE_THUMBNAILS
+      ? orderedImages.slice(0, MAX_VISIBLE_THUMBNAILS + 1)
+      : orderedImages
+  const overflowCount =
+    orderedImages.length > MAX_VISIBLE_THUMBNAILS + 1
+      ? orderedImages.length - (MAX_VISIBLE_THUMBNAILS + 1)
+      : 0
+
+  const mainContainerRef = useRef<HTMLDivElement>(null)
+  const lightboxContainerRef = useRef<HTMLDivElement>(null)
+  const main = useSnapCarousel(mainContainerRef, itemCount)
+  const lightbox = useSnapCarousel(lightboxContainerRef, itemCount)
+
+  // Mientras el lightbox está abierto es el único con el que el usuario
+  // puede interactuar (el diálogo bloquea el resto de la página), así que el
+  // índice que se muestra en las miniaturas y en el badge es siempre el del
+  // carrusel activo en cada momento.
+  const currentIndex = lightboxOpen ? lightbox.selectedIndex : main.selectedIndex
+
+  // Índice al que hay que saltar apenas el contenedor del lightbox exista en
+  // el DOM (se abre recién cuando el <Dialog> monta su contenido). No usamos
+  // `main.selectedIndex` directamente para esto: si el usuario abrió desde
+  // el casillero "+N" de miniaturas, la vista principal puede seguir
+  // mostrando otra imagen, y necesitamos el índice exacto que se pidió. Es
+  // una ref (no estado) porque solo se lee/escribe fuera del render —en un
+  // handler de click y dentro de un efecto— y no debe disparar un re-render
+  // por sí sola.
+  const pendingLightboxIndexRef = useRef<number | null>(null)
+
+  const openLightbox = useCallback((index: number) => {
+    pendingLightboxIndexRef.current = index
+    setLightboxOpen(true)
+  }, [])
 
   useEffect(() => {
-    if (!lightboxOpen || !lightboxApi) return
-    lightboxApi.scrollTo(currentIndex, true)
-  }, [currentIndex, lightboxApi, lightboxOpen])
+    if (!lightboxOpen) return
+    const index = pendingLightboxIndexRef.current
+    if (index === null) return
+    lightbox.scrollToIndex(index, 'instant')
+    pendingLightboxIndexRef.current = null
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lightboxOpen])
+
+  // Al cerrar el lightbox, llevamos la vista principal a donde haya quedado
+  // el usuario navegando adentro, para que no "salte" para atrás.
+  useEffect(() => {
+    if (lightboxOpen) return
+    main.scrollToIndex(lightbox.selectedIndex, 'instant')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lightboxOpen])
+
+  const goToThumbnail = useCallback(
+    (index: number) => {
+      if (lightboxOpen) {
+        lightbox.scrollToIndex(index)
+      } else {
+        main.scrollToIndex(index)
+      }
+    },
+    [lightboxOpen, lightbox, main],
+  )
+
+  const handleKeyDown = useCallback(
+    (carousel: Pick<ReturnType<typeof useSnapCarousel>, 'selectedIndex' | 'scrollToIndex'>) =>
+      (event: React.KeyboardEvent<HTMLDivElement>) => {
+        if (event.key === 'ArrowLeft') {
+          event.preventDefault()
+          carousel.scrollToIndex(carousel.selectedIndex - 1)
+        } else if (event.key === 'ArrowRight') {
+          event.preventDefault()
+          carousel.scrollToIndex(carousel.selectedIndex + 1)
+        }
+      },
+    [],
+  )
+
+  if (orderedImages.length === 0) {
+    return (
+      <div className="corner-marks relative overflow-hidden rounded-3xl border border-border/70 bg-white">
+        <ProductImage
+          src=""
+          alt={productName}
+          className="h-96 w-full sm:h-128 lg:h-144"
+        />
+      </div>
+    )
+  }
 
   return (
     <div className="grid min-w-0 gap-3 md:grid-cols-[5rem_minmax(0,1fr)]">
       {hasMultiple && (
-        <div className="order-2 flex gap-2 overflow-x-auto pb-1 md:order-1 md:max-h-144 md:flex-col md:overflow-x-hidden md:overflow-y-auto md:pr-1">
-          {orderedImages.map((image, index) => (
-            <Button
-              key={`${image.url}-${index}`}
-              type="button"
-              variant="outline"
-              onClick={() => goTo(index)}
-              aria-label={`Ver imagen ${index + 1}`}
-              aria-pressed={index === currentIndex}
-              className={cn(
-                'size-18 shrink-0 overflow-hidden rounded-2xl bg-white p-1',
-                index === currentIndex
-                  ? 'border-primary ring-2 ring-primary/25'
-                  : 'border-border/70 hover:border-primary/50',
-              )}
-            >
-              <ProductImage
-                src={image.url}
-                alt={image.textoAlternativo}
-                className="h-full w-full rounded-xl bg-white"
-                imgClassName="object-cover"
-              />
-            </Button>
-          ))}
+        <div className="hidden md:flex md:max-h-144 md:flex-col md:gap-2 md:overflow-y-auto md:pr-1">
+          {thumbnailsToRender.map((image, index) => {
+            const isOverflowSlot =
+              overflowCount > 0 && index === MAX_VISIBLE_THUMBNAILS
+
+            return (
+              <Button
+                key={`${image.url}-${index}`}
+                type="button"
+                variant="outline"
+                onClick={() =>
+                  isOverflowSlot ? openLightbox(index) : goToThumbnail(index)
+                }
+                aria-label={
+                  isOverflowSlot
+                    ? `Ver ${overflowCount} fotos más`
+                    : `Ver imagen ${index + 1}`
+                }
+                aria-pressed={!isOverflowSlot && index === currentIndex}
+                className={cn(
+                  'relative size-18 shrink-0 overflow-hidden rounded-2xl bg-white p-1',
+                  !isOverflowSlot && index === currentIndex
+                    ? 'border-primary ring-2 ring-primary/25'
+                    : 'border-border/70 hover:border-primary/50',
+                )}
+              >
+                <ProductImage
+                  src={image.url}
+                  alt={image.textoAlternativo}
+                  className="h-full w-full rounded-xl bg-white"
+                  imgClassName="object-cover"
+                />
+                {isOverflowSlot && (
+                  <span className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/60 text-sm font-semibold text-white">
+                    +{overflowCount}
+                  </span>
+                )}
+              </Button>
+            )
+          })}
         </div>
       )}
 
@@ -114,18 +281,60 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
           !hasMultiple && 'md:col-span-2',
         )}
       >
-        <div className="corner-marks relative overflow-hidden rounded-3xl border border-border/70 bg-white">
-          <ProductImage
-            src={activeImage?.url ?? ''}
-            alt={activeImage?.textoAlternativo ?? productName}
-            className="h-96 w-full sm:h-128 lg:h-144"
-            priority={currentIndex === 0}
-          />
+        <div
+          className="corner-marks relative overflow-hidden rounded-3xl border border-border/70 bg-white"
+          onKeyDownCapture={handleKeyDown(main)}
+        >
+          <div
+            ref={mainContainerRef}
+            role="region"
+            aria-roledescription="carousel"
+            className="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {orderedImages.map((image, index) => (
+              <div
+                key={`${image.url}-${index}`}
+                role="group"
+                aria-roledescription="slide"
+                className="w-full shrink-0 snap-start"
+              >
+                <ProductImage
+                  src={image.url}
+                  alt={image.textoAlternativo ?? productName}
+                  className="h-96 w-full sm:h-128 lg:h-144"
+                  // Fijo a index 0, no al índice reactivo: `priority` le dice
+                  // a Next qué imagen pintar como `loading="eager"` en la
+                  // carga inicial de la página (LCP). Solo el primer slide es
+                  // candidato real a LCP.
+                  priority={index === 0}
+                />
+              </div>
+            ))}
+          </div>
+
+          {hasMultiple && (
+            <>
+              <GalleryArrowButton
+                direction="prev"
+                onClick={() => main.scrollToIndex(main.selectedIndex - 1)}
+                disabled={!main.canScrollPrev}
+                ariaLabel="Ver foto anterior"
+                className="left-3 top-1/2 z-20 hidden size-7 -translate-y-1/2 bg-background/90 shadow-sm backdrop-blur-sm hover:bg-muted md:inline-flex"
+              />
+              <GalleryArrowButton
+                direction="next"
+                onClick={() => main.scrollToIndex(main.selectedIndex + 1)}
+                disabled={!main.canScrollNext}
+                ariaLabel="Ver foto siguiente"
+                className="right-3 top-1/2 z-20 hidden size-7 -translate-y-1/2 bg-background/90 shadow-sm backdrop-blur-sm hover:bg-muted md:inline-flex"
+              />
+            </>
+          )}
 
           <Button
             type="button"
             variant="secondary"
-            onClick={() => setLightboxOpen(true)}
+            onClick={() => openLightbox(main.selectedIndex)}
             className="absolute bottom-4 right-4 z-20 touch-manipulation rounded-full bg-brand-black/85 px-3 text-xs font-medium text-white shadow-sm backdrop-blur-sm hover:bg-brand-black"
             aria-label="Ampliar imagen del producto"
           >
@@ -134,36 +343,12 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
           </Button>
 
           {hasMultiple && (
-            <>
-              <Badge
-                variant="secondary"
-                className="absolute left-4 top-4 z-10 bg-background/90 backdrop-blur-sm"
-              >
-                {currentIndex + 1} / {orderedImages.length}
-              </Badge>
-              <Button
-                type="button"
-                variant="secondary"
-                size="icon-sm"
-                onClick={() => goTo(currentIndex - 1)}
-                disabled={isFirstImage}
-                aria-label="Ver foto anterior"
-                className="absolute left-3 top-1/2 z-20 -translate-y-1/2 touch-manipulation rounded-full bg-background/90 shadow-sm backdrop-blur-sm disabled:opacity-40"
-              >
-                <ChevronLeft />
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                size="icon-sm"
-                onClick={() => goTo(currentIndex + 1)}
-                disabled={isLastImage}
-                aria-label="Ver foto siguiente"
-                className="absolute right-3 top-1/2 z-20 -translate-y-1/2 touch-manipulation rounded-full bg-background/90 shadow-sm backdrop-blur-sm disabled:opacity-40"
-              >
-                <ChevronRight />
-              </Button>
-            </>
+            <Badge
+              variant="secondary"
+              className="absolute left-4 top-4 z-10 bg-background/90 backdrop-blur-sm"
+            >
+              {main.selectedIndex + 1} / {orderedImages.length}
+            </Badge>
           )}
         </div>
       </div>
@@ -190,85 +375,77 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
             </div>
             {hasMultiple && (
               <Badge className="shrink-0 border-white/10 bg-white/10 text-white">
-                {currentIndex + 1} / {orderedImages.length}
+                {lightbox.selectedIndex + 1} / {orderedImages.length}
               </Badge>
             )}
           </div>
 
-          <div className="relative min-h-0 flex-1 overflow-hidden">
-            <Carousel
-              opts={{
-                align: 'start',
-                containScroll: 'trimSnaps',
-                dragFree: false,
-                loop: false,
-                startIndex: currentIndex,
-              }}
-              setApi={setLightboxApi}
-              className="h-full [&_[data-slot=carousel-content]]:h-full [&_[data-slot=carousel-content]>div]:h-full"
+          <div
+            className="relative min-h-0 flex-1 overflow-hidden"
+            onKeyDownCapture={handleKeyDown(lightbox)}
+          >
+            <div
+              ref={lightboxContainerRef}
+              role="region"
+              aria-roledescription="carousel"
+              className="flex h-full snap-x snap-mandatory overflow-x-auto overscroll-x-contain scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
-              <CarouselContent className="h-full -ml-0">
-                {orderedImages.map((image, index) => (
-                  <CarouselItem
-                    key={`ampliada-${image.url}-${index}`}
-                    className="h-full pl-0"
-                  >
-                    <div className="flex h-full min-h-0 items-center justify-center p-2 sm:p-5">
-                      <ProductImage
-                        src={image.url}
-                        alt={image.textoAlternativo || productName}
-                        className="h-full w-full select-none rounded-2xl bg-white/5"
-                        sizes="96vw"
-                        priority={index === currentIndex}
-                      />
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-            </Carousel>
+              {orderedImages.map((image, index) => (
+                <div
+                  key={`ampliada-${image.url}-${index}`}
+                  role="group"
+                  aria-roledescription="slide"
+                  className="h-full w-full shrink-0 snap-start"
+                >
+                  <div className="flex h-full min-h-0 items-center justify-center p-2 sm:p-5">
+                    <ProductImage
+                      src={image.url}
+                      alt={image.textoAlternativo || productName}
+                      className="h-full w-full select-none rounded-2xl bg-white/5"
+                      sizes="96vw"
+                      priority={index === lightbox.selectedIndex}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
 
             {hasMultiple && (
               <>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="icon-lg"
-                  onClick={() => goToLightbox(currentIndex - 1)}
-                  disabled={isFirstImage}
-                  aria-label="Imagen anterior"
-                  className="absolute left-3 top-1/2 z-30 -translate-y-1/2 touch-manipulation rounded-full bg-white/90 text-brand-black shadow-md hover:bg-white disabled:opacity-30 sm:left-5"
-                >
-                  <ChevronLeft />
-                </Button>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="icon-lg"
-                  onClick={() => goToLightbox(currentIndex + 1)}
-                  disabled={isLastImage}
-                  aria-label="Imagen siguiente"
-                  className="absolute right-3 top-1/2 z-30 -translate-y-1/2 touch-manipulation rounded-full bg-white/90 text-brand-black shadow-md hover:bg-white disabled:opacity-30 sm:right-5"
-                >
-                  <ChevronRight />
-                </Button>
+                <GalleryArrowButton
+                  direction="prev"
+                  onClick={() => lightbox.scrollToIndex(lightbox.selectedIndex - 1)}
+                  disabled={!lightbox.canScrollPrev}
+                  ariaLabel="Imagen anterior"
+                  iconClassName="size-5"
+                  className="left-3 top-1/2 z-30 hidden size-9 -translate-y-1/2 bg-white/90 text-brand-black shadow-md hover:bg-white disabled:opacity-30 sm:left-5 md:inline-flex"
+                />
+                <GalleryArrowButton
+                  direction="next"
+                  onClick={() => lightbox.scrollToIndex(lightbox.selectedIndex + 1)}
+                  disabled={!lightbox.canScrollNext}
+                  ariaLabel="Imagen siguiente"
+                  iconClassName="size-5"
+                  className="right-3 top-1/2 z-30 hidden size-9 -translate-y-1/2 bg-white/90 text-brand-black shadow-md hover:bg-white disabled:opacity-30 sm:right-5 md:inline-flex"
+                />
               </>
             )}
           </div>
 
           {hasMultiple && (
-            <div className="shrink-0 border-t border-white/10 px-3 py-3 sm:px-5">
+            <div className="hidden shrink-0 border-t border-white/10 px-3 py-3 sm:px-5 md:block">
               <div className="flex snap-x gap-2 overflow-x-auto pb-1">
                 {orderedImages.map((image, index) => (
                   <Button
                     key={`miniatura-ampliada-${image.url}-${index}`}
                     type="button"
                     variant="ghost"
-                    onClick={() => goToLightbox(index)}
+                    onClick={() => lightbox.scrollToIndex(index)}
                     aria-label={`Ir a imagen ${index + 1}`}
-                    aria-pressed={index === currentIndex}
+                    aria-pressed={index === lightbox.selectedIndex}
                     className={cn(
                       'size-14 shrink-0 snap-start overflow-hidden rounded-xl border p-1 sm:size-16',
-                      index === currentIndex
+                      index === lightbox.selectedIndex
                         ? 'border-white bg-white/15 ring-2 ring-white/25'
                         : 'border-white/15 bg-white/5 hover:bg-white/10',
                     )}
