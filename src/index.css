@@ -488,6 +488,17 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  /* Conserva el gesto horizontal de las categorías en mobile sin sumar una
+     barra visual que compita con los filtros. */
+  .works-category-scroll {
+    scrollbar-width: none;
+    overscroll-behavior-inline: contain;
+  }
+
+  .works-category-scroll::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* Quien pide menos movimiento (prefers-reduced-motion) no debería ver
@@ -521,5 +532,109 @@
 @media (prefers-reduced-motion: reduce) {
   .fab-inicio-animado {
     animation: none;
+  }
+}
+
+/* Movimiento editorial de la página Nuestras obras. Se mantiene en CSS para
+   no hidratar la pantalla únicamente por efectos decorativos. */
+@keyframes works-copy-rise {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes works-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes works-reveal-soft {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes works-reveal-media {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .works-intro-main > *,
+  .works-intro-note > *,
+  .work-detail-intro {
+    animation: works-copy-rise 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .work-detail-intro + .work-detail-intro {
+    animation-delay: 0.08s;
+  }
+
+  .works-intro-main > :nth-child(1) {
+    animation-delay: 0.04s;
+  }
+
+  .works-intro-main > :nth-child(2) {
+    animation-delay: 0.1s;
+  }
+
+  .works-intro-main > :nth-child(3) {
+    animation-delay: 0.18s;
+  }
+
+  .works-intro-note > :nth-child(1) {
+    animation-delay: 0.24s;
+  }
+
+  .works-intro-note > :nth-child(2) {
+    animation-delay: 0.31s;
+  }
+
+  .works-intro-note > :nth-child(3) {
+    animation-delay: 0.38s;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .works-reveal {
+      animation: works-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 5% cover 28%;
+    }
+
+    .works-reveal-soft {
+      animation: works-reveal-soft linear both;
+      animation-timeline: view();
+      animation-range: entry 8% cover 22%;
+    }
+
+    .works-reveal-media {
+      animation: works-reveal-media linear both;
+      animation-timeline: view();
+      animation-range: entry 4% cover 26%;
+    }
   }
 }

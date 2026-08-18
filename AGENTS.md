@@ -225,6 +225,17 @@ src/
 - [x] Zustand reducido al único store persistente del carrito (`lebaux-cart`); la UI de carrito/checkout usa Context de React y se limpian las claves heredadas `lebaux-content` y `lebaux-admin-auth` (ver `docs/2026-08-12-store-unico-carrito.md`).
 - [x] Pantallas reutilizables movidas a `src/screens` para evitar la detección errónea de Pages Router por Next.js App Router (ver `docs/2026-08-14-correccion-rutas-next-y-validaciones.md`).
 - [x] Consultar precio extendido a variantes en la tienda pública: override global, decisión individual, ficha sin importes, promociones coherentes y protección del carrito (ver `docs/2026-08-15-consultar-precio-variantes-tienda-publica.md`).
+- [x] Página experimental de obras con contenido mock, imágenes locales, animación progresiva y acceso desde Home/Footer (ver `docs/2026-08-18-pagina-publica-nuestras-obras.md`).
+- [x] Prototipo de obras extendido con categorías dinámicas desde JSON, relato individual, remodelaciones antes/después, sedes y eslogan final (ver `docs/2026-08-18-categorias-remodelaciones-y-sedes-obras.md`).
+- [x] Nuestras obras sin banner fotográfico inicial y con doce casos mock reutilizando la serie visual existente (ver `docs/2026-08-18-obras-sin-banner-y-galeria-ampliada.md`).
+- [x] Fichas individuales mock de obras con galería, desafío, solución,
+      materiales, testimonio, CTA contextual y animaciones editoriales variadas
+      (ver `docs/2026-08-18-fichas-individuales-y-animacion-obras.md`).
+- [x] Galería inmersiva responsive en las fichas de obras, con Dialog, carrusel,
+      navegación gestual/teclado y zoom desplazable (ver
+      `docs/2026-08-18-galeria-inmersiva-obras.md` y corrección de ancho/galería
+      en `docs/2026-08-18-correccion-lightbox-obras.md`; composición responsive
+      final en `docs/2026-08-18-composicion-responsive-galeria-obras.md`).
 - [ ] Desplegar `cloudinary-signature` y `cloudinary-cleanup`, configurar sus secretos del lado de Supabase y completar la prueba operativa de medios. El frontend no usa una bandera Vite adicional.
 
 Cuando se complete un ítem o se agregue uno nuevo, actualizar esta lista y sumar

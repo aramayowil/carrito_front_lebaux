@@ -104,6 +104,14 @@ export function Footer({
             ))}
             <li className="mt-2 border-t border-white/10 pt-3">
               <Link
+                href="/obras"
+                className="inline-block py-1 font-semibold text-primary hover:text-primary/80"
+              >
+                Nuestras obras
+              </Link>
+            </li>
+            <li>
+              <Link
                 href="/catalogos-tecnicos"
                 className="inline-block py-1 font-semibold text-primary hover:text-primary/80"
               >

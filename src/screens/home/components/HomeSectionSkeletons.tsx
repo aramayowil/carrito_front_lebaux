@@ -70,7 +70,10 @@ export function HomeTechnicalCatalogsSectionSkeleton() {
         <div className="flex flex-col gap-3 lg:items-end">
           <div className="hidden gap-2 xl:flex">
             {Array.from({ length: 3 }).map((_, index) => (
-              <Skeleton key={index} className="h-6 w-20 rounded-full bg-white/10" />
+              <Skeleton
+                key={index}
+                className="h-6 w-20 rounded-full bg-white/10"
+              />
             ))}
           </div>
           <Skeleton className="h-10 w-full rounded-xl bg-white/15 sm:w-52" />
@@ -209,7 +212,9 @@ export function HomeWorksSectionSkeleton() {
           ))}
         </div>
 
-        <Card className="mt-8 gap-0 border border-primary/20 bg-brand-graphite py-0 text-white shadow-lg">
+        <Skeleton className="mx-auto mt-8 h-11 w-full rounded-xl sm:w-44" />
+
+        <Card className="mt-6 gap-0 border border-primary/20 bg-brand-graphite py-0 text-white shadow-lg sm:mt-8">
           <CardContent className="flex flex-col items-start justify-between gap-5 px-6 py-6 sm:flex-row sm:items-center sm:px-8">
             <div className="w-full max-w-xl space-y-2">
               <Skeleton className="h-5 w-60 rounded-md bg-white/15" />
