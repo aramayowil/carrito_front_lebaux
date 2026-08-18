@@ -142,7 +142,7 @@ export function CatalogLineMoreContent({
             <Button
               variant="whatsapp"
               size="lg"
-              className="w-full shrink-0 sm:w-auto"
+              className="h-12 w-full shrink-0 px-6 font-semibold shadow-none transition-transform hover:-translate-y-0.5 hover:shadow-none sm:w-auto"
               render={
                 <a href={whatsappHref} target="_blank" rel="noreferrer" />
               }
