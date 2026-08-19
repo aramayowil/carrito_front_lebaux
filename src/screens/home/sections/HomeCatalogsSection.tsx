@@ -1,71 +1,43 @@
-import { ArrowRight } from "lucide-react"
-import Link from "next/link"
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
-import { Button } from "@/components/ui/button"
-import { completarTextoPublico } from "@/lib/public-text"
-import { cn } from "@/lib/utils"
-import type { LineaProducto, Producto } from "@/types"
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import type { LineaProducto } from "@/types";
 
-function etiquetaCantidadModelos(cantidad: number) {
-  if (cantidad === 0) return "Catálogo en preparación"
-  if (cantidad === 1) return "1 modelo publicado"
-  return completarTextoPublico("{cantidad} modelos publicados", { cantidad })
-}
-
-function CatalogLineLink({
-  line,
-  productCount,
-}: {
-  line: LineaProducto
-  productCount: number
-}) {
+function CatalogLineLink({ line }: { line: LineaProducto }) {
   return (
     <Button
       variant="outline"
       size="lg"
-      className="group h-auto min-h-32 w-full flex-col items-stretch justify-between rounded-2xl border-border bg-catalog-line px-5 py-5 text-left whitespace-normal text-foreground shadow-none hover:border-muted-foreground/35 hover:bg-muted hover:text-foreground sm:min-h-36 dark:bg-catalog-line dark:hover:bg-muted"
+      className="group relative h-auto min-h-32 w-full flex-col items-stretch justify-between overflow-hidden rounded-xl border-border bg-catalog-line px-5 py-6 text-left whitespace-normal text-foreground shadow-none before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-primary transition-colors hover:border-primary/60 hover:bg-muted hover:text-foreground sm:min-h-36 sm:px-6"
       render={<Link href={`/${line.slug}`} />}
     >
-      <span className="flex items-start justify-between gap-4">
-        <span className="text-base font-bold uppercase tracking-tight sm:text-lg">
+      <span>
+        <span className="block text-lg font-bold uppercase tracking-tight sm:text-xl">
           {line.nombre}
         </span>
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform group-hover:translate-x-1">
-          <ArrowRight className="size-4" aria-hidden="true" />
+        <span className="mt-2 line-clamp-2 block text-sm leading-6 font-normal text-muted-foreground">
+          {line.subtitulo}
         </span>
       </span>
-      <span className="mt-2 line-clamp-2 block flex-1 text-xs leading-5 font-normal text-muted-foreground">
-        {line.subtitulo}
-      </span>
-      <span className="mt-4 flex items-center justify-between gap-3 border-t border-muted-foreground/20 pt-3 text-xs font-medium text-muted-foreground group-hover:border-muted-foreground/30">
-        <span>{etiquetaCantidadModelos(productCount)}</span>
-        <span className="shrink-0 font-semibold text-foreground/70 group-hover:text-foreground">
-          Explorar
+
+      <span className="mt-5 flex items-center justify-between gap-3 border-t border-border/70 pt-4 text-sm font-semibold text-foreground">
+        <span>Ver productos</span>
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+          <ArrowRight
+            className="size-4 transition-transform group-hover:translate-x-0.5"
+            aria-hidden="true"
+          />
         </span>
       </span>
     </Button>
-  )
+  );
 }
 
 /** Primera capa de navegación comercial: una entrada por línea administrable. */
-export function HomeCatalogsSection({
-  products,
-  lines,
-}: {
-  products: Producto[]
-  lines: LineaProducto[]
-}) {
-  if (lines.length === 0) return null
-
-  const visibleProducts = products.filter(
-    (product) => product.visibilidad === "visible",
-  )
-  const productCountByLine = new Map(
-    lines.map((line) => [
-      line.slug,
-      visibleProducts.filter((product) => product.linea === line.slug).length,
-    ]),
-  )
+export function HomeCatalogsSection({ lines }: { lines: LineaProducto[] }) {
+  if (lines.length === 0) return null;
 
   return (
     <section
@@ -75,37 +47,35 @@ export function HomeCatalogsSection({
     >
       <div className="mx-auto max-w-screen-2xl">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="eyebrow mb-3 flex justify-center text-base">
-            Explorá el catálogo
+          <p className="eyebrow mb-3 justify-center text-base">
+            Nuestras líneas
           </p>
           <h2
             id="catalog-lines-title"
-            className="text-2xl font-bold uppercase tracking-tight sm:text-3xl lg:text-4xl"
+            className="text-2xl font-bold uppercase tracking-tight text-balance sm:text-3xl lg:text-4xl"
           >
-            ¿Qué abertura estás buscando?
+            Encontrá la abertura para tu proyecto
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">
-            Elegí una línea para conocer sus modelos, medidas y configuraciones disponibles.
+            Explorá nuestros sistemas y elegí la solución que mejor se adapta a
+            tu espacio.
           </p>
         </div>
 
         <div
           className={cn(
-            "mt-8 grid gap-3 border-t border-border/70 pt-7 sm:mt-10 sm:gap-4 sm:pt-8",
+            "mt-8 grid gap-4 border-t border-border/70 pt-7 sm:mt-10 sm:pt-8",
             lines.length === 1 && "mx-auto max-w-xl",
-            lines.length === 2 && "md:grid-cols-2",
-            lines.length >= 3 && "md:grid-cols-2 xl:grid-cols-3",
+            lines.length === 2 && "mx-auto max-w-4xl md:grid-cols-2",
+            lines.length >= 3 &&
+              "mx-auto max-w-6xl md:grid-cols-2 lg:grid-cols-3",
           )}
         >
           {lines.map((line) => (
-            <CatalogLineLink
-              key={line.id}
-              line={line}
-              productCount={productCountByLine.get(line.slug) ?? 0}
-            />
+            <CatalogLineLink key={line.id} line={line} />
           ))}
         </div>
       </div>
     </section>
-  )
+  );
 }

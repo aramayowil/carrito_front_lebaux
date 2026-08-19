@@ -1,65 +1,61 @@
-import { ArrowRight } from "lucide-react"
-import Link from "next/link"
+import { ArrowRight, FileText } from "lucide-react";
+import Link from "next/link";
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import type { LineaProducto } from "@/types"
+import { Button } from "@/components/ui/button";
+import { normalizarUrlCatalogoTecnico } from "@/features/products/lib/technical-catalog";
+import type { LineaProducto } from "@/types";
 
-/** Franja compacta que conecta la Home con la biblioteca profesional. */
+/** Franja compacta que conecta la Home con la documentación profesional. */
 export function HomeTechnicalCatalogsSection({
   lines,
 }: {
-  lines: LineaProducto[]
+  lines: LineaProducto[];
 }) {
-  if (lines.length === 0) return null
+  const tieneDocumentos = lines.some(
+    (line) =>
+      normalizarUrlCatalogoTecnico(line.catalogoTecnicoUrl) ||
+      normalizarUrlCatalogoTecnico(line.especificacionesTecnicasUrl),
+  );
+
+  if (!tieneDocumentos) return null;
 
   return (
     <section
       aria-labelledby="technical-catalogs-title"
-      className="border-y border-white/10 bg-brand-black py-6 text-white sm:py-7 lg:py-8"
+      className="border-y border-white/10 bg-brand-black py-8 text-white sm:py-10"
     >
-      <div className="container">
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(20rem,0.8fr)] lg:items-center">
+      <div className="container flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex max-w-3xl items-start gap-4">
+          <span className="mt-1 hidden size-10 shrink-0 items-center justify-center rounded-lg bg-primary/12 text-primary sm:flex">
+            <FileText className="size-5" aria-hidden="true" />
+          </span>
+
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-primary">
-              Catálogo técnico
+              Documentación profesional
             </p>
             <h2
               id="technical-catalogs-title"
               className="mt-2 text-xl font-bold tracking-tight text-balance sm:text-2xl lg:text-3xl"
             >
-              Información técnica para profesionales
+              Catálogos y especificaciones de cada línea
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-white/60">
-              Consultá perfiles, vidrios, prestaciones y especificaciones de cada línea para definir mejor tu proyecto.
+              Consultá los documentos comerciales y técnicos disponibles para
+              conocer mejor cada sistema Lebaux.
             </p>
           </div>
-
-          <div className="flex flex-col gap-3 lg:items-end">
-            <div
-              className="hidden flex-wrap gap-2 xl:flex"
-              aria-label="Líneas con catálogo técnico"
-            >
-              {lines.map((line) => (
-                <Badge
-                  key={line.id}
-                  variant="outline"
-                  className="border-white/15 bg-white/5 text-white"
-                >
-                  {line.nombre}
-                </Badge>
-              ))}
-            </div>
-            <Button
-              className="w-full rounded-xl sm:w-auto"
-              render={<Link href="/catalogos-tecnicos" />}
-            >
-              Ver catálogos técnicos
-              <ArrowRight data-icon="inline-end" />
-            </Button>
-          </div>
         </div>
+
+        <Button
+          size="lg"
+          className="h-12 w-full shrink-0 px-7 text-base font-semibold transition-transform hover:-translate-y-0.5 sm:w-auto"
+          render={<Link href="/catalogos-tecnicos" />}
+        >
+          Ver documentación
+          <ArrowRight data-icon="inline-end" />
+        </Button>
       </div>
     </section>
-  )
+  );
 }

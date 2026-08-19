@@ -19,9 +19,7 @@ export function HomePage({ datos }: { datos: DatosHomePublica }) {
       case "hero":
         return <Hero key={id} banners={inicio.banners} />;
       case "catalogos":
-        return (
-          <HomeCatalogsSection key={id} products={productos} lines={lineas} />
-        );
+        return <HomeCatalogsSection key={id} lines={lineas} />;
       case "catalogosTecnicos":
         return <HomeTechnicalCatalogsSection key={id} lines={lineas} />;
       case "promociones":

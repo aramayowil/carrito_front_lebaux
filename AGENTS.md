@@ -161,6 +161,7 @@ src/
       compacto en Home, biblioteca pública dedicada, enlace en Footer y
       descarga contextual por línea (ver
       `docs/2026-08-10-catalogos-tecnicos-por-linea.md` y
+      `docs/2026-08-18-home-acceso-documentacion-tecnica.md` y
       `docs/2026-08-18-redisenio-biblioteca-catalogos-tecnicos.md` y
       `docs/2026-08-18-exploracion-documental-catalogos-tecnicos.md` y
       `docs/2026-08-18-accion-unica-catalogos-tecnicos.md` y
@@ -206,7 +207,8 @@ src/
       `docs/2026-08-18-card-obras-destacadas-home.md`).
 - [x] Catálogos completos de la Home generados desde todas las líneas del
       store, con conteos públicos y grilla adaptable a su cantidad (ver
-      `docs/2026-08-10-home-catalogos-dinamicos.md`).
+      `docs/2026-08-10-home-catalogos-dinamicos.md` y simplificación posterior
+      en `docs/2026-08-18-home-lineas-sin-conteos.md`).
 - [x] Revisión visual de Catálogos completos como bloque negro simple y
       destacado, sin perder su grilla dinámica (ver
       `docs/2026-08-10-home-catalogos-bloque-negro.md`).

@@ -26,23 +26,22 @@ export function HomeCatalogsSectionSkeleton() {
           <Skeleton className="mx-auto mt-2 h-4 w-4/5 max-w-lg rounded-md" />
         </div>
 
-        <div className="mt-8 grid gap-3 border-t border-border/70 pt-7 sm:mt-10 sm:gap-4 sm:pt-8 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mx-auto mt-8 grid max-w-6xl gap-4 border-t border-border/70 pt-7 sm:mt-10 sm:pt-8 md:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 3 }).map((_, index) => (
             <div
               key={index}
-              className="flex min-h-32 flex-col justify-between rounded-2xl border border-border bg-catalog-line px-5 py-5 sm:min-h-36"
+              className="relative flex min-h-32 flex-col justify-between overflow-hidden rounded-xl border border-border bg-catalog-line px-5 py-6 before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-primary/30 sm:min-h-36 sm:px-6"
             >
-              <div className="flex items-start justify-between gap-4">
-                <Skeleton className="h-5 w-28 rounded-md sm:w-36" />
-                <Skeleton className="size-9 shrink-0 rounded-full" />
+              <div>
+                <Skeleton className="h-6 w-28 rounded-md sm:w-36" />
+                <div className="mt-2 space-y-2">
+                  <Skeleton className="h-3 w-full rounded-md" />
+                  <Skeleton className="h-3 w-4/5 rounded-md" />
+                </div>
               </div>
-              <div className="mt-2 space-y-2">
-                <Skeleton className="h-3 w-full rounded-md" />
-                <Skeleton className="h-3 w-4/5 rounded-md" />
-              </div>
-              <div className="mt-4 flex items-center justify-between gap-3 border-t border-muted-foreground/20 pt-3">
-                <Skeleton className="h-3 w-28 rounded-full" />
-                <Skeleton className="h-3 w-12 rounded-full" />
+              <div className="mt-5 flex items-center justify-between gap-3 border-t border-border/70 pt-4">
+                <Skeleton className="h-4 w-24 rounded-full" />
+                <Skeleton className="size-8 rounded-full" />
               </div>
             </div>
           ))}
@@ -57,27 +56,19 @@ export function HomeTechnicalCatalogsSectionSkeleton() {
   return (
     <section
       aria-hidden="true"
-      className="border-y border-white/10 bg-brand-black py-6 text-white sm:py-7 lg:py-8"
+      className="border-y border-white/10 bg-brand-black py-8 text-white sm:py-10"
     >
-      <div className="container grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(20rem,0.8fr)] lg:items-center">
-        <div>
-          <Skeleton className="h-3 w-28 rounded-full bg-white/15" />
-          <Skeleton className="mt-2 h-7 w-full max-w-xl rounded-md bg-white/15 lg:h-8" />
-          <Skeleton className="mt-2 h-4 w-full max-w-2xl rounded-md bg-white/10" />
-          <Skeleton className="mt-2 h-4 w-4/5 max-w-xl rounded-md bg-white/10" />
-        </div>
-
-        <div className="flex flex-col gap-3 lg:items-end">
-          <div className="hidden gap-2 xl:flex">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <Skeleton
-                key={index}
-                className="h-6 w-20 rounded-full bg-white/10"
-              />
-            ))}
+      <div className="container flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex w-full max-w-3xl items-start gap-4">
+          <Skeleton className="mt-1 hidden size-10 shrink-0 rounded-lg bg-white/10 sm:block" />
+          <div className="w-full">
+            <Skeleton className="h-3 w-36 rounded-full bg-white/15" />
+            <Skeleton className="mt-2 h-7 w-full max-w-xl rounded-md bg-white/15 lg:h-8" />
+            <Skeleton className="mt-2 h-4 w-full max-w-2xl rounded-md bg-white/10" />
+            <Skeleton className="mt-2 h-4 w-4/5 max-w-xl rounded-md bg-white/10" />
           </div>
-          <Skeleton className="h-10 w-full rounded-xl bg-white/15 sm:w-52" />
         </div>
+        <Skeleton className="h-12 w-full shrink-0 rounded-lg bg-white/15 sm:w-56" />
       </div>
     </section>
   );
