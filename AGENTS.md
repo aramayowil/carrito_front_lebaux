@@ -215,6 +215,10 @@ src/
       las opciones, CTA principal contextual, contenido inferior compacto y
       skeletons alineados (ver
       `docs/2026-08-18-redisenio-ficha-producto-comercial.md`).
+- [x] Galería de producto selectiva: imagen principal estática y hasta seis
+      miniaturas en desktop, carrusel gestual mobile y visor inmersivo común con
+      zoom (ver
+      `docs/2026-08-19-galeria-producto-selectiva-responsive.md`).
 - [x] Productos relacionados manuales y ordenados desde ProductForm, con
       recomendación automática por línea/tipología cuando no hay selección
       (ver
@@ -271,6 +275,10 @@ src/
 - [x] Documentos `sitio`, `inicio` y `experiencia` migrados mediante el feature compartido `site-content`; todas las fuentes de contenido quedaron activadas en Supabase (ver `docs/2026-08-11-documentos-sitio-supabase.md`).
 - [x] Contenido operativo migrado por completo a Supabase: se retiraron el store, la importación local y la persistencia lebaux-content; el carrito conserva su almacenamiento propio (ver docs/2026-08-11-cierre-migracion-contenido-y-medios-cloudinary.md).
 - [x] Zustand reducido al único store persistente del carrito (`lebaux-cart`); la UI de carrito/checkout usa Context de React y se limpian las claves heredadas `lebaux-content` y `lebaux-admin-auth` (ver `docs/2026-08-12-store-unico-carrito.md`).
+- [x] FAB del carrito montado solo en cliente para evitar diferencias de
+      hidratación cuando Base UI aplica `inert` durante la apertura temprana de
+      galerías o diálogos (ver
+      `docs/2026-08-19-hidratacion-cart-button-y-dialogos.md`).
 - [x] Pantallas reutilizables movidas a `src/screens` para evitar la detección errónea de Pages Router por Next.js App Router (ver `docs/2026-08-14-correccion-rutas-next-y-validaciones.md`).
 - [x] Consultar precio extendido a variantes en la tienda pública: override global, decisión individual, ficha sin importes, promociones coherentes y protección del carrito (ver `docs/2026-08-15-consultar-precio-variantes-tienda-publica.md`).
 - [x] Página experimental de obras con contenido mock, imágenes locales, animación progresiva y acceso desde Home/Footer (ver `docs/2026-08-18-pagina-publica-nuestras-obras.md`).

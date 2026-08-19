@@ -5,13 +5,13 @@ export function ProductGallerySkeleton() {
   return (
     <div
       aria-hidden="true"
-      className="grid min-w-0 gap-3 md:grid-cols-[5rem_minmax(0,1fr)]"
+      className="grid min-w-0 gap-3 lg:grid-cols-[4.5rem_minmax(0,1fr)]"
     >
-      <div className="hidden gap-2 overflow-hidden md:flex md:max-h-144 md:flex-col md:pr-1">
-        {Array.from({ length: 4 }).map((_, index) => (
+      <div className="hidden gap-2 overflow-hidden lg:flex lg:flex-col lg:pr-1">
+        {Array.from({ length: 6 }).map((_, index) => (
           <Skeleton
             key={index}
-            className="size-18 shrink-0 rounded-xl border border-border/70"
+            className="aspect-square w-full shrink-0 rounded-xl border border-border/70"
           />
         ))}
       </div>

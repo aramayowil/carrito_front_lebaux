@@ -1,30 +1,30 @@
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { ArrowRight } from 'lucide-react'
+import Link from 'next/link'
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { HomeWorksShowcase } from "@/features/works/components/HomeWorksShowcase";
-import type { Obra } from "@/types";
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { HomeWorksShowcase } from '@/features/works/components/HomeWorksShowcase'
+import type { Obra } from '@/types'
 
 interface ObrasSectionProps {
-  obras: Obra[];
+  obras: Obra[]
 }
 
 const SLUGS_OBRAS_DESTACADAS_MOCK = [
-  "casa-abierta-al-jardin",
-  "luz-natural-corazon-hogar",
-  "identidad-renovada-fachada-clasica",
-] as const;
+  'casa-abierta-al-jardin',
+  'luz-natural-corazon-hogar',
+  'identidad-renovada-fachada-clasica',
+] as const
 
 /** Selección editorial de tres obras destacadas y acceso al portfolio completo. */
 export function ObrasSection({ obras }: ObrasSectionProps) {
-  if (obras.length === 0) return null;
+  if (obras.length === 0) return null
 
   // Adaptación temporal: el administrador todavía no entrega el slug público.
   const obrasPrincipales = obras.slice(0, 3).map((obra, index) => ({
     ...obra,
     href: `/obras/${SLUGS_OBRAS_DESTACADAS_MOCK[index] ?? SLUGS_OBRAS_DESTACADAS_MOCK[0]}`,
-  }));
+  }))
 
   return (
     <section
@@ -67,16 +67,11 @@ export function ObrasSection({ obras }: ObrasSectionProps) {
             <Button
               variant="default"
               size="lg"
-              className="h-auto min-h-20 w-full shrink-0 justify-between rounded-xl px-6 py-4 text-left shadow-none sm:w-80"
+              className="h-12 w-full shrink-0 justify-center gap-3 rounded-xl px-5 shadow-none sm:w-auto sm:self-center"
               render={<Link href="/obras" />}
             >
-              <span>
-                <span className="block text-xs font-semibold uppercase tracking-widest opacity-65">
-                  Más proyectos
-                </span>
-                <span className="mt-1 block text-base font-bold">
-                  Explorar todas las obras
-                </span>
+              <span className="text-sm font-bold sm:text-base">
+                Explorar todas las obras
               </span>
               <ArrowRight
                 className="size-5 transition-transform duration-300 group-hover/button:translate-x-1"
@@ -88,5 +83,5 @@ export function ObrasSection({ obras }: ObrasSectionProps) {
         </Card>
       </div>
     </section>
-  );
+  )
 }
