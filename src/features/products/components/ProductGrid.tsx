@@ -72,7 +72,7 @@ export function ProductGrid({
             tiposApertura.find((item) => item.slug === product.tipoApertura)
               ?.nombre
           }
-          priority={index < 4}
+          priority={index === 0}
         />
       ))}
     </div>
