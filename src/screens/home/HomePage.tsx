@@ -11,8 +11,15 @@ import type { IdSeccionInicio } from "@/types";
 
 /** Portada renderizada en servidor; solo Hero conserva hidratación interactiva. */
 export function HomePage({ datos }: { datos: DatosHomePublica }) {
-  const { productos, lineas, obras, beneficios, inicio, experienciaInicio } =
-    datos;
+  const {
+    productos,
+    lineas,
+    obras,
+    beneficios,
+    inicio,
+    experienciaInicio,
+    telefonoWhatsapp,
+  } = datos;
 
   function renderizarSeccion(id: IdSeccionInicio) {
     switch (id) {
@@ -39,7 +46,13 @@ export function HomePage({ datos }: { datos: DatosHomePublica }) {
       case "obras":
         return <ObrasSection key={id} obras={obras} />;
       case "nosotros":
-        return <AboutSection key={id} contenido={inicio.acercaDeNosotros} />;
+        return (
+          <AboutSection
+            key={id}
+            contenido={inicio.acercaDeNosotros}
+            telefonoWhatsapp={telefonoWhatsapp}
+          />
+        );
     }
   }
 

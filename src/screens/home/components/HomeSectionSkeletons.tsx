@@ -220,41 +220,33 @@ export function HomeWorksSectionSkeleton() {
   );
 }
 
-/** Replica la composición 4:3 + contenido institucional de la sección Nosotros. */
+/** Replica la composición visual compacta de la sección Nosotros. */
 export function HomeAboutSectionSkeleton() {
   return (
-    <section aria-hidden="true" className="bg-background py-16 sm:py-20">
-      <div className="container grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
-        <div className="w-full lg:max-w-155">
-          <Skeleton className="aspect-4/3 w-full rounded-2xl shadow-lg" />
+    <section
+      aria-hidden="true"
+      className="border-t border-border/60 bg-muted/30 py-12 sm:py-14"
+    >
+      <div className="container grid items-center gap-8 lg:grid-cols-5 lg:gap-12">
+        <div className="w-full lg:col-span-3">
+          <Skeleton className="aspect-4/3 w-full rounded-xl lg:aspect-video" />
         </div>
 
-        <div className="min-w-0">
+        <div className="min-w-0 lg:col-span-2">
           <Skeleton className="h-4 w-28 rounded-full" />
           <Skeleton className="mt-2 h-9 w-full max-w-md rounded-md" />
-          <div className="mt-6 space-y-2">
+          <div className="mt-4 space-y-2">
             <Skeleton className="h-4 w-full rounded-md" />
             <Skeleton className="h-4 w-full rounded-md" />
             <Skeleton className="h-4 w-4/5 rounded-md" />
           </div>
 
-          <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+          <div className="mt-6 flex flex-wrap gap-4 border-y border-border/70 py-4">
             {Array.from({ length: 2 }).map((_, index) => (
-              <Card
-                key={index}
-                size="sm"
-                className="gap-0 border border-border/70 py-0 shadow-none"
-              >
-                <CardContent className="flex items-start gap-4 px-4 py-4">
-                  <Skeleton className="size-10 shrink-0 rounded-xl" />
-                  <div className="min-w-0 flex-1 space-y-2">
-                    <Skeleton className="h-4 w-36 rounded-md" />
-                    <Skeleton className="h-4 w-full rounded-md" />
-                  </div>
-                </CardContent>
-              </Card>
+              <Skeleton key={index} className="h-5 w-40 rounded-md" />
             ))}
           </div>
+          <Skeleton className="mt-6 h-10 w-full rounded-lg sm:w-36" />
         </div>
       </div>
     </section>
