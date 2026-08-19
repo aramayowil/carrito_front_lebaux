@@ -118,18 +118,30 @@ export function HomeProductsSectionSkeleton({
             </div>
           </div>
         ) : (
-          <div className="px-1 sm:px-8">
-            <div className="-ml-4 flex flex-wrap gap-y-4 sm:gap-y-5">
-              {Array.from({ length: 4 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="min-w-0 basis-full pl-4 sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
-                >
-                  <ProductCardSkeleton variante="destacado" />
-                </div>
-              ))}
+          <>
+            <div className="px-1 sm:hidden">
+              <ProductCardSkeleton variante="destacado" />
+              <div className="mt-5 flex justify-center gap-2">
+                <Skeleton className="h-2 w-6 rounded-full" />
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <Skeleton key={index} className="size-2 rounded-full" />
+                ))}
+              </div>
             </div>
-          </div>
+
+            <div className="hidden px-1 sm:block sm:px-8">
+              <div className="-ml-4 flex flex-wrap gap-y-4 sm:gap-y-5">
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className="min-w-0 basis-1/2 pl-4 lg:basis-1/3 xl:basis-1/4"
+                  >
+                    <ProductCardSkeleton variante="destacado" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
         )}
       </div>
     </section>

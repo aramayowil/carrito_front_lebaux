@@ -141,7 +141,8 @@ src/
       `docs/2026-08-18-cards-home-tamano-original.md` y
       `docs/2026-08-18-destacados-home-imagen-borde-a-borde.md` y
       `docs/2026-08-18-ancho-unificado-cards-home.md` y
-      `docs/2026-08-18-geometria-unificada-cards-home.md`).
+      `docs/2026-08-18-geometria-unificada-cards-home.md` y
+      `docs/2026-08-18-destacados-home-mobile.md`).
 - [x] `features/products` completo: líneas, tipologías, filtros, catálogo,
       detalle y configurador (ver
       `docs/2026-08-03-migracion-catalogo-carrito-checkout.md`).

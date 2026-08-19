@@ -1,5 +1,6 @@
 import { FeaturedProductCard } from "@/features/products/components/FeaturedProductCard";
 import { resumirPromocionProducto } from "@/features/products/lib/discounts";
+import { HomeFeaturedProductsMobileCarousel } from "@/screens/home/components/HomeFeaturedProductsMobileCarousel";
 import type { Producto } from "@/types";
 
 /** Selección curada de productos destacados de la portada. */
@@ -8,12 +9,14 @@ export function HomeFeaturedProductsSection({
 }: {
   products: Producto[];
 }) {
-  const featured = products.filter(
-    (product) =>
-      product.visibilidad === "visible" &&
-      product.destacado &&
-      !resumirPromocionProducto(product),
-  );
+  const featured = products
+    .filter(
+      (product) =>
+        product.visibilidad === "visible" &&
+        product.destacado &&
+        !resumirPromocionProducto(product),
+    )
+    .slice(0, 4);
 
   if (featured.length === 0) return null;
 
@@ -35,7 +38,9 @@ export function HomeFeaturedProductsSection({
           </p>
         </div>
 
-        <div className="px-1 sm:px-8">
+        <HomeFeaturedProductsMobileCarousel products={featured} />
+
+        <div className="hidden px-1 sm:block sm:px-8">
           <div className="-ml-4 flex flex-wrap gap-y-4 sm:gap-y-5">
             {featured.map((product) => (
               <div
