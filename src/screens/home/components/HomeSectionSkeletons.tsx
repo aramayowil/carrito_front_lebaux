@@ -227,7 +227,7 @@ export function HomeAboutSectionSkeleton() {
       aria-hidden="true"
       className="border-t border-border/60 bg-muted/30 py-12 sm:py-14"
     >
-      <div className="container grid items-center gap-8 lg:grid-cols-5 lg:gap-12">
+      <div className="container grid items-start gap-8 lg:grid-cols-5 lg:gap-12">
         <div className="w-full lg:col-span-3">
           <Skeleton className="aspect-4/3 w-full rounded-xl lg:aspect-video" />
         </div>
@@ -239,6 +239,7 @@ export function HomeAboutSectionSkeleton() {
             <Skeleton className="h-4 w-full rounded-md" />
             <Skeleton className="h-4 w-full rounded-md" />
             <Skeleton className="h-4 w-4/5 rounded-md" />
+            <Skeleton className="h-4 w-3/4 rounded-md" />
           </div>
 
           <div className="mt-6 flex flex-wrap gap-4 border-y border-border/70 py-4">
@@ -246,7 +247,7 @@ export function HomeAboutSectionSkeleton() {
               <Skeleton key={index} className="h-5 w-40 rounded-md" />
             ))}
           </div>
-          <Skeleton className="mt-6 h-10 w-full rounded-lg sm:w-36" />
+          <Skeleton className="mt-6 h-12 w-full rounded-xl" />
         </div>
       </div>
     </section>

@@ -218,7 +218,10 @@ src/
       `docs/2026-08-10-home-administrable-y-buscador-navbar.md` y
       `docs/2026-08-18-cierre-institucional-home.md` y
       `docs/2026-08-18-cierre-institucional-contenido-dinamico.md` y
-      `docs/2026-08-18-cierre-institucional-texto-remoto-y-sedes-fijas.md`).
+      `docs/2026-08-18-cierre-institucional-texto-remoto-y-sedes-fijas.md` y
+      `docs/2026-08-18-resumen-institucional-home.md` y
+      `docs/2026-08-18-cta-contacto-home-destacado.md` y
+      `docs/2026-08-18-texto-institucional-home-completo.md`).
 - [x] Nuestras obras limitada a tres proyectos, con selección exclusiva de la
       obra principal y representación destacada en la Home (ver
       `docs/2026-08-10-obras-home-seleccion-principal.md` y

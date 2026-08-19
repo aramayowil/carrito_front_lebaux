@@ -34,6 +34,8 @@ export function AboutSection({
     DEFAULT_WHATSAPP_MESSAGE,
     telefonoWhatsapp,
   );
+  const resumenHome =
+    contenido.resumenHome?.trim() || contenido.textoDescriptivo;
 
   return (
     <section
@@ -41,7 +43,7 @@ export function AboutSection({
       className="border-t border-border/60 bg-muted/30 py-12 sm:py-14"
       aria-labelledby="about-title"
     >
-      <div className="container grid items-center gap-8 lg:grid-cols-5 lg:gap-12">
+      <div className="container grid items-start gap-8 lg:grid-cols-5 lg:gap-12">
         <div className="w-full lg:col-span-3">
           <ProductImage
             src={imagenOptimizada}
@@ -65,9 +67,9 @@ export function AboutSection({
             {contenido.titulo}
           </h2>
 
-          {contenido.textoDescriptivo && (
+          {resumenHome && (
             <RichTextContent
-              html={contenido.textoDescriptivo}
+              html={resumenHome}
               className="text-sm leading-6 text-muted-foreground"
             />
           )}
@@ -85,7 +87,8 @@ export function AboutSection({
 
           <Button
             variant="whatsapp"
-            className="mt-6 w-full sm:w-auto"
+            size="lg"
+            className="mt-6 h-12 w-full justify-center rounded-xl px-6 text-base font-bold"
             render={
               <a
                 href={whatsappHref}
@@ -95,7 +98,7 @@ export function AboutSection({
               />
             }
           >
-            <WhatsAppIcon data-icon="inline-start" />
+            <WhatsAppIcon className="size-5" data-icon="inline-start" />
             Contactanos
           </Button>
         </div>

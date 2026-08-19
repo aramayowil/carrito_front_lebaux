@@ -124,6 +124,20 @@ function normalizarConfiguracionInicio(
   if (antetitulo) acercaNormalizada.antetitulo = antetitulo.trim();
   else delete acercaNormalizada.antetitulo;
 
+  if (
+    typeof acercaActual.titulo === "string" &&
+    acercaActual.titulo.trim().toLocaleUpperCase("es-AR") === "¿QUIENES SOMOS?"
+  ) {
+    acercaNormalizada.titulo = "¿QUIÉNES SOMOS?";
+  }
+
+  if (
+    typeof acercaActual.resumenHome !== "string" ||
+    !acercaActual.resumenHome.trim()
+  ) {
+    delete acercaNormalizada.resumenHome;
+  }
+
   if (Array.isArray(acercaActual.fortalezas)) {
     acercaNormalizada.fortalezas = acercaActual.fortalezas
       .filter(

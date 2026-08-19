@@ -13,7 +13,7 @@
  * que no exista como ícono y romper el render en runtime.
  */
 export type IconoBeneficio =
-  "Ruler" | "SlidersHorizontal" | "BadgeDollarSign" | "MessageCircle" | "Truck"
+  "Ruler" | "SlidersHorizontal" | "BadgeDollarSign" | "MessageCircle" | "Truck";
 
 /**
  * Caso de éxito / testimonio para la sección "Obras realizadas".
@@ -31,14 +31,14 @@ export type IconoBeneficio =
  * };
  */
 export interface Obra {
-  id: string
-  esPrincipal: boolean
-  titulo: string
-  tipo: string
-  especificacion: string
-  imagen: string
-  testimonio: string
-  autor: string
+  id: string;
+  esPrincipal: boolean;
+  titulo: string;
+  tipo: string;
+  especificacion: string;
+  imagen: string;
+  testimonio: string;
+  autor: string;
 }
 
 /**
@@ -53,57 +53,58 @@ export interface Obra {
  * };
  */
 export interface Beneficio {
-  id: string
-  icono: IconoBeneficio
-  titulo: string
-  descripcion: string
+  id: string;
+  icono: IconoBeneficio;
+  titulo: string;
+  descripcion: string;
 }
 
 /** Pieza visual del carrusel principal de la portada. */
 export interface BannerInicio {
-  id: string
-  imagenEscritorioUrl: string
-  imagenMovilUrl: string
-  textoAlternativo: string
-  enlace: string
-  activo: boolean
+  id: string;
+  imagenEscritorioUrl: string;
+  imagenMovilUrl: string;
+  textoAlternativo: string;
+  enlace: string;
+  activo: boolean;
 }
 
 /** Nombre de un ícono de Lucide guardado en el contenido administrable. */
-export type IconoFortalezaInicio = string
+export type IconoFortalezaInicio = string;
 
 export interface FortalezaInicio {
-  id: string
-  icono: IconoFortalezaInicio
-  titulo: string
-  descripcion: string
-  activo: boolean
+  id: string;
+  icono: IconoFortalezaInicio;
+  titulo: string;
+  descripcion: string;
+  activo: boolean;
 }
 
 /** Textos editables que acompañan las tarjetas de beneficios. */
 export interface EncabezadoBeneficiosInicio {
-  titulo: string
-  descripcion: string
+  titulo: string;
+  descripcion: string;
 }
 
 /** Contenido completo de la sección "Acerca de nosotros". */
 export interface AcercaDeNosotrosInicio {
-  antetitulo?: string
-  titulo: string
-  textoDescriptivo: string
-  imagenUrl: string
-  imagenAlt: string
-  fortalezas: FortalezaInicio[]
+  antetitulo?: string;
+  titulo: string;
+  resumenHome?: string;
+  textoDescriptivo: string;
+  imagenUrl: string;
+  imagenAlt: string;
+  fortalezas: FortalezaInicio[];
 }
 
 export interface ConfiguracionObrasInicio {
-  mensajeWhatsapp: string
+  mensajeWhatsapp: string;
 }
 
 /** Contenido administrable de la página de inicio. */
 export interface ConfiguracionInicio {
-  banners: BannerInicio[]
-  porQueElegirnos: EncabezadoBeneficiosInicio
-  acercaDeNosotros: AcercaDeNosotrosInicio
-  obras: ConfiguracionObrasInicio
+  banners: BannerInicio[];
+  porQueElegirnos: EncabezadoBeneficiosInicio;
+  acercaDeNosotros: AcercaDeNosotrosInicio;
+  obras: ConfiguracionObrasInicio;
 }
