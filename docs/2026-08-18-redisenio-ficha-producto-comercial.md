@@ -16,6 +16,9 @@ el precio y la acción principal se comprendan antes que las opciones técnicas.
   reducir ruido alrededor del nombre.
 - El precio reactivo se muestra antes de los selectores. La cantidad y las
   acciones permanecen al final del configurador.
+- Cuando existen muchas medidas, las opciones frecuentes permanecen visibles y
+  “Ver todas” abre un selector modal con búsqueda local y cierre automático al
+  elegir una medida.
 - `Agregar al carrito` es la acción principal cuando existe un precio. WhatsApp
   pasa a ser una alternativa visualmente secundaria; recupera protagonismo
   cuando la configuración requiere cotización.

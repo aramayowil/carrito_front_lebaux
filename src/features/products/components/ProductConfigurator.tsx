@@ -25,7 +25,9 @@ import { Separator } from "@/components/ui/separator"
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
@@ -281,31 +283,36 @@ export function ProductConfigurator({
                   {"Hay configuraciones incluidas en esta promoción"}
                 </span>
               </div>
-              <Select
-                items={opcionesVariantesPromocion}
-                value={
-                  desglose.descuentoAplicado && varianteActual
-                    ? varianteActual.id
-                    : ""
-                }
-                onValueChange={(varianteId) => {
-                  const variante = variantesPromocion.find(
-                    (item) => item.id === varianteId,
-                  )
-                  if (variante) setVariante(variante)
-                }}
-              >
-                <SelectTrigger className="mt-3 h-10 w-full border-success/25 bg-background">
-                  <SelectValue placeholder={"Ver combinaciones con oferta"} />
-                </SelectTrigger>
-                <SelectContent align="start">
-                  {variantesPromocion.map((variante) => (
-                    <SelectItem key={variante.id} value={variante.id}>
-                      {etiquetaCombinacion(product, variante)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="mt-3">
+                <Select
+                  items={opcionesVariantesPromocion}
+                  value={
+                    desglose.descuentoAplicado && varianteActual
+                      ? varianteActual.id
+                      : ""
+                  }
+                  onValueChange={(varianteId) => {
+                    const variante = variantesPromocion.find(
+                      (item) => item.id === varianteId,
+                    )
+                    if (variante) setVariante(variante)
+                  }}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={"Ver combinaciones con oferta"} />
+                  </SelectTrigger>
+                  <SelectContent alignItemWithTrigger>
+                    <SelectGroup>
+                      <SelectLabel>{"Configuraciones con oferta"}</SelectLabel>
+                      {variantesPromocion.map((variante) => (
+                        <SelectItem key={variante.id} value={variante.id}>
+                          {etiquetaCombinacion(product, variante)}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           )}
 
@@ -388,22 +395,25 @@ export function ProductConfigurator({
                     <SelectTrigger
                       id={"vidrio-" + product.id}
                       className={cn(
-                        "h-11 w-full border-border bg-background px-3",
+                        "w-full",
                         faltaElegirVidrio && "border-destructive/50",
                       )}
                     >
                       <SelectValue placeholder={"Elegí un vidrio"} />
                     </SelectTrigger>
-                    <SelectContent align="start">
-                      {product.opcionesVidrio.map((vidrio) => (
-                        <SelectItem
-                          key={vidrio.slug}
-                          value={vidrio.slug}
-                          disabled={!vidrioTieneStock(vidrio.slug)}
-                        >
-                          {vidrio.etiqueta}
-                        </SelectItem>
-                      ))}
+                    <SelectContent alignItemWithTrigger>
+                      <SelectGroup>
+                        <SelectLabel>{"Tipos de vidrio"}</SelectLabel>
+                        {product.opcionesVidrio.map((vidrio) => (
+                          <SelectItem
+                            key={vidrio.slug}
+                            value={vidrio.slug}
+                            disabled={!vidrioTieneStock(vidrio.slug)}
+                          >
+                            {vidrio.etiqueta}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
                     </SelectContent>
                   </Select>
                 ) : (
