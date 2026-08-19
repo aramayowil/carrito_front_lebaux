@@ -280,7 +280,9 @@ src/
       `docs/2026-08-18-feature-works.md`).
 - [x] Obras destacadas de la Home con composición editorial 1+2, carrusel mobile
       y CTA único hacia el portfolio (ver
-      `docs/2026-08-18-home-obras-editorial.md`).
+      `docs/2026-08-18-home-obras-editorial.md` y
+      `docs/2026-08-18-obras-home-texto-sin-superposicion.md` y
+      `docs/2026-08-18-obras-home-card-unica-responsive.md`).
 - [x] Obras incorporada a la navegación principal y mobile, con el grupo de
       enlaces centrado respecto al Navbar completo (ver
       `docs/2026-08-18-navbar-obras-centrado.md`).

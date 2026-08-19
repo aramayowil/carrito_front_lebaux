@@ -212,10 +212,23 @@ export function HomeWorksSectionSkeleton() {
           </div>
         </div>
 
-        <div className="hidden aspect-[16/7] grid-cols-[1.35fr_0.65fr] grid-rows-2 gap-4 lg:grid">
-          <Skeleton className="row-span-2 rounded-xl" />
-          <Skeleton className="rounded-xl" />
-          <Skeleton className="rounded-xl" />
+        <div className="hidden grid-cols-3 gap-4 lg:grid">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div
+              key={index}
+              className="flex min-h-0 flex-col overflow-hidden rounded-xl bg-brand-black"
+            >
+              <Skeleton className="aspect-4/3 w-full rounded-none" />
+              <div className="flex flex-1 flex-col space-y-2 px-5 py-5">
+                <Skeleton className="h-3 w-20 rounded-full bg-white/15" />
+                <Skeleton className="h-7 w-4/5 rounded-md bg-white/15" />
+                <div className="mt-auto flex justify-between gap-4 border-t border-white/10 pt-3">
+                  <Skeleton className="h-3 w-1/2 rounded-full bg-white/10" />
+                  <Skeleton className="h-3 w-20 rounded-full bg-white/15" />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
 
         <Card className="mt-6 gap-0 border-0 bg-brand-graphite py-0 text-white shadow-none sm:mt-8">

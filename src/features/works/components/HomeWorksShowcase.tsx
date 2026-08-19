@@ -72,11 +72,7 @@ export function HomeWorksShowcase({ obras }: { obras: HomeFeaturedWork[] }) {
           <CarouselContent>
             {obras.map((obra, index) => (
               <CarouselItem key={obra.id} className="basis-full">
-                <FeaturedWorkCard
-                  obra={obra}
-                  variant="vertical"
-                  priority={index === 0}
-                />
+                <FeaturedWorkCard obra={obra} priority={index === 0} />
               </CarouselItem>
             ))}
           </CarouselContent>
@@ -107,23 +103,13 @@ export function HomeWorksShowcase({ obras }: { obras: HomeFeaturedWork[] }) {
       <div
         className={cn(
           "hidden gap-4 lg:grid",
-          obras.length === 1
-            ? "aspect-video grid-cols-1"
-            : "aspect-[16/7] grid-cols-[1.35fr_0.65fr] grid-rows-2",
+          obras.length === 1 && "mx-auto max-w-2xl grid-cols-1",
+          obras.length === 2 && "mx-auto max-w-5xl grid-cols-2",
+          obras.length >= 3 && "grid-cols-3",
         )}
       >
         {obras.map((obra, index) => (
-          <FeaturedWorkCard
-            key={obra.id}
-            obra={obra}
-            variant="overlay"
-            featured={index === 0}
-            priority={index === 0}
-            className={cn(
-              index === 0 && obras.length > 1 && "row-span-2",
-              index === 1 && obras.length === 2 && "row-span-2",
-            )}
-          />
+          <FeaturedWorkCard key={obra.id} obra={obra} priority={index === 0} />
         ))}
       </div>
     </>
