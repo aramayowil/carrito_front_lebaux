@@ -1,21 +1,21 @@
-import { FeaturedProductCard } from "@/features/products/components/FeaturedProductCard"
-import { resumirPromocionProducto } from "@/features/products/lib/discounts"
-import type { Producto } from "@/types"
+import { FeaturedProductCard } from "@/features/products/components/FeaturedProductCard";
+import { resumirPromocionProducto } from "@/features/products/lib/discounts";
+import type { Producto } from "@/types";
 
 /** Selección curada de productos destacados de la portada. */
 export function HomeFeaturedProductsSection({
   products,
 }: {
-  products: Producto[]
+  products: Producto[];
 }) {
   const featured = products.filter(
     (product) =>
       product.visibilidad === "visible" &&
       product.destacado &&
       !resumirPromocionProducto(product),
-  )
+  );
 
-  if (featured.length === 0) return null
+  if (featured.length === 0) return null;
 
   return (
     <section aria-labelledby="featured-title" className="py-14 sm:py-16">
@@ -35,12 +35,19 @@ export function HomeFeaturedProductsSection({
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 xs:gap-3 sm:gap-5 md:grid-cols-3 xl:grid-cols-4">
-          {featured.map((product) => (
-            <FeaturedProductCard key={product.id} product={product} />
-          ))}
+        <div className="px-1 sm:px-8">
+          <div className="-ml-4 flex flex-wrap gap-y-4 sm:gap-y-5">
+            {featured.map((product) => (
+              <div
+                key={product.id}
+                className="min-w-0 basis-full pl-4 sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+              >
+                <FeaturedProductCard product={product} />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
-  )
+  );
 }

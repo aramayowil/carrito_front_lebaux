@@ -109,7 +109,7 @@ export function HomeProductsSectionSkeleton({
               {Array.from({ length: 4 }).map((_, index) => (
                 <div
                   key={index}
-                  className="min-w-0 shrink-0 basis-full pl-4 xs:basis-1/2 md:basis-1/3 xl:basis-1/4"
+                  className="min-w-0 shrink-0 basis-full pl-4 sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
                 >
                   <ProductCardSkeleton variante="promocion" />
                 </div>
@@ -117,10 +117,17 @@ export function HomeProductsSectionSkeleton({
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4 xs:grid-cols-2 xs:gap-3 sm:gap-5 md:grid-cols-3 xl:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <ProductCardSkeleton key={index} variante="destacado" />
-            ))}
+          <div className="px-1 sm:px-8">
+            <div className="-ml-4 flex flex-wrap gap-y-4 sm:gap-y-5">
+              {Array.from({ length: 4 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="min-w-0 basis-full pl-4 sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+                >
+                  <ProductCardSkeleton variante="destacado" />
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>

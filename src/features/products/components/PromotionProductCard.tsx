@@ -1,132 +1,104 @@
-import { ArrowRight, Sparkles } from "lucide-react"
-import Link from "next/link"
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
-import { ProductImage } from "@/components/media/ProductImage"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { ProductImage } from "@/components/media/ProductImage";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import {
-  formatProductPrice,
-  getPrimaryProductImage,
-} from "@/features/products/lib/product-card-formatters"
-import { descripcionProductoComoTexto } from "@/features/products/lib/product-description"
-import { completarTextoPublico } from "@/lib/public-text"
+} from "@/components/ui/card";
 import {
   etiquetaPromocionCard,
   resumirPromocionProducto,
-} from "@/features/products/lib/discounts"
-import type { Producto } from "@/types"
+} from "@/features/products/lib/discounts";
+import {
+  formatProductPrice,
+  getPrimaryProductImage,
+} from "@/features/products/lib/product-card-formatters";
+import type { Producto } from "@/types";
+
+const SIZES_IMAGEN_PROMOCION =
+  "(max-width: 40rem) 20rem, (max-width: 64rem) calc((100vw - 4rem) / 2), (max-width: 96rem) 25vw, 20vw";
 
 interface PromotionProductCardProps {
-  product: Producto
-  lineLabel?: string
-  tipologiaLabel?: string
+  product: Producto;
+  lineLabel?: string;
 }
 
-/** Resume una promoción de la Home dentro del carrusel de ofertas. */
+/** Resume una promoción de la Home con la fotografía y el precio como protagonistas. */
 export function PromotionProductCard({
   product,
   lineLabel = product.linea,
-  tipologiaLabel,
 }: PromotionProductCardProps) {
-  const primaryImage = getPrimaryProductImage(product)
-  const { precios } = product
-  const promocion = resumirPromocionProducto(product)
-  if (!promocion) return null
+  const primaryImage = getPrimaryProductImage(product);
+  const promocion = resumirPromocionProducto(product);
+  if (!promocion) return null;
 
-  const href = `/producto/${product.slug}`
+  const href = `/producto/${product.slug}`;
 
   return (
-    <Card className="group h-full gap-0 overflow-hidden rounded-2xl border border-primary/25 bg-linear-to-br from-card via-card to-accent/25 py-0 shadow-sm transition-[transform,border-color,box-shadow] duration-300 hover:border-primary/50 hover:shadow-lg motion-safe:sm:hover:-translate-y-1 sm:rounded-3xl">
+    <Card className="group h-full gap-0 overflow-hidden rounded-xl! border border-border/80 bg-card py-0 shadow-none transition-colors duration-300 hover:border-foreground/30">
       <Link
         href={href}
-        className="corner-marks relative border-b border-border/60 bg-white p-1.5 xs:p-2 sm:p-3"
+        className="relative block overflow-hidden border-b border-border/70 bg-white outline-none focus-visible:ring-3 focus-visible:ring-ring/40"
         aria-label={`Ver ${product.nombre}`}
       >
-        <Badge className="absolute top-2 left-2 z-10 max-w-[calc(100%-1rem)] gap-1 truncate px-2 py-1 text-[0.625rem] uppercase tracking-wide shadow-sm sm:top-4 sm:left-4 sm:max-w-[calc(100%-2rem)] sm:text-xs">
-          <Sparkles data-icon="inline-start" className="hidden sm:block" />
-          {etiquetaPromocionCard(product)}
-        </Badge>
         <ProductImage
           src={primaryImage?.url ?? ""}
           alt={primaryImage?.textoAlternativo ?? product.nombre}
-          className="aspect-square w-full rounded-xl sm:rounded-2xl"
-          imgClassName="transition-transform duration-300 motion-safe:group-hover:scale-[1.03]"
+          sizes={SIZES_IMAGEN_PROMOCION}
+          className="aspect-square w-full"
+          imgClassName="transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.025]"
         />
+
+        <Badge className="absolute top-3 left-3 max-w-[calc(100%-1.5rem)] truncate px-2.5 py-1 text-xs shadow-none">
+          {etiquetaPromocionCard(product)}
+        </Badge>
       </Link>
 
-      <CardHeader className="gap-1.5 px-3 pt-3 sm:gap-2 sm:px-5 sm:pt-5">
-        <div className="flex min-w-0 items-center gap-2">
-          <Badge
-            variant="secondary"
-            className="max-w-full truncate px-1.5 text-[0.5625rem] uppercase tracking-wide sm:px-2.5 sm:text-xs"
-          >
-            {lineLabel}
-          </Badge>
-          <span className="hidden truncate text-xs capitalize text-muted-foreground lg:inline">
-            {tipologiaLabel ?? "Producto"}
-          </span>
-        </div>
-        <CardTitle className="line-clamp-2 min-h-9 text-xs font-bold uppercase leading-snug xs:text-sm sm:min-h-11 sm:text-base">
+      <CardHeader className="gap-1.5 px-4 pt-4">
+        <p className="line-clamp-1 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+          {lineLabel}
+        </p>
+        <CardTitle className="line-clamp-2 min-h-10 text-base font-bold uppercase leading-snug">
           <Link href={href} className="transition-colors hover:text-primary">
             {product.nombre}
           </Link>
         </CardTitle>
-        <CardDescription className="mt-1 hidden leading-6 lg:line-clamp-2">
-          {descripcionProductoComoTexto(product.descripcion)}
-        </CardDescription>
       </CardHeader>
 
-      <CardContent className="mt-2 flex-1 px-3 sm:mt-3 sm:px-5">
-        {precios.consultarPrecio || precios.precioTarjeta === null ? (
-          <p className="text-sm font-semibold">{"Precio a consultar"}</p>
-        ) : (
-          <div className="space-y-2">
-            <div>
-              <span className="block text-[0.625rem] text-muted-foreground sm:text-xs">
-                {"Ahora"}
-              </span>
-              <span className="mt-0.5 block text-base font-bold tracking-tight tabular-nums xs:text-lg sm:text-2xl">
-                {formatProductPrice(promocion.final)}
-              </span>
-            </div>
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <span className="text-[0.625rem] text-muted-foreground line-through tabular-nums sm:text-sm">
-                {formatProductPrice(promocion.original)}
-              </span>
-              <Badge className="hidden bg-success/10 text-success sm:inline-flex">
-                {"Ahorro asegurado"}
-              </Badge>
-            </div>
-            <p className="line-clamp-2 text-[0.625rem] leading-4 text-muted-foreground sm:text-xs sm:leading-5">
-              {product.variantes.length > 0
-                ? completarTextoPublico("En {cantidad} combinación(es) exacta(s)", {
-                    cantidad: promocion.cantidadVariantes,
-                  })
-                : "Disponible para todo el producto"}
+      <CardContent className="mt-3 flex-1 px-4">
+        <div className="flex items-end justify-between gap-3 border-t border-border/70 pt-3">
+          <div>
+            <p className="text-xs text-muted-foreground">Ahora</p>
+            <p className="mt-0.5 text-2xl font-bold tracking-tight tabular-nums">
+              {formatProductPrice(promocion.final)}
             </p>
           </div>
-        )}
+
+          <div className="pb-0.5 text-right">
+            <p className="text-xs text-muted-foreground">Antes</p>
+            <p className="mt-0.5 text-sm text-muted-foreground line-through tabular-nums">
+              {formatProductPrice(promocion.original)}
+            </p>
+          </div>
+        </div>
       </CardContent>
 
-      <CardFooter className="px-3 pt-3 pb-3 sm:px-5 sm:pt-4 sm:pb-5">
+      <CardFooter className="px-4 pt-4 pb-4">
         <Button
           size="sm"
-          className="h-9 w-full rounded-xl px-2 text-xs sm:h-10 sm:px-4 sm:text-sm"
+          className="h-10 w-full justify-between rounded-lg px-3 text-sm shadow-none"
           render={<Link href={href} />}
         >
-          <span className="xs:hidden sm:inline">{"Ver oferta"}</span>
-          <span className="hidden xs:inline sm:hidden">{"Ver"}</span>
-          <ArrowRight className="hidden sm:block" data-icon="inline-end" />
+          <span>Ver oferta</span>
+          <ArrowRight data-icon="inline-end" />
         </Button>
       </CardFooter>
     </Card>
-  )
+  );
 }

@@ -24,12 +24,7 @@ export function HomePage({ datos }: { datos: DatosHomePublica }) {
         return <HomeTechnicalCatalogsSection key={id} lines={lineas} />;
       case "promociones":
         return (
-          <HomePromotionsSection
-            key={id}
-            products={productos}
-            lines={lineas}
-            tipologias={datos.tipologias}
-          />
+          <HomePromotionsSection key={id} products={productos} lines={lineas} />
         );
       case "destacados":
         return <HomeFeaturedProductsSection key={id} products={productos} />;

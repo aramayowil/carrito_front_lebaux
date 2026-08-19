@@ -126,7 +126,22 @@ src/
 - [x] Primitivos de shadcn requeridos instalados mediante la CLI y verificados
       contra el registro oficial con `shadcn diff`.
 - [x] Cards de ofertas y destacados de la Home migradas a
-      `features/products` (ver `docs/2026-08-03-migracion-cards-home.md`).
+      `features/products` (ver `docs/2026-08-03-migracion-cards-home.md` y
+      `docs/2026-08-18-promociones-home-livianas.md` y
+      `docs/2026-08-18-promociones-home-imagen-cuadrada.md` y
+      `docs/2026-08-18-promociones-home-proporcion-compacta.md` y
+      `docs/2026-08-18-promociones-home-imagen-real-y-card-contenida.md` y
+      `docs/2026-08-18-promociones-home-recorte-moderado.md` y
+      `docs/2026-08-18-promociones-home-recorte-4-3.md` y
+      `docs/2026-08-18-promociones-home-proporcion-original.md` y
+      `docs/2026-08-18-promociones-home-card-angosta.md` y
+      `docs/2026-08-18-promociones-home-card-compacta.md` y
+      `docs/2026-08-18-promociones-home-card-reducida.md` y
+      `docs/2026-08-18-destacados-home-card-reducida.md` y
+      `docs/2026-08-18-cards-home-tamano-original.md` y
+      `docs/2026-08-18-destacados-home-imagen-borde-a-borde.md` y
+      `docs/2026-08-18-ancho-unificado-cards-home.md` y
+      `docs/2026-08-18-geometria-unificada-cards-home.md`).
 - [x] `features/products` completo: líneas, tipologías, filtros, catálogo,
       detalle y configurador (ver
       `docs/2026-08-03-migracion-catalogo-carrito-checkout.md`).
