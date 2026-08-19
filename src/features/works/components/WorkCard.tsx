@@ -1,4 +1,4 @@
-import { MapPin } from "lucide-react";
+import { ArrowUpRight, MapPin } from "lucide-react";
 import Link from "next/link";
 
 import { ProductImage } from "@/components/media/ProductImage";
@@ -43,12 +43,23 @@ export function WorkCard({
           </p>
         )}
 
-        {obra.ubicacion && (
-          <p className="mt-auto flex items-center gap-1.5 border-t border-border/70 pt-5 text-xs text-muted-foreground">
-            <MapPin className="size-3.5" aria-hidden="true" />
-            {obra.ubicacion}
-          </p>
-        )}
+        <div className="mt-auto flex items-center justify-between gap-3 border-t border-border/70 pt-5 text-xs">
+          {obra.ubicacion && (
+            <p className="flex min-w-0 items-center gap-1.5 text-muted-foreground">
+              <MapPin className="size-3.5 shrink-0" aria-hidden="true" />
+              <span className="truncate">{obra.ubicacion}</span>
+            </p>
+          )}
+          {href && (
+            <span className="ml-auto flex shrink-0 items-center gap-1 font-semibold text-primary">
+              Ver proyecto
+              <ArrowUpRight
+                className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                aria-hidden="true"
+              />
+            </span>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

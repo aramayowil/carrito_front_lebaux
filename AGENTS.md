@@ -271,6 +271,11 @@ src/
 - [x] Consultar precio extendido a variantes en la tienda pública: override global, decisión individual, ficha sin importes, promociones coherentes y protección del carrito (ver `docs/2026-08-15-consultar-precio-variantes-tienda-publica.md`).
 - [x] Página experimental de obras con contenido mock, imágenes locales, animación progresiva y acceso desde Home/Footer (ver `docs/2026-08-18-pagina-publica-nuestras-obras.md`).
 - [x] Prototipo de obras extendido con categorías dinámicas desde JSON, relato individual, remodelaciones antes/después, sedes y eslogan final (ver `docs/2026-08-18-categorias-remodelaciones-y-sedes-obras.md`).
+- [x] Página de Obras compacta con remodelación seleccionable, cards completamente
+      navegables y sedes secundarias en el CTA final (ver
+      `docs/2026-08-18-refinamiento-pagina-obras.md` y
+      `docs/2026-08-18-remodelaciones-descripcion-unica.md` y
+      `docs/2026-08-18-remodelaciones-sin-titulo.md`).
 - [x] Nuestras obras sin banner fotográfico inicial y con doce casos mock reutilizando la serie visual existente (ver `docs/2026-08-18-obras-sin-banner-y-galeria-ampliada.md`).
 - [x] Fichas individuales mock de obras con galería, desafío, solución,
       materiales, testimonio, CTA contextual y animaciones editoriales variadas

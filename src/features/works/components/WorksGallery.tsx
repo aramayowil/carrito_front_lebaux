@@ -32,7 +32,7 @@ export function WorksGallery({
         onValueChange={(value) => {
           if (value) setCategoriaActiva(String(value));
         }}
-        className="works-reveal-soft mb-6 min-w-0 gap-0 sm:mb-7"
+        className="works-reveal-soft mb-4 min-w-0 gap-0 sm:mb-5"
       >
         <div className="works-category-scroll w-full overflow-x-auto pb-1">
           <TabsList

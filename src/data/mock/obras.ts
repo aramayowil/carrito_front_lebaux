@@ -19,13 +19,11 @@ export interface ObraMock extends Obra {
 
 export interface RemodelacionObraMock {
   id: string;
-  titulo: string;
   categoriaId: string;
   ubicacion: string;
   imagenAntes: string;
   imagenDespues: string;
   descripcion: string;
-  resultado: string[];
 }
 
 export interface SedeObrasMock {

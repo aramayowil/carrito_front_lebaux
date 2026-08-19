@@ -324,17 +324,11 @@
   "remodelaciones": [
     {
       "id": "remodelacion-fachada-ladrillo",
-      "titulo": "Una nueva etapa sin perder la esencia",
       "categoriaId": "locales",
       "ubicacion": "San Miguel de Tucumán",
       "imagenAntes": "/images/obras/remodelacion-fachada-antes.webp",
       "imagenDespues": "/images/obras/obra-cocina-jardin.webp",
-      "descripcion": "Conservamos la envolvente de ladrillo y renovamos por completo sus aberturas, accesos e integración con el entorno.",
-      "resultado": [
-        "Mayor entrada de luz natural",
-        "Mejor hermeticidad y seguridad",
-        "Una identidad actual respetando la arquitectura original"
-      ]
+      "descripcion": "Conservamos la envolvente de ladrillo y renovamos por completo sus aberturas, accesos e integración con el entorno, logrando mayor entrada de luz natural, mejor hermeticidad y seguridad, y una identidad actual que respeta la arquitectura original."
     }
   ],
   "sedes": [
@@ -353,5 +347,5 @@
       "cobertura": "Buenos Aires y alrededores"
     }
   ],
-  "esloganFinal": "Tu proyecto empieza con una idea. Nosotros la convertimos en realidad."
+  "esloganFinal": "Contanos tu idea. Nosotros la hacemos realidad."
 }
