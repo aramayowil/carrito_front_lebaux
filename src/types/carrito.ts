@@ -199,9 +199,6 @@ export interface ResumenProductoCarrito {
  *     totalTarjeta: 165900,
  *   },
  * };
- *
- * Ver también: src/types/ejemplo-producto-configurado.ts (mismo ejemplo,
- * como archivo TS ejecutable/importable para tests o storybook).
  */
 export interface ItemCarrito {
   id: string

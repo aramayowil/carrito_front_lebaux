@@ -39,7 +39,7 @@
  *  documentado que el sistema asume ARS en todos lados (precios, carrito),
  *  y si mañana se suma otra moneda, el compilador señala cada lugar que
  *  hay que revisar en cuanto se agregue un segundo miembro. */
-export type CodigoMoneda = "ARS"
+export type CodigoMoneda = "ARS";
 
 /**
  * Slug de una línea (sistema de aluminio). Antes era una unión cerrada
@@ -47,41 +47,41 @@ export type CodigoMoneda = "ARS"
  * líneas nuevas desde el panel (ver `AdminLinesPage`). El nombre del alias
  * se mantiene para no tener que tocar cada sitio que lo importaba.
  */
-export type SlugLineaProducto = string
+export type SlugLineaProducto = string;
 
 /** Slug estable de un mecanismo de apertura administrable. */
-export type TipoApertura = string
+export type TipoApertura = string;
 
 /** Cómo FUNCIONA un producto. Es un catálogo global administrable e
  * independiente de la tipología. */
 export interface TipoAperturaProducto {
-  id: string
-  slug: TipoApertura
-  nombre: string
-  descripcion: string
-  orden: number
+  id: string;
+  slug: TipoApertura;
+  nombre: string;
+  descripcion: string;
+  orden: number;
 }
 
-export type SlugAccesorio = string
+export type SlugAccesorio = string;
 
 /** Identificador estable de un color del catálogo. Se genera desde el nombre al crear el color. */
-export type SlugColorPerfil = string
+export type SlugColorPerfil = string;
 
-export type SlugOpcionVidrio = string
+export type SlugOpcionVidrio = string;
 
 /* --------------------------------------------------------------------------
  * Líneas
  * ------------------------------------------------------------------------ */
 
 /** Nombre estable de cualquier ícono disponible en Lucide. */
-export type IconoBeneficioCatalogoLinea = string
+export type IconoBeneficioCatalogoLinea = string;
 
 /** Argumento comercial administrable que distingue a una línea. */
 export interface BeneficioCatalogoLinea {
-  id: string
-  titulo: string
-  descripcion: string
-  icono: IconoBeneficioCatalogoLinea
+  id: string;
+  titulo: string;
+  descripcion: string;
+  icono: IconoBeneficioCatalogoLinea;
 }
 
 /**
@@ -101,46 +101,46 @@ export interface BeneficioCatalogoLinea {
  * };
  */
 export interface LineaProducto {
-  id: string
-  slug: SlugLineaProducto
-  nombre: string
-  subtitulo: string
+  id: string;
+  slug: SlugLineaProducto;
+  nombre: string;
+  subtitulo: string;
 
   /** Descripción ingresada por el usuario administrador. */
-  descripcion: string
+  descripcion: string;
 
   /** Imagen panorámica del encabezado del catálogo en tablet y escritorio. */
-  imagenBannerEscritorio: string
+  imagenBannerEscritorio: string;
 
   /** Versión vertical del mismo banner, encuadrada específicamente para móvil. */
-  imagenBannerMovil: string
+  imagenBannerMovil: string;
 
   /** Descripción accesible de las imágenes del banner. */
-  textoAlternativoBanner: string
+  textoAlternativoBanner: string;
 
   /** Beneficios editoriales mostrados al final del catálogo de la línea. */
-  beneficiosCatalogo: BeneficioCatalogoLinea[]
+  beneficiosCatalogo: BeneficioCatalogoLinea[];
 
   /** Usos o proyectos recomendados para comparar esta línea con las demás. */
-  idealPara: string[]
+  idealPara: string[];
 
   /** Enlace HTTPS externo al PDF o visor del catálogo técnico de la línea. */
-  catalogoTecnicoUrl: string
+  catalogoTecnicoUrl: string;
 
   /** Identificador editorial opcional, por ejemplo "Edición 2026". */
-  catalogoTecnicoVersion: string
+  catalogoTecnicoVersion: string;
 
   /** Fecha ISO (AAAA-MM-DD) de la última actualización publicada. */
-  catalogoTecnicoActualizadoEn: string
+  catalogoTecnicoActualizadoEn: string;
 
   /** PDF o visor externo con especificaciones técnicas de la línea. */
-  especificacionesTecnicasUrl?: string
+  especificacionesTecnicasUrl: string;
 
   /** Identificador editorial opcional del documento de especificaciones. */
-  especificacionesTecnicasVersion?: string
+  especificacionesTecnicasVersion: string;
 
   /** Fecha ISO (AAAA-MM-DD) de actualización de las especificaciones. */
-  especificacionesTecnicasActualizadoEn?: string
+  especificacionesTecnicasActualizadoEn: string;
 }
 
 /* --------------------------------------------------------------------------
@@ -162,12 +162,12 @@ export interface LineaProducto {
  * };
  */
 export interface TipologiaProducto {
-  id: string
-  slug: string
-  lineaSlug: SlugLineaProducto
-  nombre: string
-  descripcion?: string
-  orden: number
+  id: string;
+  slug: string;
+  lineaSlug: SlugLineaProducto;
+  nombre: string;
+  descripcion?: string;
+  orden: number;
 }
 
 /* --------------------------------------------------------------------------
@@ -183,9 +183,9 @@ export interface TipologiaProducto {
  * };
  */
 export interface ImagenProducto {
-  url: string
-  textoAlternativo: string
-  esPrincipal?: boolean
+  url: string;
+  textoAlternativo: string;
+  esPrincipal?: boolean;
 }
 
 /* --------------------------------------------------------------------------
@@ -219,28 +219,28 @@ export interface ImagenProducto {
  */
 export interface PreciosProducto {
   /** Precio inicial, antes de elegir una variante puntual. */
-  precioBase: number | null
+  precioBase: number | null;
 
   /** Precio de lista o tarjeta para la configuración base. */
-  precioTarjeta: number | null
+  precioTarjeta: number | null;
 
   /** Precio de contado para la configuración base. */
-  precioContado: number | null
+  precioContado: number | null;
 
   /** @deprecated Fuente legacy; Descuentos 2.0 usa `Producto.descuento`. */
-  porcentajeDescuento: number
-  moneda: CodigoMoneda
+  porcentajeDescuento: number;
+  moneda: CodigoMoneda;
 
   /** Si es true, la UI debe mostrar "Consultar precio" en vez de un número,
    *  aunque `precioBase` tenga un valor cargado (ej: precio en revisión). */
-  consultarPrecio: boolean
+  consultarPrecio: boolean;
 }
 
 /* --------------------------------------------------------------------------
  * Descuentos
  * ------------------------------------------------------------------------ */
 
-export type TipoDescuento = "porcentaje" | "monto_fijo"
+export type TipoDescuento = "porcentaje" | "monto_fijo";
 
 /**
  * @example
@@ -252,10 +252,10 @@ export type TipoDescuento = "porcentaje" | "monto_fijo"
  * };
  */
 export interface Descuento {
-  activo: boolean
-  tipo: TipoDescuento
-  valor: number
-  etiqueta?: string
+  activo: boolean;
+  tipo: TipoDescuento;
+  valor: number;
+  etiqueta?: string;
 }
 
 /* --------------------------------------------------------------------------
@@ -277,10 +277,10 @@ export interface Descuento {
  * };
  */
 export interface OpcionMedida {
-  id: string
-  etiqueta: string
-  anchoCm: number
-  altoCm: number
+  id: string;
+  etiqueta: string;
+  anchoCm: number;
+  altoCm: number;
 }
 
 /**
@@ -294,13 +294,13 @@ export interface OpcionMedida {
  * };
  */
 export interface OpcionVidrio {
-  id: string
-  slug: SlugOpcionVidrio
-  etiqueta: string
+  id: string;
+  slug: SlugOpcionVidrio;
+  etiqueta: string;
   /** Vacío = disponible para todas las líneas. */
-  lineasPermitidas: SlugLineaProducto[]
+  lineasPermitidas: SlugLineaProducto[];
   /** Vacío = disponible para todas las tipologías de las líneas permitidas. */
-  tipologiasPermitidas: string[]
+  tipologiasPermitidas: string[];
 }
 
 /**
@@ -316,11 +316,11 @@ export interface OpcionVidrio {
  * };
  */
 export interface ColorPerfil {
-  id: string
-  slug: SlugColorPerfil
-  etiqueta: string
-  hexadecimal: string
-  lineasPermitidas: SlugLineaProducto[]
+  id: string;
+  slug: SlugColorPerfil;
+  etiqueta: string;
+  hexadecimal: string;
+  lineasPermitidas: SlugLineaProducto[];
 }
 
 /**
@@ -339,10 +339,10 @@ export interface ColorPerfil {
  * };
  */
 export interface MedidaAccesorio {
-  id: string
-  anchoCm: number
-  altoCm: number
-  precio: number
+  id: string;
+  anchoCm: number;
+  altoCm: number;
+  precio: number;
 }
 
 /**
@@ -367,28 +367,28 @@ export interface MedidaAccesorio {
  * };
  */
 export interface AccesorioLinea {
-  id: string
-  slug: SlugAccesorio
-  etiqueta: string
-  lineaSlug: SlugLineaProducto
-  medidas: MedidaAccesorio[]
-  incluidoPorDefecto: boolean
+  id: string;
+  slug: SlugAccesorio;
+  etiqueta: string;
+  lineaSlug: SlugLineaProducto;
+  medidas: MedidaAccesorio[];
+  incluidoPorDefecto: boolean;
 }
 
 /** Alias retro-compatible: en todo el código nuevo usar `AccesorioLinea`. */
-export type Accesorio = AccesorioLinea
+export type Accesorio = AccesorioLinea;
 
-export type ManoApertura = "izquierda" | "derecha"
+export type ManoApertura = "izquierda" | "derecha";
 
 export interface ConfigManoApertura {
-  opciones: ManoApertura[]
+  opciones: ManoApertura[];
 }
 
 /* --------------------------------------------------------------------------
  * Variante (Medida × Color × Vidrio): fuente de verdad de precio y stock
  * ------------------------------------------------------------------------ */
 
-export type ModoStock = "infinito" | "limitado"
+export type ModoStock = "infinito" | "limitado";
 
 /**
  * Estado de stock de una variante puntual. En modo "infinito" la variante
@@ -407,15 +407,15 @@ export type ModoStock = "infinito" | "limitado"
  * };
  */
 export interface StockVariante {
-  modo: ModoStock
+  modo: ModoStock;
   /** Cantidad de unidades disponibles. Solo aplica con `modo: "limitado"`. */
-  cantidad?: number
+  cantidad?: number;
   /** Motivo opcional de la limitación. Solo aplica con `modo: "limitado"`. */
-  motivo?: string
+  motivo?: string;
 }
 
 /** Controla si una combinación puntual puede ofrecerse en la tienda. */
-export type VisibilidadVariante = VisibilidadProducto
+export type VisibilidadVariante = VisibilidadProducto;
 
 /**
  * Una combinación exacta de Medida + Color + Vidrio de un producto. Acá
@@ -447,24 +447,24 @@ export type VisibilidadVariante = VisibilidadProducto
  * };
  */
 export interface VarianteProducto {
-  id: string
-  medidaId: string
-  colorSlug: SlugColorPerfil
+  id: string;
+  medidaId: string;
+  colorSlug: SlugColorPerfil;
   /** null en productos que no llevan vidrio. */
-  vidrioSlug: SlugOpcionVidrio | null
+  vidrioSlug: SlugOpcionVidrio | null;
 
-  precioContado: number
-  precioTarjeta: number
+  precioContado: number;
+  precioTarjeta: number;
   /** Si es true, esta combinación puntual no publica precio y deriva la consulta
    *  a WhatsApp. `Producto.precios.consultarPrecio` funciona como override global
    *  para todas las variantes. */
-  consultarPrecio: boolean
+  consultarPrecio: boolean;
   /** Indica si esta combinación participa del descuento global del producto. */
-  aplicaDescuento: boolean
+  aplicaDescuento: boolean;
 
-  stock: StockVariante
+  stock: StockVariante;
   /** Sigue los mismos estados de visibilidad que el producto padre. */
-  visibilidad: VisibilidadVariante
+  visibilidad: VisibilidadVariante;
 }
 
 /* --------------------------------------------------------------------------
@@ -485,9 +485,9 @@ export interface VarianteProducto {
  * };
  */
 export interface AccesorioProducto {
-  slug: SlugAccesorio
+  slug: SlugAccesorio;
   /** Si es true, se suma siempre (no es una opción que elige el cliente). */
-  obligatorio: boolean
+  obligatorio: boolean;
 }
 
 /* --------------------------------------------------------------------------
@@ -558,72 +558,72 @@ export interface AccesorioProducto {
  *   link directo (`/producto/:slug`).
  * - `oculto`: no aparece en ningún lado, ni siquiera por link directo.
  */
-export type VisibilidadProducto = "visible" | "no-listado" | "oculto"
+export type VisibilidadProducto = "visible" | "no-listado" | "oculto";
 
 export interface Producto {
-  id: string
-  slug: string
-  nombre: string
+  id: string;
+  slug: string;
+  nombre: string;
 
-  linea: SlugLineaProducto
-  tipologiaId: string
+  linea: SlugLineaProducto;
+  tipologiaId: string;
 
   /**
    * La tipología indica qué producto es.
    * El tipo de apertura indica cómo funciona.
    */
-  tipoApertura?: TipoApertura
+  tipoApertura?: TipoApertura;
 
   /** Resumen breve visible junto al nombre, en tarjetas y metadatos. */
-  descripcion: string
+  descripcion: string;
 
   /**
    * Contenido enriquecido con el detalle completo de la abertura. Se muestra
    * en una sección inferior de la ficha pública del producto.
    */
-  descripcionExtensa: string
+  descripcionExtensa: string;
 
   /** Promoción global; en productos con variantes solo aplica a las marcadas. */
-  descuento: Descuento
-  imagenes: ImagenProducto[]
-  precios: PreciosProducto
+  descuento: Descuento;
+  imagenes: ImagenProducto[];
+  precios: PreciosProducto;
 
   /** Stock del producto simple. Solo se usa cuando `variantes` está vacío. */
-  stock: StockVariante
+  stock: StockVariante;
 
   /** Listas derivadas de `variantes`, para dibujar selectores sin iterarlas. */
-  medidasDisponibles: OpcionMedida[]
-  coloresDisponibles: ColorPerfil[]
+  medidasDisponibles: OpcionMedida[];
+  coloresDisponibles: ColorPerfil[];
   /** Fuente de verdad de precio/stock: una entrada por cada combinación Medida×Color×Vidrio habilitada. */
-  variantes: VarianteProducto[]
+  variantes: VarianteProducto[];
 
-  opcionesVidrio: OpcionVidrio[]
+  opcionesVidrio: OpcionVidrio[];
 
   /** Si es false, el producto no ofrece accesorios y `accesorios` se ignora. */
-  llevaAccesorios: boolean
+  llevaAccesorios: boolean;
   /** Accesorios (mosquitero, premarco, ...) habilitados para este producto,
    *  restringidos a los de la misma línea. El precio de cada uno se resuelve
    *  por variante emparejando áreas, no se guarda acá. */
-  accesorios: AccesorioProducto[]
+  accesorios: AccesorioProducto[];
 
-  manoApertura?: ConfigManoApertura
+  manoApertura?: ConfigManoApertura;
 
   /** IDs elegidos manualmente y en el orden de aparición en la ficha.
    *  Si queda vacío, la tienda usa la recomendación automática por línea y
    *  tipología. */
-  productosRelacionadosIds: string[]
+  productosRelacionadosIds: string[];
 
-  etiquetas: string[]
-  destacado: boolean
-  visibilidad: VisibilidadProducto
+  etiquetas: string[];
+  destacado: boolean;
+  visibilidad: VisibilidadProducto;
 
-  creadoEn: string
-  actualizadoEn: string
+  creadoEn: string;
+  actualizadoEn: string;
 }
 
 /** Resultado congelable de aplicar la promoción global a un precio puntual. */
 export interface DescuentoAplicado extends Descuento {
-  origen: "producto"
-  montoUnitario: number
-  porcentajeEquivalente: number
+  origen: "producto";
+  montoUnitario: number;
+  porcentajeEquivalente: number;
 }

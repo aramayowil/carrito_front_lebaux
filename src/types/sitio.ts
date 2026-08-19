@@ -87,9 +87,8 @@ export interface ConfiguracionContacto {
 }
 
 /**
- * Configuración global del sitio. Pensada para vivir en un único objeto
- * (mock hoy en `data/mock`, backend/CMS el día de mañana) y consumirse
- * desde cualquier componente de `components/layout` o `features/`.
+ * Configuración global del sitio, consumida desde la fuente remota de
+ * contenido por componentes de `components/layout` y `features/`.
  *
  * @example
  * const sitio: ConfiguracionSitio = {

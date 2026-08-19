@@ -78,7 +78,6 @@ src/
 ├── lib/                  # utils genéricas (cn, etc.)
 ├── services/              # cliente http base / config de API
 ├── types/                 # ⭐ tipos de dominio globales (catálogo, carrito, sitio)
-├── data/mock/             # datos mock mientras no hay backend
 └── assets/
 ```
 
@@ -184,7 +183,8 @@ src/
       `docs/2026-08-18-exploracion-documental-catalogos-tecnicos.md` y
       `docs/2026-08-18-accion-unica-catalogos-tecnicos.md` y
       `docs/2026-08-18-catalogos-y-especificaciones-tecnicas.md` y
-      `docs/2026-08-18-biblioteca-tecnica-sin-filtros.md`).
+      `docs/2026-08-18-biblioteca-tecnica-sin-filtros.md` y
+      `docs/2026-08-19-contrato-documentos-tecnicos-linea.md`).
 - [x] Jerarquía v2 sin entidad Categoría, catálogos globales de colores,
       vidrios, accesorios y tipos de apertura, altas rápidas, matriz de variantes
       Medida × Color × Vidrio y mano de apertura (ver

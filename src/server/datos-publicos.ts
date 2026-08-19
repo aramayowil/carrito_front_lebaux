@@ -48,6 +48,22 @@ function normalizarProductoDesdePayload(payload: unknown): Producto {
   };
 }
 
+/** Completa el contrato dual de documentos durante el backfill de líneas. */
+function normalizarLineaDesdePayload(payload: unknown): LineaProducto {
+  const linea = payload as LineaProducto;
+  return {
+    ...linea,
+    catalogoTecnicoUrl: linea.catalogoTecnicoUrl ?? "",
+    catalogoTecnicoVersion: linea.catalogoTecnicoVersion ?? "",
+    catalogoTecnicoActualizadoEn: linea.catalogoTecnicoActualizadoEn ?? "",
+    especificacionesTecnicasUrl: linea.especificacionesTecnicasUrl ?? "",
+    especificacionesTecnicasVersion:
+      linea.especificacionesTecnicasVersion ?? "",
+    especificacionesTecnicasActualizadoEn:
+      linea.especificacionesTecnicasActualizadoEn ?? "",
+  };
+}
+
 /** Mantiene legibles las tres obras anteriores mientras se completa su ficha. */
 function normalizarObraDesdePayload(payload: unknown): Obra {
   const obra = payload as Partial<Obra>;
@@ -250,7 +266,8 @@ export async function cargarLineas() {
   "use cache";
   cacheLife({ stale: 60, revalidate: 60, expire: 3600 });
   cacheTag("lineas");
-  return consultarCatalogoSinCache<LineaProducto>("linea");
+  const lineas = await consultarCatalogoSinCache<LineaProducto>("linea");
+  return lineas.map(normalizarLineaDesdePayload);
 }
 
 export async function cargarTipologias() {
