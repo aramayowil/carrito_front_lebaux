@@ -1,20 +1,6 @@
-import {
-  MessageCircleMore,
-  Ruler,
-  ShieldCheck,
-  Truck,
-} from "lucide-react"
+import { MessageCircleMore, Ruler, ShieldCheck, Truck } from "lucide-react"
 import Link from "next/link"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
 import { CatalogProductCard } from "@/features/products/components/CatalogProductCard"
 import { ProductConfigurator } from "@/features/products/components/ProductConfigurator"
 import { ProductGallery } from "@/features/products/components/ProductGallery"
@@ -76,39 +62,14 @@ export function ProductDetailPage({ datos }: { datos: DatosProductoPublico }) {
   return (
     <div className="bg-background pb-12 pt-5 sm:pb-16 sm:pt-8">
       <div className="container">
-        <Breadcrumb className="mb-5 sm:mb-7">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink render={<Link href="/" />}>Inicio</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink render={<Link href={`/${product.linea}`} />}>
-                {line.nombre}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>{product.nombre}</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-
-        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.08fr)_minmax(24rem,0.92fr)] lg:gap-x-10 lg:gap-y-5 xl:gap-x-14">
+        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.03fr)_minmax(24rem,0.97fr)] lg:gap-x-10 lg:gap-y-5 xl:gap-x-12">
           <header className="order-1 min-w-0 lg:col-start-2 lg:row-start-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="secondary">{line.nombre}</Badge>
-              <Badge variant="outline">
-                {tipologia?.nombre ?? "Producto"}
-              </Badge>
-            </div>
-
-            <h1 className="mt-4 text-3xl font-bold tracking-tight text-balance sm:text-4xl lg:text-5xl">
+            <h1 className="text-3xl font-bold tracking-tight text-balance sm:text-4xl lg:text-5xl">
               {product.nombre}
             </h1>
             <ProductRichText
               html={product.descripcion}
-              className="mt-3 max-w-2xl leading-7 text-muted-foreground"
+              className="mt-3 max-w-xl leading-7 text-muted-foreground"
             />
           </header>
 
@@ -130,9 +91,31 @@ export function ProductDetailPage({ datos }: { datos: DatosProductoPublico }) {
           </div>
         </div>
 
+        <section
+          aria-label="Información de compra"
+          className="mt-10 grid gap-px overflow-hidden rounded-2xl border bg-border sm:grid-cols-2 lg:mt-12 lg:grid-cols-4"
+        >
+          {BLOQUES_CONFIANZA.map(({ id, Icono, titulo, descripcion }) => (
+            <article key={id} className="bg-card p-4 sm:p-5">
+              <div className="flex items-start gap-3">
+                <Icono
+                  className="mt-0.5 size-5 shrink-0 text-primary"
+                  aria-hidden="true"
+                />
+                <div>
+                  <h2 className="text-sm font-semibold">{titulo}</h2>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                    {descripcion}
+                  </p>
+                </div>
+              </div>
+            </article>
+          ))}
+        </section>
+
         {(mostrarDescripcionExtensa || tipologia?.descripcion) && (
           <section
-            className="mt-16 border-t border-border/70 pt-12 sm:mt-20 sm:pt-16"
+            className="mt-14 border-t border-border/70 pt-10 sm:mt-16 sm:pt-12"
             aria-labelledby="product-information-title"
           >
             <div className="grid gap-8 lg:grid-cols-[minmax(0,0.65fr)_minmax(0,1.35fr)] lg:gap-14">
@@ -144,14 +127,16 @@ export function ProductDetailPage({ datos }: { datos: DatosProductoPublico }) {
                 >
                   {"Detalles del producto"}
                 </h2>
-                <p className="mt-3 max-w-md text-sm leading-6 text-muted-foreground">
-                  {"Información editorial sobre su fabricación, características y usos recomendados."}
+                <p className="mt-3 max-w-sm text-sm leading-6 text-muted-foreground">
+                  {
+                    "Información editorial sobre su fabricación, características y usos recomendados."
+                  }
                 </p>
               </div>
 
               <div className="space-y-4">
                 {mostrarDescripcionExtensa && (
-                  <article className="rounded-3xl border border-border/70 bg-card p-5 sm:p-7">
+                  <article className="border-l-2 border-primary pl-5 sm:pl-7">
                     <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                       {"Descripción completa"}
                     </p>
@@ -162,13 +147,13 @@ export function ProductDetailPage({ datos }: { datos: DatosProductoPublico }) {
                     </h3>
                     <ProductRichText
                       html={product.descripcionExtensa}
-                      className="mt-5 text-base leading-7"
+                      className="mt-4 text-base leading-7"
                     />
                   </article>
                 )}
 
                 {tipologia?.descripcion && (
-                  <article className="rounded-3xl bg-brand-black p-5 text-white sm:p-7">
+                  <article className="rounded-2xl bg-brand-black p-5 text-white sm:p-6">
                     <p className="text-xs font-semibold uppercase tracking-wider text-white/50">
                       {"Sobre la tipología"}
                     </p>
@@ -194,24 +179,9 @@ export function ProductDetailPage({ datos }: { datos: DatosProductoPublico }) {
           </section>
         )}
 
-        <section
-          aria-label="Información de compra"
-          className="mt-10 grid gap-px overflow-hidden rounded-3xl border bg-border sm:grid-cols-2 lg:mt-14 lg:grid-cols-4"
-        >
-          {BLOQUES_CONFIANZA.map(({ id, Icono, titulo, descripcion }) => (
-            <article key={id} className="bg-card p-5">
-              <Icono className="size-5 text-primary" aria-hidden="true" />
-              <h2 className="mt-3 text-sm font-semibold">{titulo}</h2>
-              <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                {descripcion}
-              </p>
-            </article>
-          ))}
-        </section>
-
         {related.length > 0 && (
           <section
-            className="mt-16 border-t border-border/70 pt-12 sm:mt-20 sm:pt-16"
+            className="mt-14 border-t border-border/70 pt-10 sm:mt-16 sm:pt-12"
             aria-labelledby="related-title"
           >
             <div className="mb-7 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -235,8 +205,15 @@ export function ProductDetailPage({ datos }: { datos: DatosProductoPublico }) {
                 <CatalogProductCard
                   key={item.id}
                   product={item}
-                  tipologiaNombre={tipologias.find((tip) => tip.id === item.tipologiaId)?.nombre}
-                  aperturaNombre={tiposApertura.find((apertura) => apertura.slug === item.tipoApertura)?.nombre}
+                  tipologiaNombre={
+                    tipologias.find((tip) => tip.id === item.tipologiaId)
+                      ?.nombre
+                  }
+                  aperturaNombre={
+                    tiposApertura.find(
+                      (apertura) => apertura.slug === item.tipoApertura,
+                    )?.nombre
+                  }
                 />
               ))}
             </div>

@@ -1,11 +1,16 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ChevronLeftIcon, ChevronRightIcon, Expand } from 'lucide-react'
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  Expand,
+  ZoomIn,
+  ZoomOut,
+} from 'lucide-react'
 
 import { ProductImage } from '@/components/media/ProductImage'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
 import type { ImagenProducto } from '@/types'
@@ -124,11 +129,13 @@ function GalleryArrowButton({
 /** Galería responsive con miniaturas laterales y visor ampliado deslizable. */
 export function ProductGallery({ images, productName }: ProductGalleryProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [zoomedImageIndex, setZoomedImageIndex] = useState<number | null>(null)
 
   const orderedImages = useMemo(
     () =>
       [...images].sort(
-        (a, b) => Number(Boolean(b.esPrincipal)) - Number(Boolean(a.esPrincipal)),
+        (a, b) =>
+          Number(Boolean(b.esPrincipal)) - Number(Boolean(a.esPrincipal)),
       ),
     [images],
   )
@@ -158,7 +165,9 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
   // puede interactuar (el diálogo bloquea el resto de la página), así que el
   // índice que se muestra en las miniaturas y en el badge es siempre el del
   // carrusel activo en cada momento.
-  const currentIndex = lightboxOpen ? lightbox.selectedIndex : main.selectedIndex
+  const currentIndex = lightboxOpen
+    ? lightbox.selectedIndex
+    : main.selectedIndex
 
   // Índice al que hay que saltar apenas el contenedor del lightbox exista en
   // el DOM (se abre recién cuando el <Dialog> monta su contenido). No usamos
@@ -172,6 +181,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
 
   const openLightbox = useCallback((index: number) => {
     pendingLightboxIndexRef.current = index
+    setZoomedImageIndex(null)
     setLightboxOpen(true)
   }, [])
 
@@ -204,7 +214,12 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
   )
 
   const handleKeyDown = useCallback(
-    (carousel: Pick<ReturnType<typeof useSnapCarousel>, 'selectedIndex' | 'scrollToIndex'>) =>
+    (
+      carousel: Pick<
+        ReturnType<typeof useSnapCarousel>,
+        'selectedIndex' | 'scrollToIndex'
+      >,
+    ) =>
       (event: React.KeyboardEvent<HTMLDivElement>) => {
         if (event.key === 'ArrowLeft') {
           event.preventDefault()
@@ -219,12 +234,8 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
 
   if (orderedImages.length === 0) {
     return (
-      <div className="corner-marks relative overflow-hidden rounded-3xl border border-border/70 bg-white">
-        <ProductImage
-          src=""
-          alt={productName}
-          className="h-96 w-full sm:h-128 lg:h-144"
-        />
+      <div className="corner-marks relative aspect-square overflow-hidden rounded-2xl border border-border/70 bg-white">
+        <ProductImage src="" alt={productName} className="h-full w-full" />
       </div>
     )
   }
@@ -238,10 +249,9 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
               overflowCount > 0 && index === MAX_VISIBLE_THUMBNAILS
 
             return (
-              <Button
+              <button
                 key={`${image.url}-${index}`}
                 type="button"
-                variant="outline"
                 onClick={() =>
                   isOverflowSlot ? openLightbox(index) : goToThumbnail(index)
                 }
@@ -252,7 +262,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                 }
                 aria-pressed={!isOverflowSlot && index === currentIndex}
                 className={cn(
-                  'relative size-18 shrink-0 overflow-hidden rounded-2xl bg-white p-1',
+                  'relative size-18 shrink-0 touch-manipulation overflow-hidden rounded-xl border bg-white p-1 outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30',
                   !isOverflowSlot && index === currentIndex
                     ? 'border-primary ring-2 ring-primary/25'
                     : 'border-border/70 hover:border-primary/50',
@@ -265,11 +275,11 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                   imgClassName="object-cover"
                 />
                 {isOverflowSlot && (
-                  <span className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/60 text-sm font-semibold text-white">
+                  <span className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/60 text-sm font-semibold text-white">
                     +{overflowCount}
                   </span>
                 )}
-              </Button>
+              </button>
             )
           })}
         </div>
@@ -282,7 +292,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
         )}
       >
         <div
-          className="corner-marks relative overflow-hidden rounded-3xl border border-border/70 bg-white"
+          className="corner-marks relative aspect-square overflow-hidden rounded-2xl border border-border/70 bg-white"
           onKeyDownCapture={handleKeyDown(main)}
         >
           <div
@@ -301,7 +311,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                 <ProductImage
                   src={image.url}
                   alt={image.textoAlternativo ?? productName}
-                  className="h-96 w-full sm:h-128 lg:h-144"
+                  className="h-full w-full"
                   // Fijo a index 0, no al índice reactivo: `priority` le dice
                   // a Next qué imagen pintar como `loading="eager"` en la
                   // carga inicial de la página (LCP). Solo el primer slide es
@@ -331,16 +341,15 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
             </>
           )}
 
-          <Button
+          <button
             type="button"
-            variant="secondary"
             onClick={() => openLightbox(main.selectedIndex)}
-            className="absolute bottom-4 right-4 z-20 touch-manipulation rounded-full bg-brand-black/85 px-3 text-xs font-medium text-white shadow-sm backdrop-blur-sm hover:bg-brand-black"
+            className="absolute bottom-4 right-4 z-20 inline-flex h-9 touch-manipulation items-center justify-center gap-1.5 rounded-full border border-white/10 bg-brand-black/85 px-3 text-xs font-medium text-white shadow-sm outline-none backdrop-blur-sm transition-colors hover:bg-brand-black focus-visible:ring-3 focus-visible:ring-ring/40"
             aria-label="Ampliar imagen del producto"
           >
             <Expand className="size-4" />
             Ampliar
-          </Button>
+          </button>
 
           {hasMultiple && (
             <Badge
@@ -397,24 +406,60 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                   aria-roledescription="slide"
                   className="h-full w-full shrink-0 snap-start"
                 >
-                  <div className="flex h-full min-h-0 items-center justify-center p-2 sm:p-5">
-                    <ProductImage
-                      src={image.url}
-                      alt={image.textoAlternativo || productName}
-                      className="h-full w-full select-none rounded-2xl bg-white/5"
-                      sizes="96vw"
-                      priority={index === lightbox.selectedIndex}
-                    />
+                  <div className="h-full min-h-0 overflow-auto">
+                    <div
+                      className={cn(
+                        'flex min-h-full min-w-full items-center justify-center p-2 transition-[width,height] duration-200 sm:p-5',
+                        zoomedImageIndex === index
+                          ? 'h-[160%] w-[160%]'
+                          : 'h-full w-full',
+                      )}
+                    >
+                      <ProductImage
+                        src={image.url}
+                        alt={image.textoAlternativo || productName}
+                        className="h-full w-full select-none rounded-2xl bg-white/5"
+                        sizes="96vw"
+                        priority={index === lightbox.selectedIndex}
+                      />
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
 
+            <button
+              type="button"
+              onClick={() =>
+                setZoomedImageIndex((current) =>
+                  current === lightbox.selectedIndex
+                    ? null
+                    : lightbox.selectedIndex,
+                )
+              }
+              className="absolute bottom-3 right-3 z-30 inline-flex h-9 touch-manipulation items-center justify-center gap-1.5 rounded-full border border-white/15 bg-brand-black/80 px-3 text-xs font-medium text-white outline-none backdrop-blur-sm transition-colors hover:bg-brand-black focus-visible:ring-3 focus-visible:ring-white/30 sm:bottom-5 sm:right-5"
+              aria-label={
+                zoomedImageIndex === lightbox.selectedIndex
+                  ? 'Alejar imagen'
+                  : 'Acercar imagen'
+              }
+              aria-pressed={zoomedImageIndex === lightbox.selectedIndex}
+            >
+              {zoomedImageIndex === lightbox.selectedIndex ? (
+                <ZoomOut className="size-4" />
+              ) : (
+                <ZoomIn className="size-4" />
+              )}
+              {zoomedImageIndex === lightbox.selectedIndex ? 'Alejar' : 'Zoom'}
+            </button>
+
             {hasMultiple && (
               <>
                 <GalleryArrowButton
                   direction="prev"
-                  onClick={() => lightbox.scrollToIndex(lightbox.selectedIndex - 1)}
+                  onClick={() =>
+                    lightbox.scrollToIndex(lightbox.selectedIndex - 1)
+                  }
                   disabled={!lightbox.canScrollPrev}
                   ariaLabel="Imagen anterior"
                   iconClassName="size-5"
@@ -422,7 +467,9 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                 />
                 <GalleryArrowButton
                   direction="next"
-                  onClick={() => lightbox.scrollToIndex(lightbox.selectedIndex + 1)}
+                  onClick={() =>
+                    lightbox.scrollToIndex(lightbox.selectedIndex + 1)
+                  }
                   disabled={!lightbox.canScrollNext}
                   ariaLabel="Imagen siguiente"
                   iconClassName="size-5"
@@ -436,15 +483,14 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
             <div className="hidden shrink-0 border-t border-white/10 px-3 py-3 sm:px-5 md:block">
               <div className="flex snap-x gap-2 overflow-x-auto pb-1">
                 {orderedImages.map((image, index) => (
-                  <Button
+                  <button
                     key={`miniatura-ampliada-${image.url}-${index}`}
                     type="button"
-                    variant="ghost"
                     onClick={() => lightbox.scrollToIndex(index)}
                     aria-label={`Ir a imagen ${index + 1}`}
                     aria-pressed={index === lightbox.selectedIndex}
                     className={cn(
-                      'size-14 shrink-0 snap-start overflow-hidden rounded-xl border p-1 sm:size-16',
+                      'size-14 shrink-0 snap-start touch-manipulation overflow-hidden rounded-xl border p-1 outline-none transition-colors focus-visible:ring-3 focus-visible:ring-white/30 sm:size-16',
                       index === lightbox.selectedIndex
                         ? 'border-white bg-white/15 ring-2 ring-white/25'
                         : 'border-white/15 bg-white/5 hover:bg-white/10',
@@ -457,7 +503,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                       imgClassName="object-cover"
                       sizes="64px"
                     />
-                  </Button>
+                  </button>
                 ))}
               </div>
             </div>

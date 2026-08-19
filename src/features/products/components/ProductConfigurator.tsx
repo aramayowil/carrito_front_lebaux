@@ -167,10 +167,7 @@ export function ProductConfigurator({
   const faltaElegirMano =
     Boolean(product.manoApertura) && seleccion.manoApertura === null
   const puedeAgregar =
-    !consultarPrecio &&
-    !faltaElegirVidrio &&
-    !faltaElegirMano &&
-    disponible
+    !consultarPrecio && !faltaElegirVidrio && !faltaElegirMano && disponible
 
   const handleAgregarAlCarrito = () => {
     if (!puedeAgregar) return
@@ -180,19 +177,16 @@ export function ProductConfigurator({
 
   return (
     <div className="pb-24 sm:pb-0">
-      <section className="overflow-hidden rounded-3xl border border-border/70 bg-card shadow-sm">
-        <div className="flex items-start justify-between gap-4 border-b bg-muted/20 p-4 sm:p-5">
+      <section className="overflow-hidden rounded-2xl border border-border/70 bg-card">
+        <div className="flex items-start justify-between gap-4 border-b p-4 sm:p-5">
           <div className="flex min-w-0 items-start gap-3">
             <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <SlidersHorizontal className="size-4" />
+              <SlidersHorizontal className="size-4" aria-hidden="true" />
             </span>
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {"Personalizá y comprá"}
-              </p>
-              <h2 className="mt-0.5 text-lg font-bold">{"Configurá tu abertura"}</h2>
+              <h2 className="text-lg font-bold">{"Configurá tu abertura"}</h2>
               {tieneVariantes ? (
-                <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                <p className="mt-1 truncate text-xs text-muted-foreground">
                   {[
                     medidaSeleccionada?.etiqueta,
                     colorSeleccionado?.etiqueta,
@@ -202,7 +196,7 @@ export function ProductConfigurator({
                     .join(" · ")}
                 </p>
               ) : (
-                <p className="mt-0.5 text-xs text-muted-foreground">
+                <p className="mt-1 text-xs text-muted-foreground">
                   {"Producto sin variantes"}
                 </p>
               )}
@@ -219,18 +213,72 @@ export function ProductConfigurator({
           </Badge>
         </div>
 
-        <div className="space-y-5 p-4 sm:p-5">
+        <div className="border-b border-border/70 bg-catalog-line p-4 sm:p-5">
+          {consultarPrecio ? (
+            <div>
+              <p className="text-xs font-medium text-muted-foreground">
+                {"Configuración seleccionada"}
+              </p>
+              <p className="mt-1 text-xl font-bold">{"Precio a consultar"}</p>
+              <p className="mt-1 max-w-md text-xs leading-5 text-muted-foreground">
+                {"Te cotizamos esta abertura según la configuración elegida."}
+              </p>
+            </div>
+          ) : (
+            <div>
+              {desglose.descuentoAplicado && (
+                <div className="mb-2 flex flex-wrap items-center gap-2">
+                  <Badge className="rounded-full bg-success text-success-foreground">
+                    {etiquetaDescuento(desglose.descuentoAplicado)}
+                  </Badge>
+                  <span className="text-xs font-medium text-success">
+                    {completarTextoPublico("Ahorrás {monto}", {
+                      monto: formatProductPrice(desglose.ahorroTotal),
+                    })}
+                  </span>
+                </div>
+              )}
+              <div className="flex flex-wrap items-end gap-x-5 gap-y-2">
+                <div>
+                  <p className="text-xs text-muted-foreground">
+                    {"Contado / transferencia"}
+                  </p>
+                  {desglose.descuentoAplicado && (
+                    <p className="text-sm text-muted-foreground line-through">
+                      {formatProductPrice(desglose.totalContadoOriginal)}
+                    </p>
+                  )}
+                  <p
+                    key={desglose.totalContado}
+                    className="text-3xl font-bold tracking-tight text-success transition-all duration-200"
+                  >
+                    {formatProductPrice(desglose.totalContado)}
+                  </p>
+                </div>
+                <div className="pb-0.5">
+                  <p className="text-xs text-muted-foreground">{"Tarjeta"}</p>
+                  <p
+                    key={desglose.totalTarjeta}
+                    className="text-base font-semibold transition-all duration-200"
+                  >
+                    {formatProductPrice(desglose.totalTarjeta)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-4 p-4 sm:p-5">
           {!consultarPrecio && variantesPromocion.length > 0 && (
-            <div className="rounded-2xl border border-success/25 bg-success/5 p-3">
+            <div className="rounded-xl border border-success/25 bg-success/5 p-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <Badge className="rounded-full bg-success text-success-foreground">
                   <BadgePercent data-icon="inline-start" />
                   {etiquetaDescuento(product.descuento)}
                 </Badge>
                 <span className="text-xs font-medium text-success">
-                  {completarTextoPublico("{cantidad} combinación(es) exacta(s)", {
-                    cantidad: variantesPromocion.length,
-                  })}
+                  {"Hay configuraciones incluidas en esta promoción"}
                 </span>
               </div>
               <Select
@@ -320,9 +368,7 @@ export function ProductConfigurator({
 
               <div className="space-y-2 sm:col-span-2">
                 <div className="flex items-center justify-between gap-3">
-                  <Label htmlFor={"vidrio-" + product.id}>
-                    {"Vidrio"}
-                  </Label>
+                  <Label htmlFor={"vidrio-" + product.id}>{"Vidrio"}</Label>
                   {product.opcionesVidrio.length > 0 && (
                     <span className="text-xs text-muted-foreground">
                       {completarTextoPublico("{cantidad} disponible(s)", {
@@ -374,7 +420,9 @@ export function ProductConfigurator({
               <Separator />
               <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(15rem,1fr)] sm:items-center">
                 <div>
-                  <Label id={"mano-label-" + product.id}>{"Mano de apertura"}</Label>
+                  <Label id={"mano-label-" + product.id}>
+                    {"Mano de apertura"}
+                  </Label>
                   <p className="mt-0.5 text-xs text-muted-foreground">
                     {"Elegí el sentido de apertura."}
                   </p>
@@ -424,12 +472,9 @@ export function ProductConfigurator({
                     </span>
                     <span className="mt-0.5 block text-xs text-muted-foreground">
                       {cantidadAccesoriosSeleccionados > 0
-                        ? completarTextoPublico(
-                            "{cantidad} seleccionado(s)",
-                            {
-                              cantidad: cantidadAccesoriosSeleccionados,
-                            },
-                          )
+                        ? completarTextoPublico("{cantidad} seleccionado(s)", {
+                            cantidad: cantidadAccesoriosSeleccionados,
+                          })
                         : "Mosquiteros, premarcos y complementos"}
                     </span>
                   </span>
@@ -520,110 +565,65 @@ export function ProductConfigurator({
           )}
         </div>
 
-        <div className="space-y-4 border-t border-border/70 bg-catalog-line p-4 sm:p-5">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              {"Resumen y compra"}
-            </p>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
-            <div>
-              {consultarPrecio ? (
-                <div className="rounded-2xl border border-primary/20 bg-primary/5 p-3">
-                  <p className="text-base font-bold">{"Precio a consultar"}</p>
-                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                    {"Esta configuración se cotiza de forma personalizada. Consultanos por WhatsApp para recibir el precio."}
-                  </p>
-                </div>
-              ) : (
-                <>
-                  {desglose.descuentoAplicado && (
-                    <div className="mb-2 flex flex-wrap items-center gap-2">
-                      <Badge className="rounded-full bg-success text-success-foreground">
-                        {etiquetaDescuento(desglose.descuentoAplicado)}
-                      </Badge>
-                      <span className="text-xs font-medium text-success">
-                        {completarTextoPublico("Ahorrás {monto}", {
-                          monto: formatProductPrice(desglose.ahorroTotal),
-                        })}
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex flex-wrap items-end gap-x-5 gap-y-2">
-                    <div>
-                      <p className="text-xs text-muted-foreground">
-                        {"Contado / transferencia"}
-                      </p>
-                      {desglose.descuentoAplicado && (
-                        <p className="text-sm text-muted-foreground line-through">
-                          {formatProductPrice(desglose.totalContadoOriginal)}
-                        </p>
-                      )}
-                      <p
-                        key={desglose.totalContado}
-                        className="text-2xl font-bold text-success transition-all duration-200"
-                      >
-                        {formatProductPrice(desglose.totalContado)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">
-                        {"Tarjeta"}
-                      </p>
-                      <p
-                        key={desglose.totalTarjeta}
-                        className="text-base font-semibold transition-all duration-200"
-                      >
-                        {formatProductPrice(desglose.totalTarjeta)}
-                      </p>
-                    </div>
-                  </div>
-                </>
-              )}
+        <div className="space-y-4 border-t border-border/70 bg-muted/20 p-4 sm:p-5">
+          {!consultarPrecio && (
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold">{"Cantidad"}</p>
+                <p className="text-xs text-muted-foreground">
+                  {"Elegí cuántas unidades necesitás."}
+                </p>
+              </div>
+              <div className="flex items-center gap-2 rounded-xl border bg-background p-1">
+                <span className="pl-2 text-xs font-medium text-muted-foreground">
+                  {"Unidades"}
+                </span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  className="rounded-full"
+                  onClick={() => setCantidad(cantidad - 1)}
+                  aria-label="Restar una unidad"
+                  disabled={cantidad <= 1}
+                >
+                  <Minus />
+                </Button>
+                <span
+                  className="w-6 text-center text-sm font-bold"
+                  aria-live="polite"
+                >
+                  {cantidad}
+                </span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  className="rounded-full"
+                  onClick={() => setCantidad(cantidad + 1)}
+                  aria-label="Sumar una unidad"
+                  disabled={
+                    cantidadMaxima !== null && cantidad >= cantidadMaxima
+                  }
+                >
+                  <Plus />
+                </Button>
+              </div>
             </div>
-
-            <div className="flex items-center justify-between gap-3 rounded-2xl border bg-background p-1 sm:justify-start">
-              <span className="pl-2 text-xs font-medium text-muted-foreground">
-                {"Cantidad"}
-              </span>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                className="rounded-full"
-                onClick={() => setCantidad(cantidad - 1)}
-                aria-label="Restar una unidad"
-                disabled={cantidad <= 1}
-              >
-                <Minus />
-              </Button>
-              <span
-                className="w-6 text-center text-sm font-bold"
-                aria-live="polite"
-              >
-                {cantidad}
-              </span>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-sm"
-                className="rounded-full"
-                onClick={() => setCantidad(cantidad + 1)}
-                aria-label="Sumar una unidad"
-                disabled={cantidadMaxima !== null && cantidad >= cantidadMaxima}
-              >
-                <Plus />
-              </Button>
-            </div>
-          </div>
-
-          {cantidadMaxima !== null && cantidadMaxima > 0 && (
-            <p className="-mt-2 text-xs text-muted-foreground">
-              {completarTextoPublico("Quedan {cantidad} unidades disponibles.", {
-                cantidad: cantidadMaxima,
-              })}
-            </p>
           )}
+
+          {!consultarPrecio &&
+            cantidadMaxima !== null &&
+            cantidadMaxima > 0 && (
+              <p className="-mt-2 text-xs text-muted-foreground">
+                {completarTextoPublico(
+                  "Quedan {cantidad} unidades disponibles.",
+                  {
+                    cantidad: cantidadMaxima,
+                  },
+                )}
+              </p>
+            )}
 
           {faltaElegirVidrio && (
             <p className="flex items-center gap-2 text-sm text-destructive">
@@ -638,10 +638,13 @@ export function ProductConfigurator({
             </p>
           )}
 
-          <div className={cn("grid gap-2", !consultarPrecio && "sm:grid-cols-2")}>
+          <div
+            className={cn("grid gap-2", !consultarPrecio && "sm:grid-cols-2")}
+          >
             {!consultarPrecio && (
               <Button
                 size="lg"
+                className="h-11"
                 onClick={handleAgregarAlCarrito}
                 disabled={!puedeAgregar}
               >
@@ -650,8 +653,13 @@ export function ProductConfigurator({
               </Button>
             )}
             <Button
-              variant="whatsapp"
+              variant={consultarPrecio ? "whatsapp" : "outline"}
               size="lg"
+              className={cn(
+                "h-11",
+                !consultarPrecio &&
+                  "border-whatsapp/40 text-whatsapp hover:bg-whatsapp/10 hover:text-whatsapp",
+              )}
               render={
                 <a href={whatsappHref} target="_blank" rel="noreferrer">
                   <WhatsAppIcon data-icon="inline-start" />
@@ -670,18 +678,20 @@ export function ProductConfigurator({
           <div className="min-w-0 flex-1">
             {consultarPrecio ? (
               <>
-                <p className="truncate text-[11px] text-muted-foreground">
+                <p className="truncate text-xs leading-none text-muted-foreground">
                   {"Configuración seleccionada"}
                 </p>
-                <p className="truncate text-sm font-bold">{"Precio a consultar"}</p>
+                <p className="truncate text-sm font-bold">
+                  {"Precio a consultar"}
+                </p>
               </>
             ) : (
               <>
-                <p className="truncate text-[11px] text-muted-foreground">
+                <p className="truncate text-xs leading-none text-muted-foreground">
                   {"Contado"}
                 </p>
                 {desglose.descuentoAplicado && (
-                  <p className="truncate text-[10px] text-muted-foreground line-through">
+                  <p className="truncate text-xs leading-none text-muted-foreground line-through">
                     {formatProductPrice(desglose.totalContadoOriginal)}
                   </p>
                 )}
@@ -695,9 +705,13 @@ export function ProductConfigurator({
             )}
           </div>
           <Button
-            variant="whatsapp"
+            variant={consultarPrecio ? "whatsapp" : "outline"}
             size={consultarPrecio ? "lg" : "icon-lg"}
-            className="shrink-0"
+            className={cn(
+              "shrink-0",
+              !consultarPrecio &&
+                "border-whatsapp/40 text-whatsapp hover:bg-whatsapp/10 hover:text-whatsapp",
+            )}
             aria-label="Consultar por WhatsApp"
             render={<a href={whatsappHref} target="_blank" rel="noreferrer" />}
           >

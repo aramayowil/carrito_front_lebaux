@@ -211,6 +211,10 @@ src/
       desplegables, promociones exactas, accesorios plegables y galería fija
       en escritorio (ver
       `docs/2026-08-10-product-detail-configurador-compacto.md`).
+- [x] ProductDetailPage con jerarquía comercial: galería 1:1, precio antes de
+      las opciones, CTA principal contextual, contenido inferior compacto y
+      skeletons alineados (ver
+      `docs/2026-08-18-redisenio-ficha-producto-comercial.md`).
 - [x] Productos relacionados manuales y ordenados desde ProductForm, con
       recomendación automática por línea/tipología cuando no hay selección
       (ver
