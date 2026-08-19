@@ -1,14 +1,18 @@
 import type { MetadataRoute } from "next";
 
-import { OBRAS_MOCK } from "@/data/mock/obras";
 import { obtenerUrlSitio } from "@/lib/site-url";
-import { cargarIndiceBusqueda, cargarLineas } from "@/server/datos-publicos";
+import {
+  cargarIndiceBusqueda,
+  cargarLineas,
+  cargarObras,
+} from "@/server/datos-publicos";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = obtenerUrlSitio();
-  const [lineas, productos] = await Promise.all([
+  const [lineas, productos, obras] = await Promise.all([
     cargarLineas(),
     cargarIndiceBusqueda(),
+    cargarObras(),
   ]);
 
   const estaticas: MetadataRoute.Sitemap = [
@@ -37,7 +41,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  const deObras: MetadataRoute.Sitemap = OBRAS_MOCK.map((obra) => ({
+  const deObras: MetadataRoute.Sitemap = obras.map((obra) => ({
     url: `${base}/obras/${obra.slug}`,
     changeFrequency: "monthly",
     priority: 0.5,

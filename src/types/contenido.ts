@@ -30,15 +30,41 @@ export type IconoBeneficio =
  *   autor: "Marcela G.",
  * };
  */
+export interface CategoriaObra {
+  id: string;
+  slug: string;
+  nombre: string;
+}
+
+export interface AntesYDespuesObra {
+  activo: boolean;
+  imagenAntes: string;
+  imagenDespues: string;
+  descripcion: string;
+}
+
+/** Proyecto del portfolio, con selección editorial opcional para Inicio. */
 export interface Obra {
   id: string;
+  slug: string;
+  publicada: boolean;
+  destacadaEnInicio: boolean;
   esPrincipal: boolean;
+  ordenInicio: number;
+  categoriaId: string;
   titulo: string;
   tipo: string;
   especificacion: string;
   imagen: string;
+  detalleEspecial: string;
+  ubicacion: string;
   testimonio: string;
   autor: string;
+  galeria: string[];
+  desafio: string;
+  solucion: string;
+  materiales: string[];
+  antesYDespues?: AntesYDespuesObra;
 }
 
 /**

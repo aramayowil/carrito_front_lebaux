@@ -5,16 +5,13 @@ import { ProductImage } from "@/components/media/ProductImage";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  CATEGORIAS_OBRAS_MOCK,
-  ESLOGAN_FINAL_OBRAS_MOCK,
-  OBRAS_MOCK,
-  REMODELACIONES_OBRAS_MOCK,
-  SEDES_OBRAS_MOCK,
-} from "@/data/mock/obras";
 import { WorksGallery } from "@/features/works/components/WorksGallery";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { WorksRemodelations } from "@/screens/works/components/WorksRemodelations";
+import type { CategoriaObra, Obra } from "@/types";
+
+const SEDES = ["Tucumán", "Buenos Aires"] as const;
+const ESLOGAN_FINAL = "Contanos tu idea. Nosotros la hacemos realidad.";
 
 const PASOS = [
   {
@@ -40,9 +37,20 @@ const PASOS = [
   },
 ] as const;
 
-/** Experiencia editorial mock para explorar los proyectos realizados. */
-export function WorksPage({ telefonoWhatsapp }: { telefonoWhatsapp: string }) {
-  const [obraDestacada] = OBRAS_MOCK;
+/** Experiencia editorial alimentada por el portfolio publicado en Supabase. */
+export function WorksPage({
+  telefonoWhatsapp,
+  obras,
+  categorias,
+}: {
+  telefonoWhatsapp: string;
+  obras: Obra[];
+  categorias: CategoriaObra[];
+}) {
+  const obraDestacada =
+    obras.find((obra) => obra.destacadaEnInicio && obra.esPrincipal) ??
+    obras[0];
+  const remodelaciones = obras.filter((obra) => obra.antesYDespues?.activo);
   const whatsappHref = buildWhatsAppUrl(
     "Hola! Vi la galería de obras y quiero asesoramiento para mi proyecto.",
     telefonoWhatsapp,
@@ -84,65 +92,73 @@ export function WorksPage({ telefonoWhatsapp }: { telefonoWhatsapp: string }) {
         </div>
       </section>
 
-      <section
-        id="obra-destacada"
-        className="scroll-mt-24 py-9 sm:py-11 lg:py-14"
-      >
-        <div className="container">
-          <div className="works-reveal-soft mb-6">
-            <div>
-              <p className="eyebrow mb-2">Historia destacada</p>
-              <h2 className="section-title section-title-left max-w-2xl">
-                Cuando adentro y afuera se encuentran
-              </h2>
-            </div>
-          </div>
-
-          <article className="works-reveal-media grid items-center gap-7 lg:grid-cols-[1.15fr_0.85fr] lg:gap-12">
-            <div className="overflow-hidden rounded-xl bg-muted">
-              <ProductImage
-                src={obraDestacada.imagen}
-                alt={obraDestacada.titulo}
-                priority
-                sizes="(max-width: 1024px) 100vw, 58vw"
-                className="aspect-4/3 w-full"
-                imgClassName="object-cover"
-              />
-            </div>
-
-            <div className="lg:py-4">
+      {obraDestacada && (
+        <section
+          id="obra-destacada"
+          className="scroll-mt-24 py-9 sm:py-11 lg:py-14"
+        >
+          <div className="container">
+            <div className="works-reveal-soft mb-6">
               <div>
-                <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold uppercase tracking-widest text-primary">
-                  {obraDestacada.tipo}
-                  <span className="h-px w-6 bg-primary/50" aria-hidden="true" />
-                  <span className="text-muted-foreground">
-                    {obraDestacada.especificacion}
-                  </span>
-                </p>
-                <h3 className="mt-4 text-3xl font-bold tracking-tight text-balance sm:text-4xl">
-                  {obraDestacada.titulo}
-                </h3>
-                <p className="mt-4 leading-7 text-muted-foreground">
-                  {obraDestacada.detalleEspecial}
-                </p>
-                <p className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
-                  <MapPin className="size-4 text-primary" aria-hidden="true" />
-                  {obraDestacada.ubicacion}
-                </p>
+                <p className="eyebrow mb-2">Historia destacada</p>
+                <h2 className="section-title section-title-left max-w-2xl">
+                  Cuando adentro y afuera se encuentran
+                </h2>
+              </div>
+            </div>
+
+            <article className="works-reveal-media grid items-center gap-7 lg:grid-cols-[1.15fr_0.85fr] lg:gap-12">
+              <div className="overflow-hidden rounded-xl bg-muted">
+                <ProductImage
+                  src={obraDestacada.imagen}
+                  alt={obraDestacada.titulo}
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 58vw"
+                  className="aspect-4/3 w-full"
+                  imgClassName="object-cover"
+                />
               </div>
 
-              <figure className="mt-8 border-l-2 border-primary pl-5 sm:pl-6">
-                <blockquote className="text-lg leading-8 text-foreground/85">
-                  “{obraDestacada.testimonio}”
-                </blockquote>
-                <figcaption className="mt-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                  — {obraDestacada.autor}
-                </figcaption>
-              </figure>
-            </div>
-          </article>
-        </div>
-      </section>
+              <div className="lg:py-4">
+                <div>
+                  <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold uppercase tracking-widest text-primary">
+                    {obraDestacada.tipo}
+                    <span
+                      className="h-px w-6 bg-primary/50"
+                      aria-hidden="true"
+                    />
+                    <span className="text-muted-foreground">
+                      {obraDestacada.especificacion}
+                    </span>
+                  </p>
+                  <h3 className="mt-4 text-3xl font-bold tracking-tight text-balance sm:text-4xl">
+                    {obraDestacada.titulo}
+                  </h3>
+                  <p className="mt-4 leading-7 text-muted-foreground">
+                    {obraDestacada.detalleEspecial}
+                  </p>
+                  <p className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+                    <MapPin
+                      className="size-4 text-primary"
+                      aria-hidden="true"
+                    />
+                    {obraDestacada.ubicacion}
+                  </p>
+                </div>
+
+                <figure className="mt-8 border-l-2 border-primary pl-5 sm:pl-6">
+                  <blockquote className="text-lg leading-8 text-foreground/85">
+                    “{obraDestacada.testimonio}”
+                  </blockquote>
+                  <figcaption className="mt-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                    — {obraDestacada.autor}
+                  </figcaption>
+                </figure>
+              </div>
+            </article>
+          </div>
+        </section>
+      )}
 
       <section
         id="proyectos"
@@ -167,32 +183,34 @@ export function WorksPage({ telefonoWhatsapp }: { telefonoWhatsapp: string }) {
             </p>
           </div>
 
-          <WorksGallery categorias={CATEGORIAS_OBRAS_MOCK} obras={OBRAS_MOCK} />
+          <WorksGallery categorias={categorias} obras={obras} />
         </div>
       </section>
 
-      <section
-        className="py-10 sm:py-12 lg:py-16"
-        aria-labelledby="remodelaciones-title"
-      >
-        <div className="container">
-          <div className="works-reveal-soft mb-6 max-w-3xl">
-            <p className="eyebrow mb-2">Remodelaciones</p>
-            <h2
-              id="remodelaciones-title"
-              className="section-title section-title-left"
-            >
-              Antes y después
-            </h2>
-            <p className="mt-4 max-w-2xl leading-7 text-muted-foreground">
-              Renovamos cada espacio respetando su identidad y mejorando la
-              forma de habitarlo.
-            </p>
+      {remodelaciones.length > 0 && (
+        <section
+          className="py-10 sm:py-12 lg:py-16"
+          aria-labelledby="remodelaciones-title"
+        >
+          <div className="container">
+            <div className="works-reveal-soft mb-6 max-w-3xl">
+              <p className="eyebrow mb-2">Remodelaciones</p>
+              <h2
+                id="remodelaciones-title"
+                className="section-title section-title-left"
+              >
+                Antes y después
+              </h2>
+              <p className="mt-4 max-w-2xl leading-7 text-muted-foreground">
+                Renovamos cada espacio respetando su identidad y mejorando la
+                forma de habitarlo.
+              </p>
+            </div>
+
+            <WorksRemodelations obras={remodelaciones} />
           </div>
-
-          <WorksRemodelations remodelaciones={REMODELACIONES_OBRAS_MOCK} />
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="relative isolate overflow-hidden bg-brand-black py-12 text-white sm:py-14 lg:py-18">
         <div className="container grid items-start gap-10 lg:grid-cols-[0.75fr_1fr] lg:gap-14">
@@ -247,7 +265,7 @@ export function WorksPage({ telefonoWhatsapp }: { telefonoWhatsapp: string }) {
               El próximo proyecto puede ser el tuyo
             </p>
             <h2 className="max-w-3xl text-3xl font-bold tracking-tight text-balance sm:text-4xl lg:text-5xl">
-              {ESLOGAN_FINAL_OBRAS_MOCK}
+              {ESLOGAN_FINAL}
             </h2>
           </div>
 
@@ -261,14 +279,14 @@ export function WorksPage({ telefonoWhatsapp }: { telefonoWhatsapp: string }) {
               Estamos en
             </p>
             <div className="mt-2 flex flex-wrap gap-2">
-              {SEDES_OBRAS_MOCK.map((sede) => (
+              {SEDES.map((sede) => (
                 <Badge
-                  key={sede.id}
+                  key={sede}
                   variant="outline"
                   className="border-white/15 bg-white/5 text-white/75"
                 >
                   <MapPin aria-hidden="true" />
-                  {sede.nombre}
+                  {sede}
                 </Badge>
               ))}
             </div>

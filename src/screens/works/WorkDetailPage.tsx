@@ -3,18 +3,18 @@ import Link from "next/link";
 
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Button } from "@/components/ui/button";
-import type { CategoriaObraMock, ObraMock } from "@/data/mock/obras";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { WorkGalleryLightbox } from "@/screens/works/components/WorkGalleryLightbox";
+import type { CategoriaObra, Obra } from "@/types";
 
-/** Ficha editorial de una obra mock, preparada para recibir datos del administrador. */
+/** Ficha editorial de una obra publicada desde Supabase. */
 export function WorkDetailPage({
   obra,
   categoria,
   telefonoWhatsapp,
 }: {
-  obra: ObraMock;
-  categoria?: CategoriaObraMock;
+  obra: Obra;
+  categoria?: CategoriaObra;
   telefonoWhatsapp: string;
 }) {
   const whatsappHref = buildWhatsAppUrl(

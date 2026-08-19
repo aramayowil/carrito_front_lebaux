@@ -271,7 +271,10 @@ src/
 - [x] Líneas, tipologías y tipos de apertura preparados como bloque estructural para lectura y CRUD gradual en Supabase, con integridad de eliminación en PostgreSQL y control de conteos en el dashboard (ver `docs/2026-08-11-migracion-catalogos-estructurales-supabase.md`).
 - [x] Unicidad de catálogos corregida al ámbito `tipo + línea padre + slug`, permitiendo tipologías homónimas en líneas diferentes (ver `docs/2026-08-11-unicidad-catalogos-por-linea-supabase.md`).
 - [x] Colores, vidrios y accesorios preparados para lectura y CRUD gradual en Supabase, con propagación transaccional a payloads de productos, integridad de referencias y consumo unificado en configurador y carrito (ver `docs/2026-08-11-migracion-catalogos-insumos-supabase.md`).
-- [x] Obras y beneficios preparados como colecciones Home remotas y ordenadas, con máximo de tres obras y selección principal garantizados en PostgreSQL (ver `docs/2026-08-11-migracion-obras-beneficios-supabase.md`).
+- [x] Portfolio de obras remoto e ilimitado, con categorías dinámicas,
+      Antes/Después integrado y máximo de tres destacadas en Inicio (ver
+      `docs/2026-08-11-migracion-obras-beneficios-supabase.md` y
+      `docs/2026-08-19-obras-dinamicas-supabase.md`).
 - [x] Documentos `sitio`, `inicio` y `experiencia` migrados mediante el feature compartido `site-content`; todas las fuentes de contenido quedaron activadas en Supabase (ver `docs/2026-08-11-documentos-sitio-supabase.md`).
 - [x] Contenido operativo migrado por completo a Supabase: se retiraron el store, la importación local y la persistencia lebaux-content; el carrito conserva su almacenamiento propio (ver docs/2026-08-11-cierre-migracion-contenido-y-medios-cloudinary.md).
 - [x] Zustand reducido al único store persistente del carrito (`lebaux-cart`); la UI de carrito/checkout usa Context de React y se limpian las claves heredadas `lebaux-content` y `lebaux-admin-auth` (ver `docs/2026-08-12-store-unico-carrito.md`).
@@ -281,7 +284,10 @@ src/
       `docs/2026-08-19-hidratacion-cart-button-y-dialogos.md`).
 - [x] Pantallas reutilizables movidas a `src/screens` para evitar la detección errónea de Pages Router por Next.js App Router (ver `docs/2026-08-14-correccion-rutas-next-y-validaciones.md`).
 - [x] Consultar precio extendido a variantes en la tienda pública: override global, decisión individual, ficha sin importes, promociones coherentes y protección del carrito (ver `docs/2026-08-15-consultar-precio-variantes-tienda-publica.md`).
-- [x] Página experimental de obras con contenido mock, imágenes locales, animación progresiva y acceso desde Home/Footer (ver `docs/2026-08-18-pagina-publica-nuestras-obras.md`).
+- [x] Página pública de obras alimentada por Supabase, con galería, categorías,
+      remodelaciones y acceso desde Home/Footer (ver
+      `docs/2026-08-18-pagina-publica-nuestras-obras.md` y
+      `docs/2026-08-19-obras-dinamicas-supabase.md`).
 - [x] Prototipo de obras extendido con categorías dinámicas desde JSON, relato individual, remodelaciones antes/después, sedes y eslogan final (ver `docs/2026-08-18-categorias-remodelaciones-y-sedes-obras.md`).
 - [x] Página de Obras compacta con remodelación seleccionable, cards completamente
       navegables y sedes secundarias en el CTA final (ver

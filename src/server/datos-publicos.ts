@@ -5,6 +5,7 @@ import { crearClienteSupabaseServidor } from "@/services/supabase/server";
 import type {
   AccesorioLinea,
   Beneficio,
+  CategoriaObra,
   ConfiguracionCheckoutPublica,
   ConfiguracionExperienciaPublica,
   ConfiguracionInicio,
@@ -19,7 +20,15 @@ import type { FacetasCatalogo } from "@/features/products/lib/facets";
 
 type ClaveDocumento = "sitio" | "inicio" | "experiencia";
 type KindCatalogo =
-  "linea" | "tipologia" | "tipo_apertura" | "accesorio" | "obra" | "beneficio";
+  | "linea"
+  | "tipologia"
+  | "tipo_apertura"
+  | "color"
+  | "vidrio"
+  | "accesorio"
+  | "obra"
+  | "categoria_obra"
+  | "beneficio";
 
 /** Compatibilidad con productos guardados antes de incorporar
  * `VarianteProducto.consultarPrecio`. El payload de products es JSONB, por lo
@@ -36,6 +45,34 @@ function normalizarProductoDesdePayload(payload: unknown): Producto {
       ...variante,
       consultarPrecio: variante.consultarPrecio ?? false,
     })),
+  };
+}
+
+/** Mantiene legibles las tres obras anteriores mientras se completa su ficha. */
+function normalizarObraDesdePayload(payload: unknown): Obra {
+  const obra = payload as Partial<Obra>;
+  const imagen = obra.imagen ?? "";
+  return {
+    id: obra.id ?? "obra",
+    slug: obra.slug ?? obra.id ?? "obra",
+    publicada: obra.publicada ?? true,
+    destacadaEnInicio: obra.destacadaEnInicio ?? true,
+    esPrincipal: obra.esPrincipal ?? false,
+    ordenInicio: obra.ordenInicio ?? 0,
+    categoriaId: obra.categoriaId ?? "",
+    titulo: obra.titulo ?? "",
+    tipo: obra.tipo ?? "",
+    especificacion: obra.especificacion ?? "",
+    imagen,
+    detalleEspecial: obra.detalleEspecial ?? "",
+    ubicacion: obra.ubicacion ?? "",
+    testimonio: obra.testimonio ?? "",
+    autor: obra.autor ?? "",
+    galeria: obra.galeria?.length ? obra.galeria : imagen ? [imagen] : [],
+    desafio: obra.desafio ?? "",
+    solucion: obra.solucion ?? "",
+    materiales: obra.materiales ?? [],
+    antesYDespues: obra.antesYDespues,
   };
 }
 
@@ -237,11 +274,37 @@ export async function cargarAccesorios() {
   return consultarCatalogoSinCache<AccesorioLinea>("accesorio");
 }
 
-async function cargarObras() {
+export async function cargarObras() {
   "use cache";
   cacheLife({ stale: 60, revalidate: 60, expire: 3600 });
   cacheTag("obras");
-  return consultarCatalogoSinCache<Obra>("obra");
+  const obras = await consultarCatalogoSinCache<Obra>("obra");
+  return obras.map(normalizarObraDesdePayload);
+}
+
+export async function cargarCategoriasObras() {
+  "use cache";
+  cacheLife({ stale: 60, revalidate: 60, expire: 3600 });
+  cacheTag("obras");
+  return consultarCatalogoSinCache<CategoriaObra>("categoria_obra");
+}
+
+export async function cargarObraPorSlug(slug: string) {
+  "use cache";
+  cacheLife({ stale: 60, revalidate: 60, expire: 3600 });
+  cacheTag("obras", `obra:${slug}`);
+
+  const supabase = crearClienteSupabaseServidor();
+  const { data, error } = await supabase
+    .from("catalog_items")
+    .select("payload")
+    .eq("kind", "obra")
+    .eq("slug", slug)
+    .eq("published", true)
+    .maybeSingle();
+
+  if (error) throw new Error(`No se pudo cargar la obra: ${error.message}`);
+  return data ? normalizarObraDesdePayload(data.payload) : null;
 }
 
 async function cargarBeneficios() {
@@ -446,7 +509,10 @@ export async function cargarDatosHome(): Promise<DatosHomePublica> {
   return {
     productos,
     lineas,
-    obras,
+    obras: obras
+      .filter((obra) => obra.destacadaEnInicio)
+      .sort((a, b) => a.ordenInicio - b.ordenInicio)
+      .slice(0, 3),
     beneficios,
     inicio: normalizarConfiguracionInicio(
       inicioCrudo,

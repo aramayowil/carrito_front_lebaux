@@ -1,4 +1,4 @@
-import type { Obra } from "@/types";
+import type { CategoriaObra, Obra } from "@/types";
 
 /** Datos mínimos que una tarjeta necesita para presentar una obra. */
 export type WorkCardData = Obra & {
@@ -7,13 +7,7 @@ export type WorkCardData = Obra & {
 };
 
 /** Categoría administrable utilizada por los filtros de la galería. */
-export interface WorkCategory {
-  id: string;
-  nombre: string;
-}
+export type WorkCategory = CategoriaObra;
 
 /** Resumen navegable requerido por el listado público de obras. */
-export type WorkGalleryItem = WorkCardData & {
-  slug: string;
-  categoriaId: string;
-};
+export type WorkGalleryItem = WorkCardData;

@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { CATEGORIAS_OBRAS_MOCK, OBRAS_MOCK } from "@/data/mock/obras";
 import { WorkDetailPage } from "@/screens/works/WorkDetailPage";
-import { cargarSitio } from "@/server/datos-publicos";
+import {
+  cargarCategoriasObras,
+  cargarObraPorSlug,
+  cargarSitio,
+} from "@/server/datos-publicos";
 
 type ParamsPromise = Promise<{ slug: string }>;
-
-export function generateStaticParams() {
-  return OBRAS_MOCK.map((obra) => ({ slug: obra.slug }));
-}
 
 export async function generateMetadata({
   params,
@@ -17,7 +16,7 @@ export async function generateMetadata({
   params: ParamsPromise;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const obra = OBRAS_MOCK.find((item) => item.slug === slug);
+  const obra = await cargarObraPorSlug(slug);
 
   if (!obra) return { title: "Obra no encontrada" };
 
@@ -29,13 +28,14 @@ export async function generateMetadata({
 
 export default async function Page({ params }: { params: ParamsPromise }) {
   const { slug } = await params;
-  const obra = OBRAS_MOCK.find((item) => item.slug === slug);
+  const obra = await cargarObraPorSlug(slug);
   if (!obra) notFound();
 
-  const sitio = await cargarSitio();
-  const categoria = CATEGORIAS_OBRAS_MOCK.find(
-    (item) => item.id === obra.categoriaId,
-  );
+  const [sitio, categorias] = await Promise.all([
+    cargarSitio(),
+    cargarCategoriasObras(),
+  ]);
+  const categoria = categorias.find((item) => item.id === obra.categoriaId);
 
   return (
     <WorkDetailPage
