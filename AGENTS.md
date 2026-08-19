@@ -229,7 +229,10 @@ src/
       `docs/2026-08-10-home-catalogos-bloque-negro.md`).
 - [x] Por qué elegirnos como bloque negro simple y dinámico según la cantidad
       de beneficios administrados (ver
-      `docs/2026-08-10-home-beneficios-dinamicos-bloque-negro.md`).
+      `docs/2026-08-10-home-beneficios-dinamicos-bloque-negro.md` y
+      `docs/2026-08-18-beneficios-home-compactos.md` y
+      `docs/2026-08-18-beneficios-home-composicion-uno-dos.md` y
+      `docs/2026-08-18-beneficios-home-composicion-dos-uno.md`).
 - [x] Composición centrada de Por qué elegirnos, incluyendo filas incompletas
       centradas mediante flex-wrap (ver
       `docs/2026-08-10-home-beneficios-centrados.md`).

@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductCardSkeleton } from "@/features/products/components/ProductCardSkeleton";
+import { cn } from "@/lib/utils";
 
 /** Mantiene exactamente la relación de aspecto del banner real de Home. */
 export function HomeHeroSkeleton() {
@@ -140,26 +141,31 @@ export function HomeBenefitsSectionSkeleton() {
   return (
     <section
       aria-hidden="true"
-      className="border-y border-white/10 bg-brand-black py-14 text-white sm:py-16 lg:py-20"
+      className="border-y border-white/10 bg-brand-black py-10 text-white sm:py-12 lg:py-14"
     >
-      <div className="container">
-        <div className="mx-auto max-w-3xl text-center">
-          <Skeleton className="mx-auto h-4 w-28 rounded-full bg-white/15" />
-          <Skeleton className="mx-auto mt-3 h-9 w-full max-w-xl rounded-md bg-white/15" />
-          <Skeleton className="mx-auto mt-4 h-4 w-full max-w-2xl rounded-md bg-white/10" />
-          <Skeleton className="mx-auto mt-2 h-4 w-4/5 max-w-xl rounded-md bg-white/10" />
+      <div className="container grid gap-8 lg:grid-cols-5 lg:items-start lg:gap-12">
+        <div className="max-w-xl lg:col-span-2">
+          <Skeleton className="h-4 w-28 rounded-full bg-white/15" />
+          <Skeleton className="mt-2 h-8 w-full max-w-sm rounded-md bg-white/15" />
+          <Skeleton className="mt-3 h-4 w-full max-w-lg rounded-md bg-white/10" />
+          <Skeleton className="mt-2 h-4 w-4/5 max-w-md rounded-md bg-white/10" />
         </div>
 
-        <div className="mx-auto mt-10 flex max-w-screen-2xl flex-wrap justify-center gap-y-10 border-t border-white/10 pt-9 sm:mt-12 sm:pt-10">
-          {Array.from({ length: 5 }).map((_, index) => (
+        <div className="grid gap-x-8 gap-y-6 border-t border-white/10 pt-7 sm:grid-cols-2 lg:col-span-3 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-10">
+          {Array.from({ length: 3 }).map((_, index) => (
             <div
               key={index}
-              className="flex basis-full flex-col items-center px-5 text-center sm:basis-1/2 lg:basis-1/3 xl:basis-1/5"
+              className={cn(
+                "flex max-w-sm items-start gap-3",
+                index === 2 && "sm:col-span-2 sm:justify-self-center",
+              )}
             >
-              <Skeleton className="size-11 rounded-xl bg-white/15" />
-              <Skeleton className="mt-4 h-5 w-32 rounded-md bg-white/15" />
-              <Skeleton className="mt-2 h-4 w-full max-w-48 rounded-md bg-white/10" />
-              <Skeleton className="mt-2 h-4 w-4/5 max-w-40 rounded-md bg-white/10" />
+              <Skeleton className="mt-0.5 size-5 shrink-0 rounded-md bg-white/15" />
+              <div className="w-full">
+                <Skeleton className="h-5 w-32 rounded-md bg-white/15" />
+                <Skeleton className="mt-2 h-4 w-full max-w-52 rounded-md bg-white/10" />
+                <Skeleton className="mt-1.5 h-4 w-4/5 max-w-44 rounded-md bg-white/10" />
+              </div>
             </div>
           ))}
         </div>
