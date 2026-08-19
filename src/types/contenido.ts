@@ -90,7 +90,6 @@ export interface EncabezadoBeneficiosInicio {
 export interface AcercaDeNosotrosInicio {
   antetitulo?: string;
   titulo: string;
-  resumenHome?: string;
   textoDescriptivo: string;
   imagenUrl: string;
   imagenAlt: string;

@@ -1,39 +1,39 @@
-import { ArrowRight } from 'lucide-react'
-import Link from 'next/link'
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { HomeWorksShowcase } from '@/features/works/components/HomeWorksShowcase'
-import type { Obra } from '@/types'
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { HomeWorksShowcase } from "@/features/works/components/HomeWorksShowcase";
+import type { Obra } from "@/types";
 
 interface ObrasSectionProps {
-  obras: Obra[]
+  obras: Obra[];
 }
 
 const SLUGS_OBRAS_DESTACADAS_MOCK = [
-  'casa-abierta-al-jardin',
-  'luz-natural-corazon-hogar',
-  'identidad-renovada-fachada-clasica',
-] as const
+  "casa-abierta-al-jardin",
+  "luz-natural-corazon-hogar",
+  "identidad-renovada-fachada-clasica",
+] as const;
 
 /** Selección editorial de tres obras destacadas y acceso al portfolio completo. */
 export function ObrasSection({ obras }: ObrasSectionProps) {
-  if (obras.length === 0) return null
+  if (obras.length === 0) return null;
 
   // Adaptación temporal: el administrador todavía no entrega el slug público.
   const obrasPrincipales = obras.slice(0, 3).map((obra, index) => ({
     ...obra,
     href: `/obras/${SLUGS_OBRAS_DESTACADAS_MOCK[index] ?? SLUGS_OBRAS_DESTACADAS_MOCK[0]}`,
-  }))
+  }));
 
   return (
     <section
       id="obras"
-      className="bg-muted/40 py-14 sm:py-16 lg:py-20"
+      className="bg-muted/40 py-12 sm:py-16 lg:py-20"
       aria-labelledby="works-title"
     >
       <div className="container">
-        <div className="mb-8 grid items-end gap-5 sm:mb-10 md:grid-cols-[1fr_0.75fr]">
+        <div className="mb-7 grid items-end gap-5 sm:mb-10 md:grid-cols-[1fr_0.75fr]">
           <div>
             <p className="eyebrow mb-2">Nuestras obras</p>
             <h2
@@ -88,5 +88,5 @@ export function ObrasSection({ obras }: ObrasSectionProps) {
         </Card>
       </div>
     </section>
-  )
+  );
 }

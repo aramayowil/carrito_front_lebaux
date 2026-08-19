@@ -149,7 +149,9 @@ src/
       `features/cart` y `features/checkout`.
 - [x] Home reorganizada con banner compacto, catálogos prioritarios, promociones
       y destacados separados, ritmo vertical unificado y Navbar sticky estable
-      (ver `docs/2026-08-10-redisenio-home-ecommerce-y-navbar-sticky.md`).
+      (ver `docs/2026-08-10-redisenio-home-ecommerce-y-navbar-sticky.md` y
+      `docs/2026-08-18-cierre-revision-home.md` y
+      `docs/2026-08-18-controles-nativos-hero.md`).
 - [x] Catálogo por línea rediseñado con hero editorial, filtros derivados con
       estado en URL, toolbar sticky, Sheet mobile y cards comparativas (ver
       `docs/2026-08-10-redisenio-catalogo-por-linea.md` y
@@ -221,7 +223,8 @@ src/
       `docs/2026-08-18-cierre-institucional-texto-remoto-y-sedes-fijas.md` y
       `docs/2026-08-18-resumen-institucional-home.md` y
       `docs/2026-08-18-cta-contacto-home-destacado.md` y
-      `docs/2026-08-18-texto-institucional-home-completo.md`).
+      `docs/2026-08-18-texto-institucional-home-completo.md` y
+      `docs/2026-08-18-retiro-resumen-home.md`).
 - [x] Nuestras obras limitada a tres proyectos, con selección exclusiva de la
       obra principal y representación destacada en la Home (ver
       `docs/2026-08-10-obras-home-seleccion-principal.md` y

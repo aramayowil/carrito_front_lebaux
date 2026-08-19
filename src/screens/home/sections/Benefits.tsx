@@ -37,7 +37,7 @@ export function Benefits({
   return (
     <section
       id="como-comprar"
-      className="scroll-mt-navbar border-y border-white/10 bg-brand-black py-10 text-white sm:py-12 lg:py-14"
+      className="scroll-mt-navbar border-y border-white/10 bg-brand-black py-9 text-white sm:py-12 lg:py-14"
       aria-labelledby="benefits-title"
     >
       <div className="container grid gap-8 lg:grid-cols-5 lg:items-start lg:gap-12">

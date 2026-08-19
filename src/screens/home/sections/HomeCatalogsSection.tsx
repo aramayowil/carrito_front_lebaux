@@ -43,7 +43,7 @@ export function HomeCatalogsSection({ lines }: { lines: LineaProducto[] }) {
     <section
       id="productos"
       aria-labelledby="catalog-lines-title"
-      className="scroll-mt-navbar bg-background px-4 py-14 text-foreground sm:px-6 sm:py-16 lg:px-8"
+      className="scroll-mt-navbar bg-background px-4 py-12 text-foreground sm:px-6 sm:py-16 lg:px-8"
     >
       <div className="mx-auto max-w-screen-2xl">
         <div className="mx-auto max-w-2xl text-center">

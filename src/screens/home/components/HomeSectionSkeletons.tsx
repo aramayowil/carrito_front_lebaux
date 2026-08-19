@@ -17,7 +17,7 @@ export function HomeCatalogsSectionSkeleton() {
   return (
     <section
       aria-hidden="true"
-      className="bg-background px-4 py-14 sm:px-6 sm:py-16 lg:px-8"
+      className="bg-background px-4 py-12 sm:px-6 sm:py-16 lg:px-8"
     >
       <div className="mx-auto max-w-screen-2xl">
         <div className="mx-auto max-w-2xl text-center">
@@ -88,12 +88,12 @@ export function HomeProductsSectionSkeleton({
       aria-hidden="true"
       className={
         muted
-          ? "border-y border-border/60 bg-muted/30 py-14 sm:py-16"
-          : "py-14 sm:py-16"
+          ? "border-y border-border/60 bg-muted/30 py-12 sm:py-16"
+          : "py-12 sm:py-16"
       }
     >
       <div className="container">
-        <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mb-6 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-2">
             <Skeleton className="h-4 w-28 rounded-full" />
             <Skeleton className="h-8 w-60 rounded-md sm:w-72" />
@@ -141,7 +141,7 @@ export function HomeBenefitsSectionSkeleton() {
   return (
     <section
       aria-hidden="true"
-      className="border-y border-white/10 bg-brand-black py-10 text-white sm:py-12 lg:py-14"
+      className="border-y border-white/10 bg-brand-black py-9 text-white sm:py-12 lg:py-14"
     >
       <div className="container grid gap-8 lg:grid-cols-5 lg:items-start lg:gap-12">
         <div className="max-w-xl lg:col-span-2">
@@ -177,9 +177,9 @@ export function HomeBenefitsSectionSkeleton() {
 /** Replica la composición editorial 1+2 de obras y su CTA inferior. */
 export function HomeWorksSectionSkeleton() {
   return (
-    <section aria-hidden="true" className="bg-muted/40 py-14 sm:py-16 lg:py-20">
+    <section aria-hidden="true" className="bg-muted/40 py-12 sm:py-16 lg:py-20">
       <div className="container">
-        <div className="mb-8 grid items-end gap-5 sm:mb-10 md:grid-cols-[1fr_0.75fr]">
+        <div className="mb-7 grid items-end gap-5 sm:mb-10 md:grid-cols-[1fr_0.75fr]">
           <div className="space-y-2">
             <Skeleton className="h-4 w-28 rounded-full" />
             <Skeleton className="h-8 w-full max-w-xl rounded-md" />
@@ -225,7 +225,7 @@ export function HomeAboutSectionSkeleton() {
   return (
     <section
       aria-hidden="true"
-      className="border-t border-border/60 bg-muted/30 py-12 sm:py-14"
+      className="border-t border-border bg-background py-10 sm:py-14"
     >
       <div className="container grid items-start gap-8 lg:grid-cols-5 lg:gap-12">
         <div className="w-full lg:col-span-3">

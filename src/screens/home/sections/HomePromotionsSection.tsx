@@ -27,10 +27,10 @@ export function HomePromotionsSection({
   return (
     <section
       aria-labelledby="promotions-title"
-      className="border-y border-border/60 bg-muted/30 py-14 sm:py-16"
+      className="border-y border-border/60 bg-muted/30 py-12 sm:py-16"
     >
       <div className="container">
-        <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mb-6 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="eyebrow mb-2">Oportunidades</p>
             <h2

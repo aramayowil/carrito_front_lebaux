@@ -34,13 +34,11 @@ export function AboutSection({
     DEFAULT_WHATSAPP_MESSAGE,
     telefonoWhatsapp,
   );
-  const resumenHome =
-    contenido.resumenHome?.trim() || contenido.textoDescriptivo;
 
   return (
     <section
       id="nosotros"
-      className="border-t border-border/60 bg-muted/30 py-12 sm:py-14"
+      className="border-t border-border bg-background py-10 sm:py-14"
       aria-labelledby="about-title"
     >
       <div className="container grid items-start gap-8 lg:grid-cols-5 lg:gap-12">
@@ -67,9 +65,9 @@ export function AboutSection({
             {contenido.titulo}
           </h2>
 
-          {resumenHome && (
+          {contenido.textoDescriptivo && (
             <RichTextContent
-              html={resumenHome}
+              html={contenido.textoDescriptivo}
               className="text-sm leading-6 text-muted-foreground"
             />
           )}

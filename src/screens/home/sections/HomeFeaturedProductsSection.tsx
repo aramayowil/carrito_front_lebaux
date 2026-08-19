@@ -18,9 +18,9 @@ export function HomeFeaturedProductsSection({
   if (featured.length === 0) return null;
 
   return (
-    <section aria-labelledby="featured-title" className="py-14 sm:py-16">
+    <section aria-labelledby="featured-title" className="py-12 sm:py-16">
       <div className="container">
-        <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mb-6 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="eyebrow mb-2">Selección Lebaux</p>
             <h2

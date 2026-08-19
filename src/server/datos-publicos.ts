@@ -131,13 +131,6 @@ function normalizarConfiguracionInicio(
     acercaNormalizada.titulo = "¿QUIÉNES SOMOS?";
   }
 
-  if (
-    typeof acercaActual.resumenHome !== "string" ||
-    !acercaActual.resumenHome.trim()
-  ) {
-    delete acercaNormalizada.resumenHome;
-  }
-
   if (Array.isArray(acercaActual.fortalezas)) {
     acercaNormalizada.fortalezas = acercaActual.fortalezas
       .filter(
