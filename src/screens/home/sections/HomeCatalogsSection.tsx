@@ -6,42 +6,7 @@ import { ProductImage } from "@/components/media/ProductImage";
 import { Button } from "@/components/ui/button";
 import { getPrimaryProductImage } from "@/features/products/lib/product-card-formatters";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
-import type { LineaProducto, Producto } from "@/types";
-
-interface ConfiguracionLineaMosaico {
-  slug: "modena" | "herrero";
-  titulo: string;
-  descripcion: string;
-  colores: string;
-  vidrios: string;
-  idealPara: string;
-  mensajeWhatsapp: string;
-}
-
-const LINEAS_MOSAICO: ConfiguracionLineaMosaico[] = [
-  {
-    slug: "modena",
-    titulo: "Módena",
-    descripcion:
-      "La Línea Módena ofrece aberturas de alta prestación con perfiles resistentes, excelente hermeticidad y herrajes de calidad, brindando durabilidad, funcionalidad y un óptimo desempeño en todo tipo de proyectos.",
-    colores: "Blanco / Negro",
-    vidrios: "Estándar, laminado 3+3, DVH",
-    idealPara: "Viviendas y locales comerciales",
-    mensajeWhatsapp:
-      "Hola! Vi la página web y quiero consultar por la Línea Módena.",
-  },
-  {
-    slug: "herrero",
-    titulo: "Herrero",
-    descripcion:
-      "La Línea Herrero de Lebaux está diseñada para brindar resistencia, durabilidad y un excelente desempeño frente a las condiciones climáticas. Una solución funcional, de fácil mantenimiento y larga vida útil.",
-    colores: "Blanco / Negro",
-    vidrios: "Estándar",
-    idealPara: "Viviendas",
-    mensajeWhatsapp:
-      "Hola! Vi la página web y quiero consultar por la Línea Herrero.",
-  },
-];
+import type { LineaProducto, MosaicoInicioLinea, Producto } from "@/types";
 
 interface ImagenMosaico {
   src: string;
@@ -49,61 +14,54 @@ interface ImagenMosaico {
   href: string;
 }
 
-function normalizarSlug(valor: string) {
-  return valor
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
+function nombreCortoLinea(nombre: string) {
+  return nombre.replace(/^línea\s+/i, "").trim() || nombre;
 }
 
-function buscarLinea(
-  lines: LineaProducto[],
-  configuracion: ConfiguracionLineaMosaico,
-) {
-  return lines.find((line) => {
-    const slug = normalizarSlug(line.slug);
-    const nombre = normalizarSlug(line.nombre);
-    return (
-      slug.includes(configuracion.slug) || nombre.includes(configuracion.slug)
-    );
-  });
+function imagenDeProducto(producto: Producto): ImagenMosaico | null {
+  const imagen = getPrimaryProductImage(producto);
+  if (!imagen?.url) return null;
+
+  return {
+    src: imagen.url,
+    alt: imagen.textoAlternativo || producto.nombre,
+    href: `/producto/${producto.slug}`,
+  };
 }
 
 function obtenerImagenesMosaico(
   line: LineaProducto,
   products: Producto[],
 ): ImagenMosaico[] {
-  const imagenesProductos = products
-    .filter(
-      (product) =>
-        product.linea === line.slug && product.visibilidad === "visible",
-    )
-    .map((product) => {
-      const imagen = getPrimaryProductImage(product);
-      if (!imagen?.url) return null;
+  const productosVisibles = products.filter(
+    (product) =>
+      product.linea === line.slug && product.visibilidad === "visible",
+  );
+  const porId = new Map(productosVisibles.map((product) => [product.id, product]));
 
-      return {
-        src: imagen.url,
-        alt: imagen.textoAlternativo || product.nombre,
-        href: `/producto/${product.slug}`,
-      };
-    })
-    .filter((imagen): imagen is ImagenMosaico => imagen !== null);
+  const seleccionados = line.mosaicoInicio.productosIds
+    .map((id) => porId.get(id))
+    .filter((product): product is Producto => Boolean(product));
 
-  const candidatos: ImagenMosaico[] = [
-    ...imagenesProductos,
-    ...(line.imagenBannerEscritorio
-      ? [
-          {
-            src: line.imagenBannerEscritorio,
-            alt: line.textoAlternativoBanner || `Línea ${line.nombre}`,
-            href: `/${line.slug}`,
-          },
-        ]
-      : []),
-  ];
+  const idsSeleccionados = new Set(seleccionados.map((product) => product.id));
+  const relleno = productosVisibles.filter(
+    (product) => !idsSeleccionados.has(product.id),
+  );
 
-  if (candidatos.length === 0) {
+  const imagenesProductos = [...seleccionados, ...relleno]
+    .map(imagenDeProducto)
+    .filter((imagen): imagen is ImagenMosaico => imagen !== null)
+    .slice(0, 3);
+
+  const fallbackBanner: ImagenMosaico | null = line.imagenBannerEscritorio
+    ? {
+        src: line.imagenBannerEscritorio,
+        alt: line.textoAlternativoBanner || line.nombre,
+        href: `/${line.slug}`,
+      }
+    : null;
+
+  if (imagenesProductos.length === 0 && !fallbackBanner) {
     return Array.from({ length: 3 }, (_, index) => ({
       src: "",
       alt: `${line.nombre} · imagen ${index + 1}`,
@@ -111,21 +69,21 @@ function obtenerImagenesMosaico(
     }));
   }
 
+  const candidatos = fallbackBanner
+    ? [...imagenesProductos, fallbackBanner]
+    : imagenesProductos;
+
   return Array.from(
     { length: 3 },
     (_, index) => candidatos[index % candidatos.length],
   );
 }
 
-function LineaSpecs({
-  configuracion,
-}: {
-  configuracion: ConfiguracionLineaMosaico;
-}) {
+function LineaSpecs({ mosaico }: { mosaico: MosaicoInicioLinea }) {
   const specs = [
-    ["Colores disponibles", configuracion.colores],
-    ["Vidrios", configuracion.vidrios],
-    ["Ideal para", configuracion.idealPara],
+    ["Colores disponibles", mosaico.coloresDisponibles],
+    ["Vidrios", mosaico.vidrios],
+    ["Ideal para", mosaico.idealPara],
   ];
 
   return (
@@ -136,7 +94,9 @@ function LineaSpecs({
           className="grid grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] gap-3 border-t border-border/70 py-2.5 text-sm sm:py-3"
         >
           <dt className="text-muted-foreground">{etiqueta}</dt>
-          <dd className="text-right font-semibold text-foreground">{valor}</dd>
+          <dd className="text-right font-semibold text-foreground">
+            {valor.trim() || "A consultar"}
+          </dd>
         </div>
       ))}
     </dl>
@@ -183,20 +143,20 @@ function LineaGallery({
 }
 
 function LineaMosaico({
-  configuracion,
   line,
   products,
   invertida,
   telefonoWhatsapp,
 }: {
-  configuracion: ConfiguracionLineaMosaico;
   line: LineaProducto;
   products: Producto[];
   invertida: boolean;
   telefonoWhatsapp: string;
 }) {
+  const titulo = nombreCortoLinea(line.nombre);
+  const mosaico = line.mosaicoInicio;
   const whatsappHref = buildWhatsAppUrl(
-    configuracion.mensajeWhatsapp,
+    `Hola! Vi la página web y quiero consultar por ${line.nombre}.`,
     telefonoWhatsapp,
   );
 
@@ -204,13 +164,15 @@ function LineaMosaico({
     <article className="grid items-center gap-7 rounded-2xl border border-border/70 bg-card px-4 py-6 shadow-sm sm:px-6 sm:py-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-10 lg:px-8 lg:py-9">
       <div className={invertida ? "lg:order-2" : undefined}>
         <h3 className="text-3xl font-bold uppercase tracking-tight text-foreground sm:text-4xl">
-          {configuracion.titulo}
+          {titulo}
         </h3>
-        <p className="mt-4 max-w-lg text-sm leading-6 text-muted-foreground sm:text-[0.95rem] sm:leading-7">
-          {configuracion.descripcion}
-        </p>
+        {mosaico.descripcion.trim() ? (
+          <p className="mt-4 max-w-lg text-sm leading-6 text-muted-foreground sm:text-[0.95rem] sm:leading-7">
+            {mosaico.descripcion}
+          </p>
+        ) : null}
 
-        <LineaSpecs configuracion={configuracion} />
+        <LineaSpecs mosaico={mosaico} />
 
         <div className="mt-6 grid gap-2.5 md:grid-cols-[1.15fr_0.85fr]">
           <Button
@@ -218,7 +180,7 @@ function LineaMosaico({
             className="group h-12 w-full justify-center rounded-xl px-4 text-sm font-bold shadow-sm md:px-3 lg:text-[0.78rem] xl:px-4 xl:text-sm"
             render={<Link href={`/${line.slug}`} />}
           >
-            {`Ver catálogo Línea ${configuracion.titulo}`}
+            {`Ver catálogo ${line.nombre}`}
             <ArrowRight
               className="size-4 transition-transform group-hover:translate-x-1"
               data-icon="inline-end"
@@ -235,12 +197,12 @@ function LineaMosaico({
                 href={whatsappHref}
                 target="_blank"
                 rel="noreferrer"
-                aria-label={`Consultar por Línea ${configuracion.titulo} en WhatsApp`}
+                aria-label={`Consultar por ${line.nombre} en WhatsApp`}
               />
             }
           >
             <WhatsAppIcon className="size-4" data-icon="inline-start" />
-            {`Consultar por Línea ${configuracion.titulo}`}
+            {`Consultar por ${line.nombre}`}
           </Button>
         </div>
       </div>
@@ -252,7 +214,7 @@ function LineaMosaico({
   );
 }
 
-/** Prototipo editorial hardcodeado para evaluar el mosaico de Módena y Herrero en Inicio. */
+/** Mosaico editorial de líneas administrado desde la ficha de cada línea. */
 export function HomeCatalogsSection({
   lines,
   products,
@@ -262,19 +224,7 @@ export function HomeCatalogsSection({
   products: Producto[];
   telefonoWhatsapp: string;
 }) {
-  const lineasDisponibles = LINEAS_MOSAICO.map((configuracion) => ({
-    configuracion,
-    line: buscarLinea(lines, configuracion),
-  })).filter(
-    (
-      item,
-    ): item is {
-      configuracion: ConfiguracionLineaMosaico;
-      line: LineaProducto;
-    } => Boolean(item.line),
-  );
-
-  if (lineasDisponibles.length === 0) return null;
+  if (lines.length === 0) return null;
 
   return (
     <section
@@ -300,10 +250,9 @@ export function HomeCatalogsSection({
         </div>
 
         <div className="mt-5 grid gap-5 sm:mt-6 sm:gap-6 lg:mt-7 lg:gap-7">
-          {lineasDisponibles.map(({ configuracion, line }, index) => (
+          {lines.map((line, index) => (
             <LineaMosaico
-              key={configuracion.slug}
-              configuracion={configuracion}
+              key={line.id}
               line={line}
               products={products}
               invertida={index % 2 === 1}

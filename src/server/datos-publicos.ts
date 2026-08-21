@@ -11,6 +11,7 @@ import type {
   ConfiguracionInicio,
   ConfiguracionSitio,
   LineaProducto,
+  MosaicoInicioLinea,
   Obra,
   Producto,
   TipoAperturaProducto,
@@ -48,11 +49,70 @@ function normalizarProductoDesdePayload(payload: unknown): Producto {
   };
 }
 
+function mosaicoInicioPorDefecto(
+  linea: Partial<LineaProducto>,
+): MosaicoInicioLinea {
+  const slug = (linea.slug ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+
+  if (slug.includes("modena")) {
+    return {
+      descripcion:
+        "La Línea Módena ofrece aberturas de alta prestación con perfiles resistentes, excelente hermeticidad y herrajes de calidad, brindando durabilidad, funcionalidad y un óptimo desempeño en todo tipo de proyectos.",
+      coloresDisponibles: "Blanco / Negro",
+      vidrios: "Estándar, laminado 3+3, DVH",
+      idealPara: "Viviendas y locales comerciales",
+      productosIds: [],
+    };
+  }
+
+  if (slug.includes("herrero")) {
+    return {
+      descripcion:
+        "La Línea Herrero de Lebaux está diseñada para brindar resistencia, durabilidad y un excelente desempeño frente a las condiciones climáticas. Una solución funcional, de fácil mantenimiento y larga vida útil.",
+      coloresDisponibles: "Blanco / Negro",
+      vidrios: "Estándar",
+      idealPara: "Viviendas",
+      productosIds: [],
+    };
+  }
+
+  return {
+    descripcion: linea.descripcion ?? "",
+    coloresDisponibles: "",
+    vidrios: "",
+    idealPara: linea.idealPara?.filter(Boolean).join(" · ") ?? "",
+    productosIds: [],
+  };
+}
+
+function normalizarMosaicoInicio(
+  linea: Partial<LineaProducto>,
+): MosaicoInicioLinea {
+  const base = mosaicoInicioPorDefecto(linea);
+  const actual = linea.mosaicoInicio;
+
+  const productosIds = Array.isArray(actual?.productosIds)
+    ? actual.productosIds.filter((id): id is string => typeof id === "string")
+    : base.productosIds;
+
+  return {
+    descripcion: actual?.descripcion ?? base.descripcion,
+    coloresDisponibles: actual?.coloresDisponibles ?? base.coloresDisponibles,
+    vidrios: actual?.vidrios ?? base.vidrios,
+    idealPara: actual?.idealPara ?? base.idealPara,
+    productosIds: Array.from(new Set(productosIds)).slice(0, 3),
+  };
+}
+
 /** Completa el contrato dual de documentos durante el backfill de líneas. */
 function normalizarLineaDesdePayload(payload: unknown): LineaProducto {
   const linea = payload as LineaProducto;
   return {
     ...linea,
+    mosaicoInicio: normalizarMosaicoInicio(linea),
     catalogoTecnicoUrl: linea.catalogoTecnicoUrl ?? "",
     catalogoTecnicoVersion: linea.catalogoTecnicoVersion ?? "",
     catalogoTecnicoActualizadoEn: linea.catalogoTecnicoActualizadoEn ?? "",

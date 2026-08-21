@@ -76,6 +76,24 @@ export type SlugOpcionVidrio = string;
 /** Nombre estable de cualquier ícono disponible en Lucide. */
 export type IconoBeneficioCatalogoLinea = string;
 
+/** Configuración del mosaico editorial mostrado para esta línea en Inicio. */
+export interface MosaicoInicioLinea {
+  /** Texto comercial exclusivo del Home; no reemplaza la descripción del catálogo. */
+  descripcion: string;
+
+  /** Resumen libre de terminaciones visibles en la ficha del Home. */
+  coloresDisponibles: string;
+
+  /** Resumen libre de opciones de vidrio visibles en la ficha del Home. */
+  vidrios: string;
+
+  /** Uso recomendado resumido exclusivo del mosaico del Home. */
+  idealPara: string;
+
+  /** Hasta tres productos de la misma línea; el orden define principal + secundarias. */
+  productosIds: string[];
+}
+
 /** Argumento comercial administrable que distingue a una línea. */
 export interface BeneficioCatalogoLinea {
   id: string;
@@ -123,6 +141,9 @@ export interface LineaProducto {
 
   /** Usos o proyectos recomendados para comparar esta línea con las demás. */
   idealPara: string[];
+
+  /** Presentación comercial de esta línea dentro del mosaico de Inicio. */
+  mosaicoInicio: MosaicoInicioLinea;
 
   /** Enlace HTTPS externo al PDF o visor del catálogo técnico de la línea. */
   catalogoTecnicoUrl: string;
