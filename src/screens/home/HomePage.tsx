@@ -26,7 +26,14 @@ export function HomePage({ datos }: { datos: DatosHomePublica }) {
       case "hero":
         return <Hero key={id} banners={inicio.banners} />;
       case "catalogos":
-        return <HomeCatalogsSection key={id} lines={lineas} />;
+        return (
+          <HomeCatalogsSection
+            key={id}
+            lines={lineas}
+            products={productos}
+            telefonoWhatsapp={telefonoWhatsapp}
+          />
+        );
       case "catalogosTecnicos":
         return <HomeTechnicalCatalogsSection key={id} lines={lineas} />;
       case "promociones":
@@ -60,9 +67,20 @@ export function HomePage({ datos }: { datos: DatosHomePublica }) {
     .filter((seccion) => seccion.visible)
     .sort((a, b) => a.orden - b.orden);
 
+  const heroVisible = secciones.some((seccion) => seccion.id === "hero");
+  const seccionesRestantes = secciones.filter(
+    (seccion) => seccion.id !== "hero" && seccion.id !== "catalogos",
+  );
+
   return (
     <div className="overflow-x-clip">
-      {secciones.map((seccion) => renderizarSeccion(seccion.id))}
+      {heroVisible ? renderizarSeccion("hero") : null}
+      <HomeCatalogsSection
+        lines={lineas}
+        products={productos}
+        telefonoWhatsapp={telefonoWhatsapp}
+      />
+      {seccionesRestantes.map((seccion) => renderizarSeccion(seccion.id))}
     </div>
   );
 }
