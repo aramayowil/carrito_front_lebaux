@@ -1,5 +1,5 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 
 /** Reproduce la geometría de WorkCard mientras se cargan las obras. */
 export function WorkCardSkeleton() {
@@ -33,5 +33,5 @@ export function WorkCardSkeleton() {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

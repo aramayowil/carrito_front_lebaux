@@ -1,11 +1,10 @@
-import { ArrowUpRight, MapPin } from "lucide-react";
-import Link from "next/link";
+import { ArrowUpRight, MapPin } from 'lucide-react'
+import Link from 'next/link'
 
-import { ProductImage } from "@/components/media/ProductImage";
-import { Card, CardContent } from "@/components/ui/card";
-import type { WorkCardData } from "@/features/works/types";
-import { htmlComoTextoPlano } from "@/lib/public-text";
-import { cn } from "@/lib/utils";
+import { ProductImage } from '@/components/media/ProductImage'
+import { Card, CardContent } from '@/components/ui/card'
+import type { WorkCardData } from '@/features/works/types'
+import { cn } from '@/lib/utils'
 
 /** Presenta el resumen visual de una obra y permite enlazar a su ficha. */
 export function WorkCard({
@@ -14,12 +13,11 @@ export function WorkCard({
   className,
   href,
 }: {
-  obra: WorkCardData;
-  priority?: boolean;
-  className?: string;
-  href?: string;
+  obra: WorkCardData
+  priority?: boolean
+  className?: string
+  href?: string
 }) {
-  const detalleEspecialTexto = htmlComoTextoPlano(obra.detalleEspecial);
   const card = (
     <Card className="group flex h-full flex-col gap-0 overflow-hidden rounded-xl border-border/80 py-0 shadow-none transition-[border-color,box-shadow] duration-500 hover:border-primary/35 hover:shadow-sm">
       <ProductImage
@@ -38,12 +36,6 @@ export function WorkCard({
         </p>
 
         <h3 className="mt-3 text-xl font-bold tracking-tight">{obra.titulo}</h3>
-
-        {detalleEspecialTexto && (
-          <p className="mt-3 line-clamp-3 text-sm leading-6 text-muted-foreground">
-            {detalleEspecialTexto}
-          </p>
-        )}
 
         <div className="mt-auto flex items-center justify-between gap-3 border-t border-border/70 pt-5 text-xs">
           {obra.ubicacion && (
@@ -64,10 +56,10 @@ export function WorkCard({
         </div>
       </CardContent>
     </Card>
-  );
+  )
 
   return (
-    <article className={cn("min-w-0", className)}>
+    <article className={cn('min-w-0', className)}>
       {href ? (
         <Link
           href={href}
@@ -80,5 +72,5 @@ export function WorkCard({
         card
       )}
     </article>
-  );
+  )
 }

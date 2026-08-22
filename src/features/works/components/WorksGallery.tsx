@@ -1,36 +1,36 @@
-"use client";
+'use client'
 
-import { useMemo, useState } from "react";
+import { useMemo, useState } from 'react'
 
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { WorkCard } from "@/features/works/components/WorkCard";
-import type { WorkCategory, WorkGalleryItem } from "@/features/works/types";
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { WorkCard } from '@/features/works/components/WorkCard'
+import type { WorkCategory, WorkGalleryItem } from '@/features/works/types'
 
-const TODAS_LAS_CATEGORIAS = "todas";
+const TODAS_LAS_CATEGORIAS = 'todas'
 
 /** Filtra en cliente una colección de obras usando categorías administrables. */
 export function WorksGallery({
   categorias,
   obras,
 }: {
-  categorias: WorkCategory[];
-  obras: WorkGalleryItem[];
+  categorias: WorkCategory[]
+  obras: WorkGalleryItem[]
 }) {
-  const [categoriaActiva, setCategoriaActiva] = useState(TODAS_LAS_CATEGORIAS);
+  const [categoriaActiva, setCategoriaActiva] = useState(TODAS_LAS_CATEGORIAS)
   const obrasVisibles = useMemo(
     () =>
       categoriaActiva === TODAS_LAS_CATEGORIAS
         ? obras
         : obras.filter((obra) => obra.categoriaId === categoriaActiva),
     [categoriaActiva, obras],
-  );
+  )
 
   return (
     <>
       <Tabs
         value={categoriaActiva}
         onValueChange={(value) => {
-          if (value) setCategoriaActiva(String(value));
+          if (value) setCategoriaActiva(String(value))
         }}
         className="works-reveal-soft mb-4 min-w-0 gap-0 sm:mb-5"
       >
@@ -82,5 +82,5 @@ export function WorksGallery({
         </p>
       )}
     </>
-  );
+  )
 }
