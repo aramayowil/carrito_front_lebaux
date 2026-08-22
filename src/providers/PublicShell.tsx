@@ -1,14 +1,14 @@
-import { Suspense, type ReactNode } from "react"
+import { Suspense, type ReactNode } from "react";
 
-import { Footer } from "@/components/layout/Footer"
-import { Navbar } from "@/components/layout/Navbar"
-import { NavbarSkeleton } from "@/components/layout/NavbarSkeleton"
-import { CarritoGlobal } from "@/features/cart/components/CarritoGlobal"
-import { cargarDatosLayout } from "@/server/datos-publicos"
+import { Footer } from "@/components/layout/Footer";
+import { Navbar } from "@/components/layout/Navbar";
+import { NavbarSkeleton } from "@/components/layout/NavbarSkeleton";
+import { CarritoGlobal } from "@/features/cart/components/CarritoGlobal";
+import { cargarDatosLayout } from "@/server/datos-publicos";
 
 /** Shell público mayormente de servidor. Solo navegación y carrito hidratan JS. */
 export async function PublicShell({ children }: { children: ReactNode }) {
-  const { sitio, lineas, tipologias, checkout } = await cargarDatosLayout()
+  const { sitio, lineas, tipologias, checkout } = await cargarDatosLayout();
 
   return (
     <CarritoGlobal
@@ -35,5 +35,5 @@ export async function PublicShell({ children }: { children: ReactNode }) {
         <Footer sitio={sitio} lineas={lineas} tipologias={tipologias} />
       </div>
     </CarritoGlobal>
-  )
+  );
 }

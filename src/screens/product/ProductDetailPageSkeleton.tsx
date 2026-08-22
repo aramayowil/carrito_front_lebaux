@@ -1,7 +1,7 @@
-import { Skeleton } from "@/components/ui/skeleton"
-import { ProductCardSkeleton } from "@/features/products/components/ProductCardSkeleton"
-import { ProductConfiguratorSkeleton } from "@/features/products/components/ProductConfiguratorSkeleton"
-import { ProductGallerySkeleton } from "@/features/products/components/ProductGallerySkeleton"
+import { Skeleton } from "@/components/ui/skeleton";
+import { ProductCardSkeleton } from "@/features/products/components/ProductCardSkeleton";
+import { ProductConfiguratorSkeleton } from "@/features/products/components/ProductConfiguratorSkeleton";
+import { ProductGallerySkeleton } from "@/features/products/components/ProductGallerySkeleton";
 
 /** Fallback estructural de ProductDetailPage, alineado con galería, configurador y secciones reales. */
 export function ProductDetailPageSkeleton() {
@@ -96,5 +96,5 @@ export function ProductDetailPageSkeleton() {
         </section>
       </div>
     </div>
-  )
+  );
 }

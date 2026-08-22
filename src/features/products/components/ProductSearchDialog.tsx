@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { useMemo, useState } from "react"
-import { ArrowRight, LoaderCircle, Search } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { useMemo, useState } from "react";
+import { ArrowRight, LoaderCircle, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-import { ProductImage } from "@/components/media/ProductImage"
-import { Button } from "@/components/ui/button"
+import { ProductImage } from "@/components/media/ProductImage";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -13,76 +13,79 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { cn } from "@/lib/utils"
-import type { ResultadoBusquedaProducto } from "@/server/datos-publicos"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import type { ResultadoBusquedaProducto } from "@/server/datos-publicos";
 
 function normalizarBusqueda(value: string) {
   return value
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
-    .trim()
+    .trim();
 }
 
 /** Buscador global: carga un índice liviano únicamente cuando se abre. */
-export function ProductSearchDialog({ compact = false }: { compact?: boolean }) {
-  const [abierto, setAbierto] = useState(false)
-  const [consulta, setConsulta] = useState("")
-  const [indice, setIndice] = useState<ResultadoBusquedaProducto[] | null>(null)
-  const [cargando, setCargando] = useState(false)
-  const [error, setError] = useState(false)
-  const router = useRouter()
+export function ProductSearchDialog({
+  compact = false,
+}: {
+  compact?: boolean;
+}) {
+  const [abierto, setAbierto] = useState(false);
+  const [consulta, setConsulta] = useState("");
+  const [indice, setIndice] = useState<ResultadoBusquedaProducto[] | null>(
+    null,
+  );
+  const [cargando, setCargando] = useState(false);
+  const [error, setError] = useState(false);
+  const router = useRouter();
 
   function handleOpenChange(open: boolean) {
-    setAbierto(open)
+    setAbierto(open);
     if (!open) {
-      setConsulta("")
-      return
+      setConsulta("");
+      return;
     }
-    if (indice || cargando) return
+    if (indice || cargando) return;
 
-    setCargando(true)
-    setError(false)
+    setCargando(true);
+    setError(false);
 
     void fetch("/api/busqueda", { cache: "force-cache" })
       .then((respuesta) => {
-        if (!respuesta.ok) throw new Error("No se pudo cargar el buscador")
-        return respuesta.json() as Promise<ResultadoBusquedaProducto[]>
+        if (!respuesta.ok) throw new Error("No se pudo cargar el buscador");
+        return respuesta.json() as Promise<ResultadoBusquedaProducto[]>;
       })
       .then((datos) => {
-        setIndice(datos)
+        setIndice(datos);
       })
       .catch(() => {
-        setError(true)
+        setError(true);
       })
       .finally(() => {
-        setCargando(false)
-      })
+        setCargando(false);
+      });
   }
 
-  const consultaNormalizada = normalizarBusqueda(consulta)
+  const consultaNormalizada = normalizarBusqueda(consulta);
   const resultados = useMemo(() => {
-    if (!indice || consultaNormalizada.length < 2) return []
+    if (!indice || consultaNormalizada.length < 2) return [];
     return indice
       .filter((producto) =>
         normalizarBusqueda(producto.indice).includes(consultaNormalizada),
       )
-      .slice(0, 8)
-  }, [consultaNormalizada, indice])
+      .slice(0, 8);
+  }, [consultaNormalizada, indice]);
 
   function irAlProducto(slug: string) {
-    setAbierto(false)
-    setConsulta("")
-    router.push(`/producto/${slug}`)
+    setAbierto(false);
+    setConsulta("");
+    router.push(`/producto/${slug}`);
   }
 
   return (
-    <Dialog
-      open={abierto}
-      onOpenChange={handleOpenChange}
-    >
+    <Dialog open={abierto} onOpenChange={handleOpenChange}>
       <DialogTrigger
         render={
           <Button
@@ -101,7 +104,9 @@ export function ProductSearchDialog({ compact = false }: { compact?: boolean }) 
       >
         <Search className="shrink-0" />
         {!compact && (
-          <span className="hidden min-w-0 truncate xl:inline">Buscar productos</span>
+          <span className="hidden min-w-0 truncate xl:inline">
+            Buscar productos
+          </span>
         )}
       </DialogTrigger>
 
@@ -130,12 +135,15 @@ export function ProductSearchDialog({ compact = false }: { compact?: boolean }) 
         <div className="max-h-[min(60svh,32rem)] overflow-y-auto p-3">
           {cargando ? (
             <div className="flex min-h-44 items-center justify-center gap-2 text-sm text-muted-foreground">
-              <LoaderCircle className="size-4 animate-spin" /> Cargando catálogo...
+              <LoaderCircle className="size-4 animate-spin" /> Cargando
+              catálogo...
             </div>
           ) : error ? (
             <div className="flex min-h-44 flex-col items-center justify-center px-6 text-center">
               <p className="font-medium">No pudimos cargar el buscador</p>
-              <p className="mt-1 text-sm text-muted-foreground">Cerralo y volvé a intentarlo.</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Cerralo y volvé a intentarlo.
+              </p>
             </div>
           ) : consultaNormalizada.length < 2 ? (
             <div className="flex min-h-44 flex-col items-center justify-center px-6 text-center">
@@ -150,12 +158,15 @@ export function ProductSearchDialog({ compact = false }: { compact?: boolean }) 
           ) : resultados.length === 0 ? (
             <div className="flex min-h-44 flex-col items-center justify-center px-6 text-center">
               <p className="font-medium">No encontramos coincidencias</p>
-              <p className="mt-1 text-sm text-muted-foreground">Probá con otro nombre, una línea o un tipo de abertura.</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Probá con otro nombre, una línea o un tipo de abertura.
+              </p>
             </div>
           ) : (
             <div className="space-y-1">
               <p className="px-2 pb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                {resultados.length} {resultados.length === 1 ? "resultado" : "resultados"}
+                {resultados.length}{" "}
+                {resultados.length === 1 ? "resultado" : "resultados"}
               </p>
               {resultados.map((producto) => (
                 <Button
@@ -172,9 +183,13 @@ export function ProductSearchDialog({ compact = false }: { compact?: boolean }) 
                     imgClassName="object-cover"
                   />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-semibold">{producto.nombre}</span>
+                    <span className="block truncate font-semibold">
+                      {producto.nombre}
+                    </span>
                     <span className="mt-1 block truncate text-xs font-normal text-muted-foreground">
-                      {[producto.linea, producto.tipologia].filter(Boolean).join(" · ")}
+                      {[producto.linea, producto.tipologia]
+                        .filter(Boolean)
+                        .join(" · ")}
                     </span>
                   </span>
                   <ArrowRight className="size-4 shrink-0 text-muted-foreground" />
@@ -185,5 +200,5 @@ export function ProductSearchDialog({ compact = false }: { compact?: boolean }) 
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

@@ -26,7 +26,7 @@ import type {
   SlugLineaProducto,
   SlugOpcionVidrio,
   ManoApertura,
-} from "./catalogo"
+} from "./catalogo";
 
 /* --------------------------------------------------------------------------
  * Selección del cliente
@@ -54,27 +54,27 @@ import type {
  * };
  */
 export interface SeleccionProducto {
-  medidaId: string
-  colorSlug: SlugColorPerfil
+  medidaId: string;
+  colorSlug: SlugColorPerfil;
 
   /**
    * null cuando el producto no lleva vidrio,
    * por ejemplo una puerta completamente ciega.
    */
-  vidrioSlug: SlugOpcionVidrio | null
+  vidrioSlug: SlugOpcionVidrio | null;
 
   /** Accesorios elegidos por el cliente. */
-  accesoriosSlug: SlugAccesorio[]
-  manoApertura: ManoApertura | null
+  accesoriosSlug: SlugAccesorio[];
+  manoApertura: ManoApertura | null;
 }
 
 /** Etiquetas legibles congeladas junto al item para renderizar el carrito sin rehidratar el catálogo. */
 export interface ResumenSeleccionCarrito {
-  medidaEtiqueta: string
-  colorEtiqueta: string
-  vidrioEtiqueta: string | null
-  accesoriosEtiqueta: string[]
-  manoAperturaEtiqueta: string | null
+  medidaEtiqueta: string;
+  colorEtiqueta: string;
+  vidrioEtiqueta: string | null;
+  accesoriosEtiqueta: string[];
+  manoAperturaEtiqueta: string | null;
 }
 
 /* --------------------------------------------------------------------------
@@ -104,32 +104,32 @@ export interface ResumenSeleccionCarrito {
  * };
  */
 export interface DesglosePrecio {
-  moneda: CodigoMoneda
+  moneda: CodigoMoneda;
 
   /** Precio de la variante elegida después de aplicar la promoción global, si participa. */
-  precioVarianteContado: number
-  precioVarianteTarjeta: number
+  precioVarianteContado: number;
+  precioVarianteTarjeta: number;
 
-  adicionalVidrio: number
-  adicionalAccesorios: number
+  adicionalVidrio: number;
+  adicionalAccesorios: number;
 
-  porcentajeDescuento: number
-  descuentoAplicado: DescuentoAplicado | null
+  porcentajeDescuento: number;
+  descuentoAplicado: DescuentoAplicado | null;
 
   /** Precio de contado antes de la promoción, con accesorios incluidos. */
-  precioUnitarioContadoOriginal: number
-  ahorroUnitario: number
-  ahorroTotal: number
+  precioUnitarioContadoOriginal: number;
+  ahorroUnitario: number;
+  ahorroTotal: number;
 
-  precioUnitarioContado: number
-  precioUnitarioTarjeta: number
+  precioUnitarioContado: number;
+  precioUnitarioTarjeta: number;
 
   /** precioUnitarioContado * cantidad */
-  totalContado: number
+  totalContado: number;
   /** precioUnitarioTarjeta * cantidad */
-  totalTarjeta: number
+  totalTarjeta: number;
   /** precioUnitarioContadoOriginal * cantidad */
-  totalContadoOriginal: number
+  totalContadoOriginal: number;
 }
 
 /* --------------------------------------------------------------------------
@@ -151,12 +151,12 @@ export interface DesglosePrecio {
  * };
  */
 export interface ResumenProductoCarrito {
-  id: string
-  slug: string
-  nombre: string
-  linea: SlugLineaProducto
-  tipologiaId: string
-  imagen: string
+  id: string;
+  slug: string;
+  nombre: string;
+  linea: SlugLineaProducto;
+  tipologiaId: string;
+  imagen: string;
 }
 
 /* --------------------------------------------------------------------------
@@ -201,13 +201,13 @@ export interface ResumenProductoCarrito {
  * };
  */
 export interface ItemCarrito {
-  id: string
-  producto: ResumenProductoCarrito
-  seleccion: SeleccionProducto
-  resumenSeleccion: ResumenSeleccionCarrito
-  cantidad: number
+  id: string;
+  producto: ResumenProductoCarrito;
+  seleccion: SeleccionProducto;
+  resumenSeleccion: ResumenSeleccionCarrito;
+  cantidad: number;
   /** Tope de unidades al momento de agregar el ítem (foto del stock de la
    *  variante, igual que `precios`): null = infinito, sin tope. */
-  cantidadMaxima: number | null
-  precios: DesglosePrecio
+  cantidadMaxima: number | null;
+  precios: DesglosePrecio;
 }

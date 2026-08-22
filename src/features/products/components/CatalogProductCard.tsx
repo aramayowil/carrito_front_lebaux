@@ -80,7 +80,7 @@ export function CatalogProductCard({
       </Link>
 
       <CardHeader className="gap-1.5 px-3 pt-3 sm:px-4 sm:pt-4">
-        <p className="line-clamp-1 text-[0.625rem] font-semibold uppercase tracking-[0.1em] text-muted-foreground sm:text-xs sm:tracking-[0.12em]">
+        <p className="line-clamp-1 text-[0.625rem] font-semibold uppercase tracking-widest text-muted-foreground sm:text-xs sm:tracking-[0.12em]">
           {[tipologiaNombre, aperturaNombre].filter(Boolean).join(" · ") ||
             "Abertura"}
         </p>

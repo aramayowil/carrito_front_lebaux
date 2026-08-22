@@ -1,17 +1,17 @@
-import type { ImagenProducto, Producto } from "@/types"
+import type { ImagenProducto, Producto } from "@/types";
 
 const currencyFormatter = new Intl.NumberFormat("es-AR", {
   style: "currency",
   currency: "ARS",
   maximumFractionDigits: 0,
-})
+});
 
 export function formatProductPrice(price: number): string {
-  return currencyFormatter.format(price)
+  return currencyFormatter.format(price);
 }
 
 export function formatAvailableSizes(count: number): string {
-  return count === 1 ? "1 medida disponible" : `${count} medidas disponibles`
+  return count === 1 ? "1 medida disponible" : `${count} medidas disponibles`;
 }
 
 export function getPrimaryProductImage(
@@ -19,5 +19,5 @@ export function getPrimaryProductImage(
 ): ImagenProducto | undefined {
   return (
     product.imagenes.find((image) => image.esPrincipal) ?? product.imagenes[0]
-  )
+  );
 }

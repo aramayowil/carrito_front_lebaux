@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
 
-import { withSentryConfig } from '@sentry/nextjs'
+import { withSentryConfig } from "@sentry/nextjs";
 
-const esDesarrollo = process.env.NODE_ENV !== 'production'
+const esDesarrollo = process.env.NODE_ENV !== "production";
 
 // Next.js necesita 'unsafe-inline' en script-src porque inyecta el payload
 // de hidratación de RSC como <script> inline sin nonce. Si en algún momento
@@ -11,7 +11,7 @@ const esDesarrollo = process.env.NODE_ENV !== 'production'
 // Fast Refresh de webpack); en producción no hace falta.
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${esDesarrollo ? " 'unsafe-eval'" : ''}`,
+  `script-src 'self' 'unsafe-inline'${esDesarrollo ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https://res.cloudinary.com",
   "font-src 'self' data:",
@@ -24,22 +24,22 @@ const csp = [
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
-].join('; ')
+].join("; ");
 
 const securityHeaders = [
-  { key: 'Content-Security-Policy', value: csp },
-  { key: 'X-Frame-Options', value: 'DENY' },
-  { key: 'X-Content-Type-Options', value: 'nosniff' },
-  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  { key: "Content-Security-Policy", value: csp },
+  { key: "X-Frame-Options", value: "DENY" },
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   {
-    key: 'Permissions-Policy',
-    value: 'camera=(), microphone=(), geolocation=()',
+    key: "Permissions-Policy",
+    value: "camera=(), microphone=(), geolocation=()",
   },
   {
-    key: 'Strict-Transport-Security',
-    value: 'max-age=63072000; includeSubDomains; preload',
+    key: "Strict-Transport-Security",
+    value: "max-age=63072000; includeSubDomains; preload",
   },
-]
+];
 
 const nextConfig = {
   poweredByHeader: false,
@@ -47,20 +47,20 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'res.cloudinary.com',
+        protocol: "https",
+        hostname: "res.cloudinary.com",
       },
     ],
   },
   async headers() {
     return [
       {
-        source: '/:path*',
+        source: "/:path*",
         headers: securityHeaders,
       },
-    ]
+    ];
   },
-}
+};
 
 export default withSentryConfig(nextConfig, {
   org: process.env.SENTRY_ORG,
@@ -88,5 +88,5 @@ export default withSentryConfig(nextConfig, {
   // propio dominio) en vez de pegarle directo a *.sentry.io: evita tocar
   // la Content-Security-Policy (connect-src sigue en 'self') y esquiva
   // bloqueadores de publicidad que filtran dominios de telemetría.
-  tunnelRoute: '/monitoring',
-})
+  tunnelRoute: "/monitoring",
+});

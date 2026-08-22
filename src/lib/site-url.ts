@@ -7,11 +7,11 @@
  * último recurso a localhost para no romper `next build` en desarrollo.
  */
 export function obtenerUrlSitio(): string {
-  const configurada = process.env.NEXT_PUBLIC_SITE_URL?.trim()
-  if (configurada) return configurada.replace(/\/+$/, "")
+  const configurada = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (configurada) return configurada.replace(/\/+$/, "");
 
-  const vercelUrl = process.env.NEXT_PUBLIC_VERCEL_URL?.trim()
-  if (vercelUrl) return `https://${vercelUrl}`
+  const vercelUrl = process.env.NEXT_PUBLIC_VERCEL_URL?.trim();
+  if (vercelUrl) return `https://${vercelUrl}`;
 
-  return "http://localhost:3000"
+  return "http://localhost:3000";
 }

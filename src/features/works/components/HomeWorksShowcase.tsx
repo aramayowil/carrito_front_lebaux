@@ -108,8 +108,8 @@ export function HomeWorksShowcase({ obras }: { obras: HomeFeaturedWork[] }) {
           obras.length >= 3 && "grid-cols-3",
         )}
       >
-        {obras.map((obra, index) => (
-          <FeaturedWorkCard key={obra.id} obra={obra} priority={index === 0} />
+        {obras.map((obra) => (
+          <FeaturedWorkCard key={obra.id} obra={obra} />
         ))}
       </div>
     </>

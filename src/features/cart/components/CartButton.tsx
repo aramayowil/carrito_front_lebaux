@@ -1,22 +1,22 @@
-"use client"
+"use client";
 
-import { ShoppingCart } from "lucide-react"
-import { usePathname } from "next/navigation"
+import { ShoppingCart } from "lucide-react";
+import { usePathname } from "next/navigation";
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { useCartStore } from "@/features/cart/store/use-cart-store"
-import { useUICarrito } from "@/features/cart/hooks/use-ui-carrito"
-import { cn } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useCartStore } from "@/features/cart/store/use-cart-store";
+import { useUICarrito } from "@/features/cart/hooks/use-ui-carrito";
+import { cn } from "@/lib/utils";
 
 /** FAB del carrito: respeta el área segura y se eleva sobre la compra móvil. */
 export function CartButton() {
   const count = useCartStore((state) =>
     state.items.reduce((total, item) => total + item.cantidad, 0),
-  )
-  const { abrirCarrito } = useUICarrito()
-  const pathname = usePathname()
-  const withBottomBar = pathname?.startsWith("/producto/") ?? false
+  );
+  const { abrirCarrito } = useUICarrito();
+  const pathname = usePathname();
+  const withBottomBar = pathname?.startsWith("/producto/") ?? false;
 
   return (
     <div
@@ -46,5 +46,5 @@ export function CartButton() {
         )}
       </Button>
     </div>
-  )
+  );
 }

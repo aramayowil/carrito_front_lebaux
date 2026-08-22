@@ -11,7 +11,7 @@ Alinear la ficha pública de producto con el modelo incorporado en el administra
 La publicación de precio se resuelve siempre con:
 
 ```ts
-producto.precios.consultarPrecio || variante?.consultarPrecio === true
+producto.precios.consultarPrecio || variante?.consultarPrecio === true;
 ```
 
 `Producto.precios.consultarPrecio` sigue siendo el override global. Cuando está desactivado, cada `VarianteProducto.consultarPrecio` decide si esa combinación publica precio.

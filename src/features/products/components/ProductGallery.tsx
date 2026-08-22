@@ -1,26 +1,26 @@
-"use client"
+"use client";
 
-import { useEffect, useMemo, useState } from "react"
-import { ZoomIn } from "lucide-react"
+import { useEffect, useMemo, useState } from "react";
+import { ZoomIn } from "lucide-react";
 
-import { Lightbox } from "@/components/media/Lightbox"
-import { ProductImage } from "@/components/media/ProductImage"
+import { Lightbox } from "@/components/media/Lightbox";
+import { ProductImage } from "@/components/media/ProductImage";
 import {
   Carousel,
   type CarouselApi,
   CarouselContent,
   CarouselItem,
-} from "@/components/ui/carousel"
-import { cn } from "@/lib/utils"
-import type { ImagenProducto } from "@/types"
+} from "@/components/ui/carousel";
+import { cn } from "@/lib/utils";
+import type { ImagenProducto } from "@/types";
 
 interface ProductGalleryProps {
-  images: ImagenProducto[]
-  productName: string
+  images: ImagenProducto[];
+  productName: string;
 }
 
-const MAX_MINIATURAS_DESKTOP = 6
-const MINIATURAS_SIN_RESUMEN = MAX_MINIATURAS_DESKTOP - 1
+const MAX_MINIATURAS_DESKTOP = 6;
+const MINIATURAS_SIN_RESUMEN = MAX_MINIATURAS_DESKTOP - 1;
 
 /** Galería de producto: selector estático desktop, carrusel mobile y visor inmersivo compartido. */
 export function ProductGallery({ images, productName }: ProductGalleryProps) {
@@ -31,45 +31,45 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
           Number(Boolean(b.esPrincipal)) - Number(Boolean(a.esPrincipal)),
       ),
     [images],
-  )
-  const [selectedIndex, setSelectedIndex] = useState(0)
-  const [mobileIndex, setMobileIndex] = useState(0)
-  const [mobileApi, setMobileApi] = useState<CarouselApi>()
-  const [lightboxOpen, setLightboxOpen] = useState(false)
+  );
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [mobileIndex, setMobileIndex] = useState(0);
+  const [mobileApi, setMobileApi] = useState<CarouselApi>();
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
-  const maxIndex = Math.max(orderedImages.length - 1, 0)
-  const selectedIndexSeguro = Math.min(selectedIndex, maxIndex)
-  const mobileIndexSeguro = Math.min(mobileIndex, maxIndex)
+  const maxIndex = Math.max(orderedImages.length - 1, 0);
+  const selectedIndexSeguro = Math.min(selectedIndex, maxIndex);
+  const mobileIndexSeguro = Math.min(mobileIndex, maxIndex);
 
-  const hasMultiple = orderedImages.length > 1
-  const hasThumbnailOverflow = orderedImages.length > MAX_MINIATURAS_DESKTOP
-  const desktopThumbnails = orderedImages.slice(0, MAX_MINIATURAS_DESKTOP)
+  const hasMultiple = orderedImages.length > 1;
+  const hasThumbnailOverflow = orderedImages.length > MAX_MINIATURAS_DESKTOP;
+  const desktopThumbnails = orderedImages.slice(0, MAX_MINIATURAS_DESKTOP);
   const remainingImages = Math.max(
     0,
     orderedImages.length - MINIATURAS_SIN_RESUMEN,
-  )
-  const selectedImage = orderedImages[selectedIndexSeguro]
+  );
+  const selectedImage = orderedImages[selectedIndexSeguro];
 
   useEffect(() => {
-    if (!mobileApi) return
+    if (!mobileApi) return;
 
     const updateSelection = () => {
-      setMobileIndex(mobileApi.selectedScrollSnap())
-    }
+      setMobileIndex(mobileApi.selectedScrollSnap());
+    };
 
-    updateSelection()
-    mobileApi.on("select", updateSelection)
-    mobileApi.on("reInit", updateSelection)
+    updateSelection();
+    mobileApi.on("select", updateSelection);
+    mobileApi.on("reInit", updateSelection);
 
     return () => {
-      mobileApi.off("select", updateSelection)
-      mobileApi.off("reInit", updateSelection)
-    }
-  }, [mobileApi])
+      mobileApi.off("select", updateSelection);
+      mobileApi.off("reInit", updateSelection);
+    };
+  }, [mobileApi]);
 
   function openAt(index: number) {
-    setSelectedIndex(index)
-    setLightboxOpen(true)
+    setSelectedIndex(index);
+    setLightboxOpen(true);
   }
 
   if (orderedImages.length === 0) {
@@ -77,7 +77,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
       <div className="corner-marks relative aspect-square overflow-hidden rounded-2xl border border-border/70 bg-white">
         <ProductImage src="" alt={productName} className="h-full w-full" />
       </div>
-    )
+    );
   }
 
   return (
@@ -87,8 +87,9 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
           <div className="flex max-h-full flex-col gap-2 overflow-y-auto pr-1">
             {desktopThumbnails.map((image, index) => {
               const isOverflowTrigger =
-                hasThumbnailOverflow && index === MAX_MINIATURAS_DESKTOP - 1
-              const selected = selectedIndexSeguro === index && !isOverflowTrigger
+                hasThumbnailOverflow && index === MAX_MINIATURAS_DESKTOP - 1;
+              const selected =
+                selectedIndexSeguro === index && !isOverflowTrigger;
 
               return (
                 <button
@@ -124,7 +125,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
                     </span>
                   )}
                 </button>
-              )
+              );
             })}
           </div>
         )}
@@ -143,7 +144,6 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
             alt={selectedImage.textoAlternativo || productName}
             className="h-full w-full"
             sizes="50vw"
-            priority
           />
         </button>
       </div>
@@ -202,7 +202,9 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
 
       <Lightbox
         images={orderedImages.map((image) => image.url)}
-        alts={orderedImages.map((image) => image.textoAlternativo || productName)}
+        alts={orderedImages.map(
+          (image) => image.textoAlternativo || productName,
+        )}
         title={productName}
         open={lightboxOpen}
         initialIndex={selectedIndexSeguro}
@@ -210,5 +212,5 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
         onIndexChange={setSelectedIndex}
       />
     </>
-  )
+  );
 }

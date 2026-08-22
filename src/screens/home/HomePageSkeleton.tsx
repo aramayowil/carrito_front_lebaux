@@ -6,7 +6,7 @@ import {
   HomeProductsSectionSkeleton,
   HomeTechnicalCatalogsSectionSkeleton,
   HomeWorksSectionSkeleton,
-} from "@/screens/home/components/HomeSectionSkeletons"
+} from "@/screens/home/components/HomeSectionSkeletons";
 
 /** Fallback estructural de Home: reproduce las secciones reales y minimiza cambios de layout. */
 export function HomePageSkeleton() {
@@ -21,5 +21,5 @@ export function HomePageSkeleton() {
       <HomeWorksSectionSkeleton />
       <HomeAboutSectionSkeleton />
     </div>
-  )
+  );
 }

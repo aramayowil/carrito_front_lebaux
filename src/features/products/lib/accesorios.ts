@@ -1,4 +1,4 @@
-import type { AccesorioLinea, MedidaAccesorio, OpcionMedida } from "@/types"
+import type { AccesorioLinea, MedidaAccesorio, OpcionMedida } from "@/types";
 
 /**
  * Resultado de emparejar la medida de una variante de producto con la tabla
@@ -14,10 +14,10 @@ import type { AccesorioLinea, MedidaAccesorio, OpcionMedida } from "@/types"
  */
 export type ResultadoEmparejeAccesorio =
   | { estado: "exacta" | "cercana"; medida: MedidaAccesorio }
-  | { estado: "sin-medidas" | "ambigua"; medida: null }
+  | { estado: "sin-medidas" | "ambigua"; medida: null };
 
 function areaCm2(anchoCm: number, altoCm: number): number {
-  return anchoCm * altoCm
+  return anchoCm * altoCm;
 }
 
 /**
@@ -35,38 +35,38 @@ export function emparejarAccesorioConVariante(
   medidaProducto: Pick<OpcionMedida, "anchoCm" | "altoCm">,
 ): ResultadoEmparejeAccesorio {
   if (accesorio.medidas.length === 0) {
-    return { estado: "sin-medidas", medida: null }
+    return { estado: "sin-medidas", medida: null };
   }
 
-  const areaObjetivo = areaCm2(medidaProducto.anchoCm, medidaProducto.altoCm)
+  const areaObjetivo = areaCm2(medidaProducto.anchoCm, medidaProducto.altoCm);
 
   const exacta = accesorio.medidas.find(
     (medida) =>
       medida.anchoCm === medidaProducto.anchoCm &&
       medida.altoCm === medidaProducto.altoCm,
-  )
-  if (exacta) return { estado: "exacta", medida: exacta }
+  );
+  if (exacta) return { estado: "exacta", medida: exacta };
 
-  let mejorDistancia = Infinity
-  let candidatas: MedidaAccesorio[] = []
+  let mejorDistancia = Infinity;
+  let candidatas: MedidaAccesorio[] = [];
 
   for (const medida of accesorio.medidas) {
     const distancia = Math.abs(
       areaCm2(medida.anchoCm, medida.altoCm) - areaObjetivo,
-    )
+    );
     if (distancia < mejorDistancia) {
-      mejorDistancia = distancia
-      candidatas = [medida]
+      mejorDistancia = distancia;
+      candidatas = [medida];
     } else if (distancia === mejorDistancia) {
-      candidatas.push(medida)
+      candidatas.push(medida);
     }
   }
 
   if (candidatas.length > 1) {
-    return { estado: "ambigua", medida: null }
+    return { estado: "ambigua", medida: null };
   }
 
-  return { estado: "cercana", medida: candidatas[0] }
+  return { estado: "cercana", medida: candidatas[0] };
 }
 
 /** Precio resuelto de un accesorio para una medida de producto puntual, o
@@ -75,6 +75,6 @@ export function precioAccesorioParaMedida(
   accesorio: AccesorioLinea,
   medidaProducto: Pick<OpcionMedida, "anchoCm" | "altoCm">,
 ): number | null {
-  const resultado = emparejarAccesorioConVariante(accesorio, medidaProducto)
-  return resultado.medida?.precio ?? null
+  const resultado = emparejarAccesorioConVariante(accesorio, medidaProducto);
+  return resultado.medida?.precio ?? null;
 }

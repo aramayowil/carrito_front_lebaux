@@ -1,29 +1,29 @@
-import { ImageOff } from "lucide-react"
-import Image from "next/image"
+import { ImageOff } from "lucide-react";
+import Image from "next/image";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 interface ProductImageProps {
-  src: string
-  alt: string
-  className?: string
-  imgClassName?: string
-  sizes?: string
-  srcSet?: string
-  priority?: boolean
+  src: string;
+  alt: string;
+  className?: string;
+  imgClassName?: string;
+  sizes?: string;
+  srcSet?: string;
+  priority?: boolean;
 }
 
 const SIZES_POR_DEFECTO =
-  "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+  "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw";
 
 function esImagenOptimizablePorNext(src: string) {
-  if (src.startsWith("/")) return true
+  if (src.startsWith("/")) return true;
 
   try {
-    const url = new URL(src)
-    return url.protocol === "https:" && url.hostname === "res.cloudinary.com"
+    const url = new URL(src);
+    return url.protocol === "https:" && url.hostname === "res.cloudinary.com";
   } catch {
-    return false
+    return false;
   }
 }
 
@@ -40,7 +40,7 @@ export function ProductImage({
   srcSet,
   priority = false,
 }: ProductImageProps) {
-  const fuente = src.trim()
+  const fuente = src.trim();
 
   if (!fuente) {
     return (
@@ -53,7 +53,7 @@ export function ProductImage({
         <ImageOff className="h-8 w-8" />
         <span className="px-3 text-center text-xs">{alt}</span>
       </div>
-    )
+    );
   }
 
   if (!esImagenOptimizablePorNext(fuente)) {
@@ -70,7 +70,7 @@ export function ProductImage({
           className={cn("h-full w-full object-contain", imgClassName)}
         />
       </div>
-    )
+    );
   }
 
   return (
@@ -84,5 +84,5 @@ export function ProductImage({
         className={cn("object-contain", imgClassName)}
       />
     </div>
-  )
+  );
 }

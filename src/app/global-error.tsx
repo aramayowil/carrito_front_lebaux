@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
-import * as Sentry from "@sentry/nextjs"
+import { useEffect } from "react";
+import * as Sentry from "@sentry/nextjs";
 
 export default function GlobalError({
   error,
   reset,
 }: {
-  error: Error & { digest?: string }
-  reset: () => void
+  error: Error & { digest?: string };
+  reset: () => void;
 }) {
   useEffect(() => {
-    Sentry.captureException(error)
-  }, [error])
+    Sentry.captureException(error);
+  }, [error]);
 
   return (
     <html lang="es">
@@ -44,7 +44,8 @@ export default function GlobalError({
             No pudimos cargar el sitio
           </h1>
           <p style={{ margin: "14px 0 0", lineHeight: 1.6, color: "#5f6364" }}>
-            Ocurrió un problema al obtener la información. Intentá nuevamente en unos segundos.
+            Ocurrió un problema al obtener la información. Intentá nuevamente en
+            unos segundos.
           </p>
           <button
             type="button"
@@ -65,5 +66,5 @@ export default function GlobalError({
         </main>
       </body>
     </html>
-  )
+  );
 }

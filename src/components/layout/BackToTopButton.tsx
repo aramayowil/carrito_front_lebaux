@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { ArrowUp } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { ArrowUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function BackToTopButton() {
   return (
@@ -13,5 +13,5 @@ export function BackToTopButton() {
     >
       Volver arriba <ArrowUp data-icon="inline-end" />
     </Button>
-  )
+  );
 }

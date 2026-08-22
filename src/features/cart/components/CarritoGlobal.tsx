@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import type { ReactNode } from "react"
-import dynamic from "next/dynamic"
+import type { ReactNode } from "react";
+import dynamic from "next/dynamic";
 
-import { Toaster } from "@/components/ui/sonner"
-import { CartDrawer } from "@/features/cart/components/CartDrawer"
-import { useSyncCartCatalog } from "@/features/cart/hooks/use-sync-cart-catalog"
-import { ProveedorUICarrito } from "@/features/cart/providers/ProveedorUICarrito"
-import { CheckoutDialog } from "@/features/checkout/components/CheckoutDialog"
-import { OrderSuccessDialog } from "@/features/checkout/components/OrderSuccessDialog"
-import type { ConfiguracionCheckoutPublica } from "@/types"
+import { Toaster } from "@/components/ui/sonner";
+import { CartDrawer } from "@/features/cart/components/CartDrawer";
+import { useSyncCartCatalog } from "@/features/cart/hooks/use-sync-cart-catalog";
+import { ProveedorUICarrito } from "@/features/cart/providers/ProveedorUICarrito";
+import { CheckoutDialog } from "@/features/checkout/components/CheckoutDialog";
+import { OrderSuccessDialog } from "@/features/checkout/components/OrderSuccessDialog";
+import type { ConfiguracionCheckoutPublica } from "@/types";
 
 // El FAB se monta después de la hidratación. Los Dialog/Sheet de Base UI
 // agregan `inert` y `aria-hidden` a sus hermanos mientras están abiertos; si
@@ -21,7 +21,7 @@ const CartButton = dynamic(
       (module) => module.CartButton,
     ),
   { ssr: false },
-)
+);
 
 /**
  * Única frontera cliente global del carrito. Los `children` pueden seguir
@@ -32,11 +32,11 @@ export function CarritoGlobal({
   telefonoWhatsapp,
   children,
 }: {
-  checkout: ConfiguracionCheckoutPublica
-  telefonoWhatsapp: string
-  children: ReactNode
+  checkout: ConfiguracionCheckoutPublica;
+  telefonoWhatsapp: string;
+  children: ReactNode;
 }) {
-  useSyncCartCatalog()
+  useSyncCartCatalog();
 
   return (
     <ProveedorUICarrito>
@@ -50,5 +50,5 @@ export function CarritoGlobal({
       <OrderSuccessDialog />
       <Toaster richColors closeButton />
     </ProveedorUICarrito>
-  )
+  );
 }

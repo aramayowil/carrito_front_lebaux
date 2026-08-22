@@ -1,19 +1,19 @@
-import { MessageCircleMore, Ruler, ShieldCheck, Truck } from "lucide-react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { CatalogProductCard } from "@/features/products/components/CatalogProductCard"
-import { ProductConfigurator } from "@/features/products/components/ProductConfigurator"
-import { ProductGallery } from "@/features/products/components/ProductGallery"
-import { ProductRichText } from "@/features/products/components/ProductRichText"
-import { descripcionProductoComoTexto } from "@/features/products/lib/product-description"
-import { completarTextoPublico } from "@/lib/public-text"
-import type { DatosProductoPublico } from "@/server/datos-publicos"
+import { MessageCircleMore, Ruler, ShieldCheck, Truck } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { CatalogProductCard } from "@/features/products/components/CatalogProductCard";
+import { ProductConfigurator } from "@/features/products/components/ProductConfigurator";
+import { ProductGallery } from "@/features/products/components/ProductGallery";
+import { ProductRichText } from "@/features/products/components/ProductRichText";
+import { descripcionProductoComoTexto } from "@/features/products/lib/product-description";
+import { completarTextoPublico } from "@/lib/public-text";
+import type { DatosProductoPublico } from "@/server/datos-publicos";
 
 function tieneDescripcionExtensa(descripcion: string): boolean {
   return (
     descripcionProductoComoTexto(descripcion).length > 0 ||
     /<(img|table|hr)\b/i.test(descripcion)
-  )
+  );
 }
 
 const BLOQUES_CONFIANZA = [
@@ -41,7 +41,7 @@ const BLOQUES_CONFIANZA = [
     titulo: "Asesoramiento real",
     descripcion: "Te ayudamos por WhatsApp antes de confirmar.",
   },
-] as const
+] as const;
 
 /** Ficha comercial del producto: galería, configuración, compra y contenido técnico. */
 export function ProductDetailPage({ datos }: { datos: DatosProductoPublico }) {
@@ -54,10 +54,10 @@ export function ProductDetailPage({ datos }: { datos: DatosProductoPublico }) {
     tiposApertura,
     accesorios,
     telefonoWhatsapp,
-  } = datos
+  } = datos;
   const mostrarDescripcionExtensa = tieneDescripcionExtensa(
     product.descripcionExtensa,
-  )
+  );
 
   return (
     <div className="bg-background pb-12 pt-5 sm:pb-16 sm:pt-8">
@@ -221,5 +221,5 @@ export function ProductDetailPage({ datos }: { datos: DatosProductoPublico }) {
         )}
       </div>
     </div>
-  )
+  );
 }

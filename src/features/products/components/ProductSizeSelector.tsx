@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { useMemo, useState } from "react"
-import { Ruler, Search } from "lucide-react"
+import { useMemo, useState } from "react";
+import { Ruler, Search } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,18 +11,18 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { completarTextoPublico } from "@/lib/public-text"
-import type { OpcionMedida } from "@/types"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { completarTextoPublico } from "@/lib/public-text";
+import type { OpcionMedida } from "@/types";
 
 interface ProductSizeSelectorProps {
-  productId: string
-  medidas: OpcionMedida[]
-  medidaId: string
-  onChange: (medidaId: string) => void
-  isAvailable?: (medidaId: string) => boolean
+  productId: string;
+  medidas: OpcionMedida[];
+  medidaId: string;
+  onChange: (medidaId: string) => void;
+  isAvailable?: (medidaId: string) => boolean;
 }
 
 function normalizarMedida(value: string) {
@@ -32,7 +32,7 @@ function normalizarMedida(value: string) {
     .replace(/×/g, "x")
     .toLowerCase()
     .replace(/\s+/g, " ")
-    .trim()
+    .trim();
 }
 
 /** Selector híbrido: medidas frecuentes visibles y listado completo cuando abundan. */
@@ -43,11 +43,11 @@ export function ProductSizeSelector({
   onChange,
   isAvailable,
 }: ProductSizeSelectorProps) {
-  const [modalAbierto, setModalAbierto] = useState(false)
-  const [busqueda, setBusqueda] = useState("")
-  const selectedMeasure = medidas.find((medida) => medida.id === medidaId)
-  const hasMore = medidas.length > 6
-  const firstMeasures = hasMore ? medidas.slice(0, 4) : medidas
+  const [modalAbierto, setModalAbierto] = useState(false);
+  const [busqueda, setBusqueda] = useState("");
+  const selectedMeasure = medidas.find((medida) => medida.id === medidaId);
+  const hasMore = medidas.length > 6;
+  const firstMeasures = hasMore ? medidas.slice(0, 4) : medidas;
   const quickMeasures =
     hasMore &&
     selectedMeasure &&
@@ -55,8 +55,8 @@ export function ProductSizeSelector({
       ? [...firstMeasures, selectedMeasure]
       : hasMore
         ? medidas.slice(0, 5)
-        : firstMeasures
-  const busquedaNormalizada = normalizarMedida(busqueda)
+        : firstMeasures;
+  const busquedaNormalizada = normalizarMedida(busqueda);
   const medidasFiltradas = useMemo(
     () =>
       busquedaNormalizada
@@ -65,12 +65,12 @@ export function ProductSizeSelector({
           )
         : medidas,
     [busquedaNormalizada, medidas],
-  )
+  );
 
   function seleccionarMedida(id: string) {
-    onChange(id)
-    setModalAbierto(false)
-    setBusqueda("")
+    onChange(id);
+    setModalAbierto(false);
+    setBusqueda("");
   }
 
   return (
@@ -89,8 +89,8 @@ export function ProductSizeSelector({
         aria-labelledby={`medida-label-${productId}`}
       >
         {quickMeasures.map((medida) => {
-          const selected = medida.id === medidaId
-          const available = isAvailable?.(medida.id) ?? true
+          const selected = medida.id === medidaId;
+          const available = isAvailable?.(medida.id) ?? true;
           return (
             <Button
               key={medida.id}
@@ -104,15 +104,15 @@ export function ProductSizeSelector({
             >
               {medida.etiqueta}
             </Button>
-          )
+          );
         })}
 
         {hasMore && (
           <Dialog
             open={modalAbierto}
             onOpenChange={(open) => {
-              setModalAbierto(open)
-              if (!open) setBusqueda("")
+              setModalAbierto(open);
+              if (!open) setBusqueda("");
             }}
           >
             <DialogTrigger
@@ -161,8 +161,8 @@ export function ProductSizeSelector({
                 {medidasFiltradas.length > 0 ? (
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                     {medidasFiltradas.map((medida) => {
-                      const selected = medida.id === medidaId
-                      const available = isAvailable?.(medida.id) ?? true
+                      const selected = medida.id === medidaId;
+                      const available = isAvailable?.(medida.id) ?? true;
 
                       return (
                         <Button
@@ -177,7 +177,7 @@ export function ProductSizeSelector({
                           <Ruler className="size-4" aria-hidden="true" />
                           <span className="truncate">{medida.etiqueta}</span>
                         </Button>
-                      )
+                      );
                     })}
                   </div>
                 ) : (
@@ -197,5 +197,5 @@ export function ProductSizeSelector({
         )}
       </div>
     </div>
-  )
+  );
 }

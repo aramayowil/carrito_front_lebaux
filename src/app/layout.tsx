@@ -1,9 +1,8 @@
-import type { Metadata } from "next"
-import type { ReactNode } from "react"
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
 
-import "@/index.css"
-import { PublicShell } from "@/providers/PublicShell"
-
+import "@/index.css";
+import { PublicShell } from "@/providers/PublicShell";
 
 export const metadata: Metadata = {
   title: {
@@ -13,7 +12,7 @@ export const metadata: Metadata = {
   description:
     "Fábrica de aberturas de aluminio a medida en Tucumán. Líneas Herrero, Módena y A30.",
   icons: { icon: "/favicon.ico" },
-}
+};
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
@@ -22,5 +21,5 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <PublicShell>{children}</PublicShell>
       </body>
     </html>
-  )
+  );
 }

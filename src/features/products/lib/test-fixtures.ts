@@ -5,7 +5,7 @@ import type {
   Producto,
   StockVariante,
   VarianteProducto,
-} from "@/types"
+} from "@/types";
 
 /** Producto "simple", sin variantes: usa `precios`/`stock` directo. */
 export function crearProductoSimple(
@@ -44,7 +44,7 @@ export function crearProductoSimple(
     creadoEn: "2026-01-01T00:00:00.000Z",
     actualizadoEn: "2026-01-01T00:00:00.000Z",
     ...overrides,
-  }
+  };
 }
 
 export function crearVariante(
@@ -62,17 +62,19 @@ export function crearVariante(
     stock: { modo: "infinito" },
     visibilidad: "visible",
     ...overrides,
-  }
+  };
 }
 
-export function crearMedida(overrides: Partial<OpcionMedida> = {}): OpcionMedida {
+export function crearMedida(
+  overrides: Partial<OpcionMedida> = {},
+): OpcionMedida {
   return {
     id: "size-120x100",
     etiqueta: "120 x 100 cm",
     anchoCm: 120,
     altoCm: 100,
     ...overrides,
-  }
+  };
 }
 
 export function crearColor(overrides: Partial<ColorPerfil> = {}): ColorPerfil {
@@ -83,7 +85,7 @@ export function crearColor(overrides: Partial<ColorPerfil> = {}): ColorPerfil {
     hexadecimal: "#1C1C1C",
     lineasPermitidas: [],
     ...overrides,
-  }
+  };
 }
 
 /** Producto con variantes (Medida × Color), la forma más común en catálogo. */
@@ -98,13 +100,16 @@ export function crearProductoConVariantes(
     medidasDisponibles: [crearMedida()],
     coloresDisponibles: [crearColor()],
     ...overrides,
-  })
+  });
 }
 
 export function crearDescuento(overrides: Partial<Descuento> = {}): Descuento {
-  return { activo: true, tipo: "porcentaje", valor: 10, ...overrides }
+  return { activo: true, tipo: "porcentaje", valor: 10, ...overrides };
 }
 
-export function stockLimitado(cantidad: number, motivo?: string): StockVariante {
-  return { modo: "limitado", cantidad, motivo }
+export function stockLimitado(
+  cantidad: number,
+  motivo?: string,
+): StockVariante {
+  return { modo: "limitado", cantidad, motivo };
 }

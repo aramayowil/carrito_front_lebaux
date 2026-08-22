@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { ShoppingCart, Trash2 } from "lucide-react"
+import { useState } from "react";
+import { ShoppingCart, Trash2 } from "lucide-react";
 
 import {
   AlertDialog,
@@ -13,36 +13,36 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet"
-import { CartItemRow } from "@/features/cart/components/CartItemRow"
+} from "@/components/ui/sheet";
+import { CartItemRow } from "@/features/cart/components/CartItemRow";
 import {
   calcularTotalesCarrito,
   useCartStore,
-} from "@/features/cart/store/use-cart-store"
-import { useUICarrito } from "@/features/cart/hooks/use-ui-carrito"
-import { formatProductPrice } from "@/features/products/lib/product-card-formatters"
-import { completarTextoPublico } from "@/lib/public-text"
+} from "@/features/cart/store/use-cart-store";
+import { useUICarrito } from "@/features/cart/hooks/use-ui-carrito";
+import { formatProductPrice } from "@/features/products/lib/product-card-formatters";
+import { completarTextoPublico } from "@/lib/public-text";
 
 /** Drawer principal del carrito con edición, totales y confirmación para vaciar. */
 export function CartDrawer() {
-  const [clearDialogOpen, setClearDialogOpen] = useState(false)
+  const [clearDialogOpen, setClearDialogOpen] = useState(false);
   const {
     carritoAbierto: open,
     setCarritoAbierto: setOpen,
     abrirCheckout,
-  } = useUICarrito()
-  const items = useCartStore((state) => state.items)
-  const vaciar = useCartStore((state) => state.vaciar)
-  const totals = calcularTotalesCarrito(items)
+  } = useUICarrito();
+  const items = useCartStore((state) => state.items);
+  const vaciar = useCartStore((state) => state.vaciar);
+  const totals = calcularTotalesCarrito(items);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -83,9 +83,13 @@ export function CartDrawer() {
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>{"¿Vaciar todo el carrito?"}</AlertDialogTitle>
+                    <AlertDialogTitle>
+                      {"¿Vaciar todo el carrito?"}
+                    </AlertDialogTitle>
                     <AlertDialogDescription>
-                      {"Se eliminarán todas las configuraciones guardadas en este pedido."}
+                      {
+                        "Se eliminarán todas las configuraciones guardadas en este pedido."
+                      }
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -93,8 +97,8 @@ export function CartDrawer() {
                     <AlertDialogAction
                       variant="destructive"
                       onClick={() => {
-                        vaciar()
-                        setClearDialogOpen(false)
+                        vaciar();
+                        setClearDialogOpen(false);
                       }}
                     >
                       {"Vaciar carrito"}
@@ -115,7 +119,9 @@ export function CartDrawer() {
               {"Tu carrito está vacío"}
             </p>
             <p className="max-w-64 text-xs leading-5">
-              {"Elegí una abertura, configurá sus opciones y agregala para empezar el pedido."}
+              {
+                "Elegí una abertura, configurá sus opciones y agregala para empezar el pedido."
+              }
             </p>
           </div>
         ) : (
@@ -176,5 +182,5 @@ export function CartDrawer() {
         )}
       </SheetContent>
     </Sheet>
-  )
+  );
 }

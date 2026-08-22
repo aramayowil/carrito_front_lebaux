@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { useState, type FormEvent } from "react"
+import { useState, type FormEvent } from "react";
 
-import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon"
-import { Button } from "@/components/ui/button"
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,23 +11,23 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Separator } from "@/components/ui/separator"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 import {
   calcularTotalesCarrito,
   useCartStore,
-} from "@/features/cart/store/use-cart-store"
-import { useUICarrito } from "@/features/cart/hooks/use-ui-carrito"
-import { buildOrderMessage } from "@/features/checkout/lib/order-message"
-import type { FormaPago } from "@/features/checkout/types/checkout"
-import { formatProductPrice } from "@/features/products/lib/product-card-formatters"
-import { cn } from "@/lib/utils"
-import { buildWhatsAppUrl } from "@/lib/whatsapp"
-import type { CampoCheckoutId, ConfiguracionCheckoutPublica } from "@/types"
+} from "@/features/cart/store/use-cart-store";
+import { useUICarrito } from "@/features/cart/hooks/use-ui-carrito";
+import { buildOrderMessage } from "@/features/checkout/lib/order-message";
+import type { FormaPago } from "@/features/checkout/types/checkout";
+import { formatProductPrice } from "@/features/products/lib/product-card-formatters";
+import { cn } from "@/lib/utils";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import type { CampoCheckoutId, ConfiguracionCheckoutPublica } from "@/types";
 
 const TEXTOS_CHECKOUT = {
   titulo: "Confirmá tu pedido",
@@ -39,15 +39,15 @@ const TEXTOS_CHECKOUT = {
   resumenEtiqueta: "Total estimado",
   botonVolver: "Volver al carrito",
   botonEnviar: "Enviar pedido",
-} as const
+} as const;
 
 const CAMPOS_CHECKOUT: Record<
   CampoCheckoutId,
   {
-    etiqueta: string
-    placeholder: string
-    tipo: "text" | "tel" | "email"
-    autoComplete?: string
+    etiqueta: string;
+    placeholder: string;
+    tipo: "text" | "tel" | "email";
+    autoComplete?: string;
   }
 > = {
   nombre: {
@@ -79,14 +79,14 @@ const CAMPOS_CHECKOUT: Record<
     placeholder: "Contanos cualquier detalle adicional",
     tipo: "text",
   },
-}
+};
 
 const FORMAS_PAGO: Record<
   FormaPago,
   {
-    etiqueta: string
-    descripcion: string
-    etiquetaMensaje: string
+    etiqueta: string;
+    descripcion: string;
+    etiquetaMensaje: string;
   }
 > = {
   contado: {
@@ -99,11 +99,11 @@ const FORMAS_PAGO: Record<
     descripcion: "Precio de lista",
     etiquetaMensaje: "Tarjeta",
   },
-}
+};
 
 interface CampoCheckoutVisible {
-  id: CampoCheckoutId
-  requerido: boolean
+  id: CampoCheckoutId;
+  requerido: boolean;
 }
 
 /** Recoge los datos mínimos y genera el pedido final para WhatsApp. */
@@ -111,79 +111,75 @@ export function CheckoutDialog({
   configuracion,
   telefonoWhatsapp,
 }: {
-  configuracion: ConfiguracionCheckoutPublica
-  telefonoWhatsapp: string
+  configuracion: ConfiguracionCheckoutPublica;
+  telefonoWhatsapp: string;
 }) {
   const {
     checkoutAbierto: open,
     setCheckoutAbierto: setOpen,
     setExitoAbierto,
     abrirCarrito,
-  } = useUICarrito()
-  const items = useCartStore((state) => state.items)
-  const totals = calcularTotalesCarrito(items)
+  } = useUICarrito();
+  const items = useCartStore((state) => state.items);
+  const totals = calcularTotalesCarrito(items);
   const camposActivos: CampoCheckoutVisible[] = [
     { id: "nombre", requerido: true },
     ...configuracion.campos
       .filter((campo) => campo.activo && campo.id !== "nombre")
       .map((campo) => ({ id: campo.id, requerido: campo.requerido })),
-  ]
+  ];
   const formasPagoActivas = configuracion.formasPago.filter(
     (forma) => forma.activa,
-  )
+  );
 
   const [valores, setValores] = useState<
     Partial<Record<CampoCheckoutId, string>>
-  >({})
+  >({});
   const [formaPagoPreferida, setFormaPago] = useState<FormaPago>(
     formasPagoActivas[0]?.id ?? "contado",
-  )
-  const [submitted, setSubmitted] = useState(false)
+  );
+  const [submitted, setSubmitted] = useState(false);
 
   const formaPago = formasPagoActivas.some(
     (forma) => forma.id === formaPagoPreferida,
   )
     ? formaPagoPreferida
-    : (formasPagoActivas[0]?.id ?? "contado")
+    : (formasPagoActivas[0]?.id ?? "contado");
 
   const hayCamposInvalidos = camposActivos.some(
     (campo) => campo.requerido && !valores[campo.id]?.trim(),
-  )
+  );
   const formaPagoSeleccionada =
     formasPagoActivas.find((forma) => forma.id === formaPago) ??
-    configuracion.formasPago.find((forma) => forma.id === formaPago)
+    configuracion.formasPago.find((forma) => forma.id === formaPago);
   const total =
-    formaPago === "contado" ? totals.totalContado : totals.totalTarjeta
+    formaPago === "contado" ? totals.totalContado : totals.totalTarjeta;
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setSubmitted(true)
+    event.preventDefault();
+    setSubmitted(true);
     if (hayCamposInvalidos || !formaPagoSeleccionada || items.length === 0) {
-      return
+      return;
     }
 
-    const message = buildOrderMessage(
-      items,
-      {
-        campos: camposActivos.map((campo) => ({
-          id: campo.id,
-          etiqueta: CAMPOS_CHECKOUT[campo.id].etiqueta,
-          valor: valores[campo.id]?.trim() ?? "",
-        })),
-        formaPago,
-        formaPagoEtiqueta:
-          FORMAS_PAGO[formaPagoSeleccionada.id].etiquetaMensaje,
-        saludoWhatsapp: configuracion.saludoWhatsapp,
-      },
-    )
+    const message = buildOrderMessage(items, {
+      campos: camposActivos.map((campo) => ({
+        id: campo.id,
+        etiqueta: CAMPOS_CHECKOUT[campo.id].etiqueta,
+        valor: valores[campo.id]?.trim() ?? "",
+      })),
+      formaPago,
+      formaPagoEtiqueta: FORMAS_PAGO[formaPagoSeleccionada.id].etiquetaMensaje,
+      saludoWhatsapp: configuracion.saludoWhatsapp,
+    });
     window.open(
       buildWhatsAppUrl(message, telefonoWhatsapp),
       "_blank",
       "noopener,noreferrer",
-    )
-    setOpen(false)
-    setExitoAbierto(true)
-  }
+    );
+    setOpen(false);
+    setExitoAbierto(true);
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -197,18 +193,18 @@ export function CheckoutDialog({
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {camposActivos.map((campo) => {
-            const meta = CAMPOS_CHECKOUT[campo.id]
+            const meta = CAMPOS_CHECKOUT[campo.id];
             const campoInvalido =
-              submitted && campo.requerido && !valores[campo.id]?.trim()
-            const id = `checkout-${campo.id}`
-            const value = valores[campo.id] ?? ""
+              submitted && campo.requerido && !valores[campo.id]?.trim();
+            const id = `checkout-${campo.id}`;
+            const value = valores[campo.id] ?? "";
             const onChange = (
               event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
             ) =>
               setValores((actuales) => ({
                 ...actuales,
                 [campo.id]: event.target.value,
-              }))
+              }));
 
             return (
               <div key={campo.id} className="space-y-2">
@@ -248,7 +244,7 @@ export function CheckoutDialog({
                   </p>
                 )}
               </div>
-            )
+            );
           })}
 
           <fieldset className="space-y-3">
@@ -261,7 +257,7 @@ export function CheckoutDialog({
               className="grid gap-3 sm:grid-cols-2"
             >
               {formasPagoActivas.map((forma) => {
-                const meta = FORMAS_PAGO[forma.id]
+                const meta = FORMAS_PAGO[forma.id];
                 return (
                   <Label
                     key={forma.id}
@@ -285,7 +281,7 @@ export function CheckoutDialog({
                       </span>
                     </span>
                   </Label>
-                )
+                );
               })}
             </RadioGroup>
           </fieldset>
@@ -330,5 +326,5 @@ export function CheckoutDialog({
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

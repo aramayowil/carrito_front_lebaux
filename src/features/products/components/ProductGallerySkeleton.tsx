@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@/components/ui/skeleton";
 
 /** Replica la galería real, incluidas miniaturas laterales y alto de la imagen principal. */
 export function ProductGallerySkeleton() {
@@ -20,5 +20,5 @@ export function ProductGallerySkeleton() {
         <Skeleton className="aspect-square w-full rounded-2xl border border-border/70 bg-muted" />
       </div>
     </div>
-  )
+  );
 }

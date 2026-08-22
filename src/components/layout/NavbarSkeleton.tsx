@@ -1,8 +1,12 @@
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@/components/ui/skeleton";
 
 /** Reserva la geometría exacta del Navbar mientras hidrata la navegación cliente. */
-export function NavbarSkeleton({ cantidadLineas = 3 }: { cantidadLineas?: number }) {
-  const items = Math.min(Math.max(cantidadLineas, 2), 4)
+export function NavbarSkeleton({
+  cantidadLineas = 3,
+}: {
+  cantidadLineas?: number;
+}) {
+  const items = Math.min(Math.max(cantidadLineas, 2), 4);
 
   return (
     <header
@@ -35,5 +39,5 @@ export function NavbarSkeleton({ cantidadLineas = 3 }: { cantidadLineas?: number
         </div>
       </div>
     </header>
-  )
+  );
 }

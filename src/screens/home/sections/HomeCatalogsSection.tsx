@@ -37,7 +37,9 @@ function obtenerImagenesMosaico(
     (product) =>
       product.linea === line.slug && product.visibilidad === "visible",
   );
-  const porId = new Map(productosVisibles.map((product) => [product.id, product]));
+  const porId = new Map(
+    productosVisibles.map((product) => [product.id, product]),
+  );
 
   const seleccionados = line.mosaicoInicio.productosIds
     .map((id) => porId.get(id))

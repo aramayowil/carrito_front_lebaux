@@ -1,21 +1,24 @@
-import { CalendarDays, Clock, ExternalLink, MapPin } from 'lucide-react'
-import Link from 'next/link'
+import { CalendarDays, Clock, ExternalLink, MapPin } from "lucide-react";
+import Link from "next/link";
 
-import { BackToTopButton } from '@/components/layout/BackToTopButton'
-import { Logo } from '@/components/layout/Logo'
-import { Button } from '@/components/ui/button'
-import { obtenerUrlGoogleMaps, obtenerUrlMapaEmbebido } from '@/lib/google-maps'
+import { BackToTopButton } from "@/components/layout/BackToTopButton";
+import { Logo } from "@/components/layout/Logo";
+import { Button } from "@/components/ui/button";
+import {
+  obtenerUrlGoogleMaps,
+  obtenerUrlMapaEmbebido,
+} from "@/lib/google-maps";
 import {
   IconoRedSocial,
   obtenerDatosRedSocial,
-} from '@/components/ui/icons/social-icons'
+} from "@/components/ui/icons/social-icons";
 import type {
   ConfiguracionSitio,
   LineaProducto,
   TipologiaProducto,
-} from '@/types'
+} from "@/types";
 
-const COPYRIGHT_YEAR = '2026'
+const COPYRIGHT_YEAR = "2026";
 
 /** Pie global renderizado en servidor. Solo el botón de volver arriba hidrata JS. */
 export function Footer({
@@ -23,29 +26,29 @@ export function Footer({
   lineas,
   tipologias,
 }: {
-  sitio: ConfiguracionSitio
-  lineas: LineaProducto[]
-  tipologias: TipologiaProducto[]
+  sitio: ConfiguracionSitio;
+  lineas: LineaProducto[];
+  tipologias: TipologiaProducto[];
 }) {
-  const { contacto } = sitio
+  const { contacto } = sitio;
   const urlMapaEmbebido = obtenerUrlMapaEmbebido({
     urlConfigurada: contacto.urlMapaEmbebido,
     direccion: contacto.direccion,
     ciudad: contacto.ciudad,
-  })
+  });
   const urlGoogleMaps = obtenerUrlGoogleMaps({
     urlConfigurada: contacto.urlMapaEmbebido,
     direccion: contacto.direccion,
     ciudad: contacto.ciudad,
-  })
+  });
   const tipologiasUnicas = Array.from(
     tipologias
       .reduce((mapa, tipologia) => {
-        if (!mapa.has(tipologia.nombre)) mapa.set(tipologia.nombre, tipologia)
-        return mapa
+        if (!mapa.has(tipologia.nombre)) mapa.set(tipologia.nombre, tipologia);
+        return mapa;
       }, new Map<string, TipologiaProducto>())
       .values(),
-  )
+  );
 
   return (
     <footer className="bg-brand-black text-white">
@@ -63,7 +66,7 @@ export function Footer({
             {contacto.redesSociales
               .filter((social) => social.url.trim())
               .map((social) => {
-                const datos = obtenerDatosRedSocial(social.plataforma)
+                const datos = obtenerDatosRedSocial(social.plataforma);
                 return (
                   <Button
                     key={social.plataforma}
@@ -84,7 +87,7 @@ export function Footer({
                       aria-hidden="true"
                     />
                   </Button>
-                )
+                );
               })}
           </div>
         </div>
@@ -190,11 +193,11 @@ export function Footer({
         <div className="container flex flex-col items-center gap-3 sm:flex-row sm:justify-between sm:gap-4">
           <p className="text-center text-xs uppercase tracking-wide text-white/40 sm:text-left">
             © {COPYRIGHT_YEAR} {sitio.nombreLegal}. Todos los derechos
-            reservados.{' '}
+            reservados.{" "}
           </p>
           <BackToTopButton />
         </div>
       </div>
     </footer>
-  )
+  );
 }

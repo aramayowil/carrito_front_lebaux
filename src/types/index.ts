@@ -15,8 +15,8 @@
  * acá — se quedan junto a ese archivo. Este barrel es solo para tipos de
  * dominio compartidos entre features/páginas.
  */
-export * from "./catalogo"
-export * from "./carrito"
-export * from "./contenido"
-export * from "./sitio"
-export * from "./experiencia"
+export * from "./catalogo";
+export * from "./carrito";
+export * from "./contenido";
+export * from "./sitio";
+export * from "./experiencia";

@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 import {
   AlertCircle,
   BadgePercent,
@@ -9,19 +9,19 @@ import {
   Plus,
   ShoppingCart,
   SlidersHorizontal,
-} from "lucide-react"
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible"
-import { Checkbox } from "@/components/ui/checkbox"
-import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/ui/collapsible";
+import { Checkbox } from "@/components/ui/checkbox";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import {
   Select,
   SelectContent,
@@ -30,35 +30,35 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { useCartStore } from "@/features/cart/store/use-cart-store"
-import { useUICarrito } from "@/features/cart/hooks/use-ui-carrito"
-import { useProductConfigurator } from "@/features/products/hooks/use-product-configurator"
-import { ProductSizeSelector } from "@/features/products/components/ProductSizeSelector"
-import { emparejarAccesorioConVariante } from "@/features/products/lib/accesorios"
+} from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useCartStore } from "@/features/cart/store/use-cart-store";
+import { useUICarrito } from "@/features/cart/hooks/use-ui-carrito";
+import { useProductConfigurator } from "@/features/products/hooks/use-product-configurator";
+import { ProductSizeSelector } from "@/features/products/components/ProductSizeSelector";
+import { emparejarAccesorioConVariante } from "@/features/products/lib/accesorios";
 import {
   etiquetaDescuento,
   obtenerVariantesPromocion,
-} from "@/features/products/lib/discounts"
-import { formatProductPrice } from "@/features/products/lib/product-card-formatters"
-import { buildConfiguredProductMessage } from "@/features/products/lib/product-inquiry"
-import { debeConsultarPrecio } from "@/features/products/lib/pricing"
-import { completarTextoPublico } from "@/lib/public-text"
-import { buildWhatsAppUrl } from "@/lib/whatsapp"
-import { cn } from "@/lib/utils"
+} from "@/features/products/lib/discounts";
+import { formatProductPrice } from "@/features/products/lib/product-card-formatters";
+import { buildConfiguredProductMessage } from "@/features/products/lib/product-inquiry";
+import { debeConsultarPrecio } from "@/features/products/lib/pricing";
+import { completarTextoPublico } from "@/lib/public-text";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import { cn } from "@/lib/utils";
 import type {
   AccesorioLinea,
   Producto,
   SlugColorPerfil,
   SlugOpcionVidrio,
   VarianteProducto,
-} from "@/types"
+} from "@/types";
 
 interface ProductConfiguratorProps {
-  product: Producto
-  catalogoAccesorios: AccesorioLinea[]
-  telefonoWhatsapp: string
+  product: Producto;
+  catalogoAccesorios: AccesorioLinea[];
+  telefonoWhatsapp: string;
 }
 
 function esColorDisponible(
@@ -68,7 +68,7 @@ function esColorDisponible(
   return (
     typeof value === "string" &&
     product.coloresDisponibles.some((color) => color.slug === value)
-  )
+  );
 }
 function etiquetaCombinacion(
   product: Producto,
@@ -76,14 +76,14 @@ function etiquetaCombinacion(
 ): string {
   const medida = product.medidasDisponibles.find(
     (item) => item.id === variante.medidaId,
-  )?.etiqueta
+  )?.etiqueta;
   const color = product.coloresDisponibles.find(
     (item) => item.slug === variante.colorSlug,
-  )?.etiqueta
+  )?.etiqueta;
   const vidrio = product.opcionesVidrio.find(
     (item) => item.slug === variante.vidrioSlug,
-  )?.etiqueta
-  return [medida, color, vidrio].filter(Boolean).join(" · ")
+  )?.etiqueta;
+  return [medida, color, vidrio].filter(Boolean).join(" · ");
 }
 
 /** Configura una abertura, calcula ambos precios y la agrega al carrito persistente. */
@@ -92,7 +92,7 @@ export function ProductConfigurator({
   catalogoAccesorios,
   telefonoWhatsapp,
 }: ProductConfiguratorProps) {
-  const [accesoriosAbiertos, setAccesoriosAbiertos] = useState(false)
+  const [accesoriosAbiertos, setAccesoriosAbiertos] = useState(false);
   const {
     seleccion,
     cantidad,
@@ -110,9 +110,9 @@ export function ProductConfigurator({
     medidaTieneStock,
     colorTieneStock,
     vidrioTieneStock,
-  } = useProductConfigurator(product, catalogoAccesorios)
-  const agregarItem = useCartStore((state) => state.agregarItem)
-  const { abrirCarrito } = useUICarrito()
+  } = useProductConfigurator(product, catalogoAccesorios);
+  const agregarItem = useCartStore((state) => state.agregarItem);
+  const { abrirCarrito } = useUICarrito();
   const accesoriosDisponibles = product.llevaAccesorios
     ? product.accesorios
         .map((activado) =>
@@ -121,30 +121,30 @@ export function ProductConfigurator({
         .filter((item): item is (typeof catalogoAccesorios)[number] =>
           Boolean(item),
         )
-    : []
-  const variantesPromocion = obtenerVariantesPromocion(product)
+    : [];
+  const variantesPromocion = obtenerVariantesPromocion(product);
   const opcionesVariantesPromocion = variantesPromocion.map((variante) => ({
     value: variante.id,
     label: etiquetaCombinacion(product, variante),
-  }))
+  }));
   const opcionesVidrioSelect = product.opcionesVidrio.map((vidrio) => ({
     value: vidrio.slug,
     label: vidrio.etiqueta,
-  }))
+  }));
   const medidaSeleccionada = product.medidasDisponibles.find(
     (item) => item.id === seleccion.medidaId,
-  )
+  );
   const colorSeleccionado = product.coloresDisponibles.find(
     (item) => item.slug === seleccion.colorSlug,
-  )
+  );
   const vidrioSeleccionado = product.opcionesVidrio.find(
     (item) => item.slug === seleccion.vidrioSlug,
-  )
-  const cantidadAccesoriosSeleccionados = seleccion.accesoriosSlug.length
-  const consultarPrecio = debeConsultarPrecio(product, varianteActual)
+  );
+  const cantidadAccesoriosSeleccionados = seleccion.accesoriosSlug.length;
+  const consultarPrecio = debeConsultarPrecio(product, varianteActual);
   const handleColorChange = (value: unknown) => {
-    if (esColorDisponible(product, value)) setColor(value)
-  }
+    if (esColorDisponible(product, value)) setColor(value);
+  };
   const whatsappHref = buildWhatsAppUrl(
     buildConfiguredProductMessage(
       product,
@@ -154,28 +154,28 @@ export function ProductConfigurator({
       catalogoAccesorios,
     ),
     telefonoWhatsapp,
-  )
+  );
 
   // El producto requiere elegir vidrio cuando tiene opciones disponibles;
   // si `opcionesVidrio` está vacío (ej. puerta ciega) no hay nada que exigir.
   // `crearSeleccionInicial` ya autoselecciona la primera opción por defecto,
   // así que esto solo bloquea el caso donde el usuario dejó `vidrioSlug`
   // explícitamente en null (o el producto no tiene default posible).
-  const tieneVariantes = product.variantes.length > 0
+  const tieneVariantes = product.variantes.length > 0;
   const faltaElegirVidrio =
     tieneVariantes &&
     product.opcionesVidrio.length > 0 &&
-    seleccion.vidrioSlug === null
+    seleccion.vidrioSlug === null;
   const faltaElegirMano =
-    Boolean(product.manoApertura) && seleccion.manoApertura === null
+    Boolean(product.manoApertura) && seleccion.manoApertura === null;
   const puedeAgregar =
-    !consultarPrecio && !faltaElegirVidrio && !faltaElegirMano && disponible
+    !consultarPrecio && !faltaElegirVidrio && !faltaElegirMano && disponible;
 
   const handleAgregarAlCarrito = () => {
-    if (!puedeAgregar) return
-    agregarItem(product, seleccion, cantidad, catalogoAccesorios)
-    abrirCarrito()
-  }
+    if (!puedeAgregar) return;
+    agregarItem(product, seleccion, cantidad, catalogoAccesorios);
+    abrirCarrito();
+  };
 
   return (
     <div className="pb-24 sm:pb-0">
@@ -294,8 +294,8 @@ export function ProductConfigurator({
                   onValueChange={(varianteId) => {
                     const variante = variantesPromocion.find(
                       (item) => item.id === varianteId,
-                    )
-                    if (variante) setVariante(variante)
+                    );
+                    if (variante) setVariante(variante);
                   }}
                 >
                   <SelectTrigger className="w-full">
@@ -341,8 +341,8 @@ export function ProductConfigurator({
                   className="flex flex-wrap gap-2"
                 >
                   {product.coloresDisponibles.map((color) => {
-                    const sinStock = !colorTieneStock(color.slug)
-                    const selected = seleccion.colorSlug === color.slug
+                    const sinStock = !colorTieneStock(color.slug);
+                    const selected = seleccion.colorSlug === color.slug;
                     return (
                       <Label
                         key={color.slug}
@@ -368,7 +368,7 @@ export function ProductConfigurator({
                           className="sr-only"
                         />
                       </Label>
-                    )
+                    );
                   })}
                 </RadioGroup>
               </div>
@@ -505,18 +505,18 @@ export function ProductConfigurator({
                     {accesoriosDisponibles.map((accesorio) => {
                       const checked = seleccion.accesoriosSlug.includes(
                         accesorio.slug,
-                      )
+                      );
                       const esObligatorio = product.accesorios.some(
                         (item) =>
                           item.slug === accesorio.slug && item.obligatorio,
-                      )
+                      );
                       const emparejado = medidaSeleccionada
                         ? emparejarAccesorioConVariante(
                             accesorio,
                             medidaSeleccionada,
                           )
-                        : null
-                      const precio = emparejado?.medida?.precio ?? null
+                        : null;
+                      const precio = emparejado?.medida?.precio ?? null;
                       return (
                         <Label
                           key={accesorio.slug}
@@ -557,7 +557,7 @@ export function ProductConfigurator({
                                 : "+ " + formatProductPrice(precio)}
                           </span>
                         </Label>
-                      )
+                      );
                     })}
                   </div>
                 </CollapsibleContent>
@@ -742,5 +742,5 @@ export function ProductConfigurator({
         </div>
       </div>
     </div>
-  )
+  );
 }

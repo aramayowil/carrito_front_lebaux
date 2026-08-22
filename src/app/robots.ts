@@ -1,9 +1,9 @@
-import type { MetadataRoute } from "next"
+import type { MetadataRoute } from "next";
 
-import { obtenerUrlSitio } from "@/lib/site-url"
+import { obtenerUrlSitio } from "@/lib/site-url";
 
 export default function robots(): MetadataRoute.Robots {
-  const base = obtenerUrlSitio()
+  const base = obtenerUrlSitio();
 
   return {
     rules: {
@@ -12,5 +12,5 @@ export default function robots(): MetadataRoute.Robots {
       disallow: ["/api/"],
     },
     sitemap: `${base}/sitemap.xml`,
-  }
+  };
 }

@@ -1,9 +1,9 @@
-import { sanitizarHtml } from '@/lib/sanitize-html'
-import { cn } from '@/lib/utils'
+import { sanitizarHtml } from "@/lib/sanitize-html";
+import { cn } from "@/lib/utils";
 
 interface RichTextContentProps {
-  html: string
-  className?: string
+  html: string;
+  className?: string;
 }
 
 /**
@@ -18,12 +18,12 @@ export async function RichTextContent({
   html,
   className,
 }: RichTextContentProps) {
-  const htmlSeguro = await sanitizarHtml(html)
+  const htmlSeguro = await sanitizarHtml(html);
 
   return (
     <div
-      className={cn('rich-text-content outline-none', className)}
+      className={cn("rich-text-content outline-none", className)}
       dangerouslySetInnerHTML={{ __html: htmlSeguro }}
     />
-  )
+  );
 }

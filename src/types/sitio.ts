@@ -21,7 +21,7 @@ export type PlataformaSocial =
   | "telegram"
   | "discord"
   | "twitch"
-  | "snapchat"
+  | "snapchat";
 
 /**
  * @example

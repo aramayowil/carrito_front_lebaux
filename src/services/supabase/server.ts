@@ -1,21 +1,21 @@
-import { createClient } from "@supabase/supabase-js"
+import { createClient } from "@supabase/supabase-js";
 
 function obtenerConfiguracionSupabase() {
-  const url = process.env.SUPABASE_URL?.trim()
-  const publishableKey = process.env.SUPABASE_PUBLISHABLE_KEY?.trim()
+  const url = process.env.SUPABASE_URL?.trim();
+  const publishableKey = process.env.SUPABASE_PUBLISHABLE_KEY?.trim();
 
   if (!url || !publishableKey) {
     throw new Error(
       "Supabase no está configurado. Revisá SUPABASE_URL y SUPABASE_PUBLISHABLE_KEY.",
-    )
+    );
   }
 
-  return { url, publishableKey }
+  return { url, publishableKey };
 }
 
 /** Cliente de solo lectura utilizado por los Server Components del carrito. */
 export function crearClienteSupabaseServidor() {
-  const { url, publishableKey } = obtenerConfiguracionSupabase()
+  const { url, publishableKey } = obtenerConfiguracionSupabase();
 
   return createClient(url, publishableKey, {
     auth: {
@@ -23,5 +23,5 @@ export function crearClienteSupabaseServidor() {
       autoRefreshToken: false,
       detectSessionInUrl: false,
     },
-  })
+  });
 }

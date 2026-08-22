@@ -7,5 +7,5 @@ export function completarTextoPublico(
     (resultado, [clave, valor]) =>
       resultado.replaceAll("{" + clave + "}", String(valor)),
     texto,
-  )
+  );
 }

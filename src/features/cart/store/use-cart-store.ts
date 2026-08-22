@@ -1,43 +1,43 @@
-import { create } from "zustand"
-import { persist } from "zustand/middleware"
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 import {
   actualizarCantidadDesglose,
   buscarVariante,
   calcularPrecioProducto,
   debeConsultarPrecio,
-} from "@/features/products/lib/pricing"
-import { cantidadMaximaDeStock, hayStock } from "@/features/products/lib/stock"
+} from "@/features/products/lib/pricing";
+import { cantidadMaximaDeStock, hayStock } from "@/features/products/lib/stock";
 import type {
   AccesorioLinea,
   ItemCarrito,
   Producto,
   SeleccionProducto,
-} from "@/types"
+} from "@/types";
 
 export interface TotalesCarrito {
-  cantidadItems: number
-  totalContadoOriginal: number
-  ahorroTotal: number
-  totalContado: number
-  totalTarjeta: number
+  cantidadItems: number;
+  totalContadoOriginal: number;
+  ahorroTotal: number;
+  totalContado: number;
+  totalTarjeta: number;
 }
 
 interface CartState {
-  items: ItemCarrito[]
+  items: ItemCarrito[];
   agregarItem: (
     producto: Producto,
     seleccion: SeleccionProducto,
     cantidad: number,
     catalogoAccesorios: AccesorioLinea[],
-  ) => void
-  actualizarCantidad: (itemId: string, cantidad: number) => void
-  eliminarItem: (itemId: string) => void
+  ) => void;
+  actualizarCantidad: (itemId: string, cantidad: number) => void;
+  eliminarItem: (itemId: string) => void;
   sincronizarConCatalogo: (
     productos: Producto[],
     catalogoAccesorios: AccesorioLinea[],
-  ) => void
-  vaciar: () => void
+  ) => void;
+  vaciar: () => void;
 }
 
 function mismaSeleccion(a: SeleccionProducto, b: SeleccionProducto): boolean {
@@ -48,7 +48,7 @@ function mismaSeleccion(a: SeleccionProducto, b: SeleccionProducto): boolean {
     a.manoApertura === b.manoApertura &&
     [...a.accesoriosSlug].sort().join("|") ===
       [...b.accesoriosSlug].sort().join("|")
-  )
+  );
 }
 
 function crearItem(
@@ -59,36 +59,36 @@ function crearItem(
 ): ItemCarrito {
   const medida = producto.medidasDisponibles.find(
     (item) => item.id === seleccion.medidaId,
-  )
+  );
   const color = producto.coloresDisponibles.find(
     (item) => item.slug === seleccion.colorSlug,
-  )
+  );
   const vidrio = producto.opcionesVidrio.find(
     (item) => item.slug === seleccion.vidrioSlug,
-  )
+  );
   const accesorios = producto.llevaAccesorios
     ? catalogoAccesorios.filter((item) =>
         seleccion.accesoriosSlug.includes(item.slug),
       )
-    : []
+    : [];
   const imagen =
     producto.imagenes.find((item) => item.esPrincipal)?.url ??
     producto.imagenes[0]?.url ??
-    ""
+    "";
 
   // Tope de unidades "congelado" al momento de agregar, igual criterio que
   // el precio: si la variante no existe (no debería pasar, la UI ya la
   // valida) tratamos como sin tope en vez de bloquear el alta.
-  const variante = buscarVariante(producto, seleccion)
+  const variante = buscarVariante(producto, seleccion);
   const cantidadMaxima = variante
     ? cantidadMaximaDeStock(variante.stock)
     : producto.variantes.length === 0
       ? cantidadMaximaDeStock(producto.stock)
-      : null
+      : null;
   const cantidadFinal =
     cantidadMaxima !== null
       ? Math.min(Math.max(1, cantidad), Math.max(cantidadMaxima, 1))
-      : Math.max(1, cantidad)
+      : Math.max(1, cantidad);
 
   return {
     id: crypto.randomUUID(),
@@ -120,7 +120,7 @@ function crearItem(
       cantidadFinal,
       catalogoAccesorios,
     ),
-  }
+  };
 }
 
 function sincronizarItem(
@@ -131,22 +131,22 @@ function sincronizarItem(
   const producto = productos.find(
     (candidato) =>
       candidato.id === item.producto.id && candidato.visibilidad !== "oculto",
-  )
-  if (!producto) return null
+  );
+  if (!producto) return null;
 
-  const variante = buscarVariante(producto, item.seleccion)
-  if (debeConsultarPrecio(producto, variante)) return null
+  const variante = buscarVariante(producto, item.seleccion);
+  if (debeConsultarPrecio(producto, variante)) return null;
   if (
     producto.variantes.length > 0 &&
     (!variante || !hayStock(variante.stock))
   ) {
-    return null
+    return null;
   }
-  if (producto.variantes.length === 0 && !hayStock(producto.stock)) return null
+  if (producto.variantes.length === 0 && !hayStock(producto.stock)) return null;
 
   const accesoriosCatalogados = new Set(
     catalogoAccesorios.map((accesorio) => accesorio.slug),
-  )
+  );
   const seleccion: SeleccionProducto = {
     ...item.seleccion,
     accesoriosSlug: producto.llevaAccesorios
@@ -159,15 +159,15 @@ function sincronizarItem(
           )
           .map((accesorio) => accesorio.slug)
       : [],
-  }
+  };
   const actualizado = crearItem(
     producto,
     seleccion,
     item.cantidad,
     catalogoAccesorios,
-  )
+  );
 
-  return { ...actualizado, id: item.id }
+  return { ...actualizado, id: item.id };
 }
 
 export function calcularTotalesCarrito(items: ItemCarrito[]): TotalesCarrito {
@@ -187,13 +187,13 @@ export function calcularTotalesCarrito(items: ItemCarrito[]): TotalesCarrito {
       totalContado: 0,
       totalTarjeta: 0,
     },
-  )
+  );
 }
 
 function normalizarDescuentoDeItem(item: ItemCarrito): ItemCarrito {
-  const precios = item.precios
+  const precios = item.precios;
   const precioOriginal =
-    precios.precioUnitarioContadoOriginal ?? precios.precioUnitarioContado
+    precios.precioUnitarioContadoOriginal ?? precios.precioUnitarioContado;
 
   return {
     ...item,
@@ -206,7 +206,7 @@ function normalizarDescuentoDeItem(item: ItemCarrito): ItemCarrito {
       totalContadoOriginal:
         precios.totalContadoOriginal ?? precioOriginal * item.cantidad,
     },
-  }
+  };
 }
 
 export const useCartStore = create<CartState>()(
@@ -215,14 +215,14 @@ export const useCartStore = create<CartState>()(
       items: [],
       agregarItem: (producto, seleccion, cantidad, catalogoAccesorios) =>
         set((state) => {
-          const variante = buscarVariante(producto, seleccion)
-          if (debeConsultarPrecio(producto, variante)) return state
+          const variante = buscarVariante(producto, seleccion);
+          if (debeConsultarPrecio(producto, variante)) return state;
 
           const existingIndex = state.items.findIndex(
             (item) =>
               item.producto.id === producto.id &&
               mismaSeleccion(item.seleccion, seleccion),
-          )
+          );
 
           if (existingIndex === -1) {
             return {
@@ -230,39 +230,39 @@ export const useCartStore = create<CartState>()(
                 ...state.items,
                 crearItem(producto, seleccion, cantidad, catalogoAccesorios),
               ],
-            }
+            };
           }
 
-          const items = [...state.items]
-          const existing = items[existingIndex]
-          const sumaSinTope = existing.cantidad + Math.max(1, cantidad)
+          const items = [...state.items];
+          const existing = items[existingIndex];
+          const sumaSinTope = existing.cantidad + Math.max(1, cantidad);
           const nextQuantity =
             existing.cantidadMaxima !== null
               ? Math.min(sumaSinTope, Math.max(existing.cantidadMaxima, 1))
-              : sumaSinTope
+              : sumaSinTope;
           items[existingIndex] = {
             ...existing,
             cantidad: nextQuantity,
             precios: actualizarCantidadDesglose(existing.precios, nextQuantity),
-          }
-          return { items }
+          };
+          return { items };
         }),
       actualizarCantidad: (itemId, cantidad) =>
         set((state) => ({
           items: state.items.map((item) => {
-            if (item.id !== itemId) return item
+            if (item.id !== itemId) return item;
             const cantidadFinal =
               item.cantidadMaxima !== null
                 ? Math.min(
                     Math.max(1, cantidad),
                     Math.max(item.cantidadMaxima, 1),
                   )
-                : Math.max(1, cantidad)
+                : Math.max(1, cantidad);
             return {
               ...item,
               cantidad: cantidadFinal,
               precios: actualizarCantidadDesglose(item.precios, cantidadFinal),
-            }
+            };
           }),
         })),
       eliminarItem: (itemId) =>
@@ -276,8 +276,8 @@ export const useCartStore = create<CartState>()(
               item,
               productos,
               catalogoAccesorios,
-            )
-            return actualizado ? [actualizado] : []
+            );
+            return actualizado ? [actualizado] : [];
           }),
         })),
       vaciar: () => set({ items: [] }),
@@ -291,9 +291,9 @@ export const useCartStore = create<CartState>()(
         // carrito viejo no es dato de negocio que valga la pena migrar
         // campo a campo: se vacía y listo, es preferible a mostrar un
         // carrito con precios corridos o campos faltantes.
-        if (version < 1) return { items: [] } as unknown as CartState
+        if (version < 1) return { items: [] } as unknown as CartState;
         if (version < 2) {
-          const previous = persistedState as CartState
+          const previous = persistedState as CartState;
           return {
             items: previous.items.map((item) => ({
               ...item,
@@ -304,30 +304,30 @@ export const useCartStore = create<CartState>()(
                 manoAperturaEtiqueta: null,
               },
             })),
-          } as CartState
+          } as CartState;
         }
         if (version < 3) {
           // v3 suma `cantidadMaxima` (tope de stock) a cada ítem. Los
           // carritos previos no tienen esa foto del stock original: los
           // dejamos sin tope (null) en vez de bloquear el checkout de un
           // carrito ya armado por datos que nunca se capturaron.
-          const previous = persistedState as CartState
+          const previous = persistedState as CartState;
           return {
             items: previous.items.map((item) => ({
               ...item,
               precios: normalizarDescuentoDeItem(item).precios,
               cantidadMaxima: null,
             })),
-          } as CartState
+          } as CartState;
         }
         if (version < 4) {
-          const previous = persistedState as CartState
+          const previous = persistedState as CartState;
           return {
             items: previous.items.map(normalizarDescuentoDeItem),
-          } as CartState
+          } as CartState;
         }
-        return persistedState as CartState
+        return persistedState as CartState;
       },
     },
   ),
-)
+);

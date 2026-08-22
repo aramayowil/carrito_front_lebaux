@@ -8,54 +8,54 @@ export type IdSeccionInicio =
   | "destacados"
   | "beneficios"
   | "obras"
-  | "nosotros"
+  | "nosotros";
 
 export interface EstadoSeccionInicio {
-  id: IdSeccionInicio
-  visible: boolean
-  orden: number
+  id: IdSeccionInicio;
+  visible: boolean;
+  orden: number;
 }
 
 /** En Experiencia, Inicio solo controla composición: orden y visibilidad. */
 export interface ConfiguracionInicioPublica {
-  secciones: EstadoSeccionInicio[]
+  secciones: EstadoSeccionInicio[];
 }
 
 export interface ConfiguracionCatalogoLineaPublica {
-  asesoramientoMensajeWhatsapp: string
+  asesoramientoMensajeWhatsapp: string;
 }
 
 export interface ConfiguracionCatalogosTecnicosPublica {
-  imagenBannerEscritorio: string
-  imagenBannerMovil: string
-  textoAlternativoBanner?: string
+  imagenBannerEscritorio: string;
+  imagenBannerMovil: string;
+  textoAlternativoBanner?: string;
 }
 
 export type CampoCheckoutId =
-  "nombre" | "telefono" | "email" | "localidad" | "notas"
+  "nombre" | "telefono" | "email" | "localidad" | "notas";
 
 export interface CampoCheckoutConfig {
-  id: CampoCheckoutId
-  activo: boolean
-  requerido: boolean
+  id: CampoCheckoutId;
+  activo: boolean;
+  requerido: boolean;
 }
 
-export type FormaPagoCheckout = "contado" | "tarjeta"
+export type FormaPagoCheckout = "contado" | "tarjeta";
 
 export interface FormaPagoCheckoutConfig {
-  id: FormaPagoCheckout
-  activa: boolean
+  id: FormaPagoCheckout;
+  activa: boolean;
 }
 
 export interface ConfiguracionCheckoutPublica {
-  campos: CampoCheckoutConfig[]
-  formasPago: FormaPagoCheckoutConfig[]
-  saludoWhatsapp: string
+  campos: CampoCheckoutConfig[];
+  formasPago: FormaPagoCheckoutConfig[];
+  saludoWhatsapp: string;
 }
 
 export interface ConfiguracionExperienciaPublica {
-  inicio: ConfiguracionInicioPublica
-  catalogoLinea: ConfiguracionCatalogoLineaPublica
-  catalogosTecnicos: ConfiguracionCatalogosTecnicosPublica
-  checkout: ConfiguracionCheckoutPublica
+  inicio: ConfiguracionInicioPublica;
+  catalogoLinea: ConfiguracionCatalogoLineaPublica;
+  catalogosTecnicos: ConfiguracionCatalogosTecnicosPublica;
+  checkout: ConfiguracionCheckoutPublica;
 }

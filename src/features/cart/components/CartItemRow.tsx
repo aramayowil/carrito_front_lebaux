@@ -1,25 +1,25 @@
-"use client"
+"use client";
 
-import { Minus, Plus, Trash2 } from "lucide-react"
+import { Minus, Plus, Trash2 } from "lucide-react";
 
-import { ProductImage } from "@/components/media/ProductImage"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { useCartStore } from "@/features/cart/store/use-cart-store"
-import { formatProductPrice } from "@/features/products/lib/product-card-formatters"
-import { etiquetaDescuento } from "@/features/products/lib/discounts"
-import { completarTextoPublico } from "@/lib/public-text"
-import type { ItemCarrito } from "@/types"
+import { ProductImage } from "@/components/media/ProductImage";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { useCartStore } from "@/features/cart/store/use-cart-store";
+import { formatProductPrice } from "@/features/products/lib/product-card-formatters";
+import { etiquetaDescuento } from "@/features/products/lib/discounts";
+import { completarTextoPublico } from "@/lib/public-text";
+import type { ItemCarrito } from "@/types";
 
 interface CartItemRowProps {
-  item: ItemCarrito
+  item: ItemCarrito;
 }
 
 /** Fila editable de un producto configurado dentro del carrito. */
 export function CartItemRow({ item }: CartItemRowProps) {
-  const actualizarCantidad = useCartStore((state) => state.actualizarCantidad)
-  const eliminarItem = useCartStore((state) => state.eliminarItem)
+  const actualizarCantidad = useCartStore((state) => state.actualizarCantidad);
+  const eliminarItem = useCartStore((state) => state.eliminarItem);
 
   return (
     <Card size="sm" className="gap-0 border border-border/70 py-0">
@@ -149,5 +149,5 @@ export function CartItemRow({ item }: CartItemRowProps) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

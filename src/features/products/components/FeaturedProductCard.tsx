@@ -20,10 +20,14 @@ import type { Producto } from "@/types";
 
 interface FeaturedProductCardProps {
   product: Producto;
+  priority?: boolean;
 }
 
 /** Presenta un producto destacado de la Home con imagen, precios y consulta directa. */
-export function FeaturedProductCard({ product }: FeaturedProductCardProps) {
+export function FeaturedProductCard({
+  product,
+  priority = false,
+}: FeaturedProductCardProps) {
   const primaryImage = getPrimaryProductImage(product);
   const startingPrice = obtenerPrecioInicial(product);
   const href = `/producto/${product.slug}`;
@@ -41,6 +45,7 @@ export function FeaturedProductCard({ product }: FeaturedProductCardProps) {
         <ProductImage
           src={primaryImage?.url ?? ""}
           alt={primaryImage?.textoAlternativo ?? product.nombre}
+          priority={priority}
           className="aspect-square w-full"
           imgClassName="transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.025]"
         />

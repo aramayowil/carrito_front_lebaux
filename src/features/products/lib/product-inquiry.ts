@@ -1,15 +1,15 @@
-import { formatProductPrice } from "@/features/products/lib/product-card-formatters"
-import { etiquetaDescuento } from "@/features/products/lib/discounts"
+import { formatProductPrice } from "@/features/products/lib/product-card-formatters";
+import { etiquetaDescuento } from "@/features/products/lib/discounts";
 import {
   buscarVariante,
   debeConsultarPrecio,
-} from "@/features/products/lib/pricing"
+} from "@/features/products/lib/pricing";
 import type {
   AccesorioLinea,
   DesglosePrecio,
   Producto,
   SeleccionProducto,
-} from "@/types"
+} from "@/types";
 
 export function buildConfiguredProductMessage(
   producto: Producto,
@@ -20,20 +20,20 @@ export function buildConfiguredProductMessage(
 ): string {
   const medida = producto.medidasDisponibles.find(
     (item) => item.id === seleccion.medidaId,
-  )
+  );
   const color = producto.coloresDisponibles.find(
     (item) => item.slug === seleccion.colorSlug,
-  )
+  );
   const vidrio = producto.opcionesVidrio.find(
     (item) => item.slug === seleccion.vidrioSlug,
-  )
+  );
   const accesorios = producto.llevaAccesorios
     ? catalogoAccesorios.filter((item) =>
         seleccion.accesoriosSlug.includes(item.slug),
       )
-    : []
-  const variante = buscarVariante(producto, seleccion)
-  const consultarPrecio = debeConsultarPrecio(producto, variante)
+    : [];
+  const variante = buscarVariante(producto, seleccion);
+  const consultarPrecio = debeConsultarPrecio(producto, variante);
 
   return [
     "Hola Lebaux! Quiero consultar por esta abertura:",
@@ -60,5 +60,5 @@ export function buildConfiguredProductMessage(
           `Estimado contado: ${formatProductPrice(desglose.totalContado)}`,
           `Estimado tarjeta: ${formatProductPrice(desglose.totalTarjeta)}`,
         ]),
-  ].join("\n")
+  ].join("\n");
 }

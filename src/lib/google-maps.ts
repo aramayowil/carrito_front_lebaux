@@ -4,47 +4,47 @@ function decodificarEntidadesBasicas(valor: string) {
   return valor
     .replaceAll("&amp;", "&")
     .replaceAll("&quot;", '"')
-    .replaceAll("&#39;", "'")
+    .replaceAll("&#39;", "'");
 }
 
 function extraerSrcIframe(valor: string) {
-  const coincidencia = valor.match(/<iframe[^>]*\ssrc=["']([^"']+)["']/i)
-  return coincidencia?.[1]?.trim() ?? ""
+  const coincidencia = valor.match(/<iframe[^>]*\ssrc=["']([^"']+)["']/i);
+  return coincidencia?.[1]?.trim() ?? "";
 }
 
 function esUrlGoogleMapsEmbebible(valor: string) {
   try {
-    const url = new URL(valor)
-    if (url.protocol !== "https:") return false
+    const url = new URL(valor);
+    if (url.protocol !== "https:") return false;
 
-    const host = url.hostname.toLowerCase()
+    const host = url.hostname.toLowerCase();
     const esGoogle =
       host === "google.com" ||
       host === "www.google.com" ||
       host === "maps.google.com" ||
-      host.endsWith(".google.com")
+      host.endsWith(".google.com");
 
-    if (!esGoogle) return false
+    if (!esGoogle) return false;
 
     return (
       url.pathname.startsWith("/maps/embed") ||
       url.pathname.startsWith("/maps/d/embed") ||
       url.searchParams.get("output") === "embed"
-    )
+    );
   } catch {
-    return false
+    return false;
   }
 }
 
 function obtenerValorUrl(valor: string) {
-  const limpio = valor.trim()
-  if (!limpio) return ""
+  const limpio = valor.trim();
+  if (!limpio) return "";
 
   const src = limpio.toLowerCase().includes("<iframe")
     ? extraerSrcIframe(limpio)
-    : limpio
+    : limpio;
 
-  return decodificarEntidadesBasicas(src)
+  return decodificarEntidadesBasicas(src);
 }
 
 /**
@@ -59,17 +59,19 @@ export function obtenerUrlMapaEmbebido({
   direccion,
   ciudad,
 }: {
-  urlConfigurada: string
-  direccion: string
-  ciudad: string
+  urlConfigurada: string;
+  direccion: string;
+  ciudad: string;
 }) {
-  const url = obtenerValorUrl(urlConfigurada)
-  if (esUrlGoogleMapsEmbebible(url)) return url
+  const url = obtenerValorUrl(urlConfigurada);
+  if (esUrlGoogleMapsEmbebible(url)) return url;
 
-  const ubicacion = [direccion.trim(), ciudad.trim()].filter(Boolean).join(", ")
-  if (!ubicacion) return ""
+  const ubicacion = [direccion.trim(), ciudad.trim()]
+    .filter(Boolean)
+    .join(", ");
+  if (!ubicacion) return "";
 
-  return `https://www.google.com/maps?q=${encodeURIComponent(ubicacion)}&output=embed`
+  return `https://www.google.com/maps?q=${encodeURIComponent(ubicacion)}&output=embed`;
 }
 
 /** URL universal para abrir la ubicación en Google Maps fuera del iframe. */
@@ -78,30 +80,38 @@ export function obtenerUrlGoogleMaps({
   direccion,
   ciudad,
 }: {
-  urlConfigurada: string
-  direccion: string
-  ciudad: string
+  urlConfigurada: string;
+  direccion: string;
+  ciudad: string;
 }) {
-  const url = obtenerValorUrl(urlConfigurada)
+  const url = obtenerValorUrl(urlConfigurada);
 
   try {
-    const parsed = new URL(url)
-    const host = parsed.hostname.toLowerCase()
+    const parsed = new URL(url);
+    const host = parsed.hostname.toLowerCase();
     const esGoogleMaps =
       host === "maps.app.goo.gl" ||
       host === "maps.google.com" ||
-      ((host === "google.com" || host === "www.google.com" || host.endsWith(".google.com")) &&
-        parsed.pathname.startsWith("/maps"))
+      ((host === "google.com" ||
+        host === "www.google.com" ||
+        host.endsWith(".google.com")) &&
+        parsed.pathname.startsWith("/maps"));
 
-    if (parsed.protocol === "https:" && esGoogleMaps && !esUrlGoogleMapsEmbebible(url)) {
-      return url
+    if (
+      parsed.protocol === "https:" &&
+      esGoogleMaps &&
+      !esUrlGoogleMapsEmbebible(url)
+    ) {
+      return url;
     }
   } catch {
     // Si el valor configurado no es una URL válida, usamos la dirección pública.
   }
 
-  const ubicacion = [direccion.trim(), ciudad.trim()].filter(Boolean).join(", ")
-  if (!ubicacion) return "https://www.google.com/maps"
+  const ubicacion = [direccion.trim(), ciudad.trim()]
+    .filter(Boolean)
+    .join(", ");
+  if (!ubicacion) return "https://www.google.com/maps";
 
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ubicacion)}`
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ubicacion)}`;
 }

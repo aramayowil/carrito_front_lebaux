@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
-import * as Sentry from "@sentry/nextjs"
-import { AlertTriangle, RotateCcw } from "lucide-react"
+import { useEffect } from "react";
+import * as Sentry from "@sentry/nextjs";
+import { AlertTriangle, RotateCcw } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 
 export default function Error({
   error,
   reset,
 }: {
-  error: Error & { digest?: string }
-  reset: () => void
+  error: Error & { digest?: string };
+  reset: () => void;
 }) {
   useEffect(() => {
-    Sentry.captureException(error)
-  }, [error])
+    Sentry.captureException(error);
+  }, [error]);
 
   return (
     <section className="container flex min-h-[60svh] items-center justify-center py-16">
@@ -27,7 +27,8 @@ export default function Error({
           No pudimos cargar esta sección
         </h1>
         <p className="mt-3 leading-7 text-muted-foreground">
-          Hubo un problema al consultar la información. Podés volver a intentarlo sin recargar todo el sitio.
+          Hubo un problema al consultar la información. Podés volver a
+          intentarlo sin recargar todo el sitio.
         </p>
         <Button className="mt-6" onClick={reset}>
           <RotateCcw data-icon="inline-start" />
@@ -35,5 +36,5 @@ export default function Error({
         </Button>
       </div>
     </section>
-  )
+  );
 }

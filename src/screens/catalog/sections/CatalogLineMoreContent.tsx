@@ -1,46 +1,46 @@
-import { Check } from 'lucide-react'
-import { DynamicIcon } from 'lucide-react/dynamic'
-import Link from 'next/link'
+import { Check } from "lucide-react";
+import { DynamicIcon } from "lucide-react/dynamic";
+import Link from "next/link";
 
-import { WhatsAppIcon } from '@/components/icons/WhatsAppIcon'
-import { normalizarNombreIconoLucide } from '@/components/ui/icons/lucide-icons'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
-import { buildWhatsAppUrl } from '@/lib/whatsapp'
-import type { LineaProducto } from '@/types'
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import { normalizarNombreIconoLucide } from "@/components/ui/icons/lucide-icons";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import type { LineaProducto } from "@/types";
 
 const TEXTOS_CONTENIDO_LINEA = {
-  beneficiosSobrelinea: 'Por qué elegir esta línea',
-  beneficiosTitulo: 'Lo que distingue a {linea}',
-  asesoramientoTitulo: '¿Necesitás ayuda para elegir?',
-  asesoramientoDescripcion: 'Contanos las medidas y dónde querés instalarla.',
-  asesoramientoBoton: 'Consultar por WhatsApp',
-  comparacionSobrelinea: 'Compará alternativas',
-  comparacionTitulo: 'Encontrá la línea para tu proyecto',
+  beneficiosSobrelinea: "Por qué elegir esta línea",
+  beneficiosTitulo: "Lo que distingue a {linea}",
+  asesoramientoTitulo: "¿Necesitás ayuda para elegir?",
+  asesoramientoDescripcion: "Contanos las medidas y dónde querés instalarla.",
+  asesoramientoBoton: "Consultar por WhatsApp",
+  comparacionSobrelinea: "Compará alternativas",
+  comparacionTitulo: "Encontrá la línea para tu proyecto",
   comparacionDescripcion:
-    'Cambian las prestaciones y terminaciones, la fabricación Lebaux se mantiene en todas.',
-  comparacionEtiqueta: 'Línea de aluminio',
-  comparacionActual: 'Línea actual',
-  comparacionDisponible: 'Disponible',
-  comparacionBoton: 'Ver {linea}',
-} as const
+    "Cambian las prestaciones y terminaciones, la fabricación Lebaux se mantiene en todas.",
+  comparacionEtiqueta: "Línea de aluminio",
+  comparacionActual: "Línea actual",
+  comparacionDisponible: "Disponible",
+  comparacionBoton: "Ver {linea}",
+} as const;
 
 function conNombreLinea(texto: string, nombre: string) {
-  return texto.replaceAll('{linea}', nombre)
+  return texto.replaceAll("{linea}", nombre);
 }
 
 function obtenerClasesGrid(cantidad: number) {
   if (cantidad <= 1) {
-    return 'mx-auto max-w-xl grid-cols-1'
+    return "mx-auto max-w-xl grid-cols-1";
   }
 
   if (cantidad === 2) {
-    return 'mx-auto max-w-4xl grid-cols-1 sm:grid-cols-2'
+    return "mx-auto max-w-4xl grid-cols-1 sm:grid-cols-2";
   }
 
-  return 'mx-auto max-w-6xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+  return "mx-auto max-w-6xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
 }
 
 /** Argumentos de compra, comparación breve y asesoramiento para una línea. */
@@ -50,23 +50,23 @@ export function CatalogLineMoreContent({
   mensajeWhatsapp,
   telefonoWhatsapp,
 }: {
-  lineInfo: LineaProducto
-  lines: LineaProducto[]
-  mensajeWhatsapp: string
-  telefonoWhatsapp: string
+  lineInfo: LineaProducto;
+  lines: LineaProducto[];
+  mensajeWhatsapp: string;
+  telefonoWhatsapp: string;
 }) {
-  const line = lineInfo.slug
+  const line = lineInfo.slug;
 
   const beneficios = lineInfo.beneficiosCatalogo
     .filter(
       (beneficio) => beneficio.titulo.trim() && beneficio.descripcion.trim(),
     )
-    .slice(0, 3)
+    .slice(0, 3);
 
   const whatsappHref = buildWhatsAppUrl(
     conNombreLinea(mensajeWhatsapp, lineInfo.nombre),
     telefonoWhatsapp,
-  )
+  );
 
   return (
     <div className="mt-14 space-y-14 border-t border-border/70 pt-10 sm:mt-20 sm:space-y-20 sm:pt-16">
@@ -94,16 +94,16 @@ export function CatalogLineMoreContent({
 
           <div
             className={cn(
-              'mt-9 grid gap-8 border-t border-white/10 pt-9',
-              beneficios.length === 1 && 'mx-auto max-w-lg grid-cols-1',
+              "mt-9 grid gap-8 border-t border-white/10 pt-9",
+              beneficios.length === 1 && "mx-auto max-w-lg grid-cols-1",
               beneficios.length === 2 &&
-                'mx-auto max-w-3xl grid-cols-1 sm:grid-cols-2',
+                "mx-auto max-w-3xl grid-cols-1 sm:grid-cols-2",
               beneficios.length >= 3 &&
-                'grid-cols-1 sm:grid-cols-2 md:grid-cols-3',
+                "grid-cols-1 sm:grid-cols-2 md:grid-cols-3",
             )}
           >
             {beneficios.slice(0, 3).map((beneficio) => {
-              const icono = normalizarNombreIconoLucide(beneficio.icono)
+              const icono = normalizarNombreIconoLucide(beneficio.icono);
 
               return (
                 <article
@@ -124,7 +124,7 @@ export function CatalogLineMoreContent({
                     {beneficio.descripcion}
                   </p>
                 </article>
-              )
+              );
             })}
           </div>
 
@@ -178,26 +178,26 @@ export function CatalogLineMoreContent({
 
           <div
             className={cn(
-              'grid gap-4 sm:gap-5',
+              "grid gap-4 sm:gap-5",
               obtenerClasesGrid(lines.length),
             )}
           >
             {lines.map((item) => {
-              const current = item.slug === line
+              const current = item.slug === line;
 
               const usosRecomendados = item.idealPara
                 .filter((uso) => uso.trim())
-                .slice(0, 3)
+                .slice(0, 3);
 
               return (
                 <Card
                   key={item.slug}
                   className={cn(
-                    'group h-full gap-0 overflow-hidden rounded-2xl border py-0 shadow-none',
-                    'transition-[border-color,background-color,box-shadow,transform] duration-200',
+                    "group h-full gap-0 overflow-hidden rounded-2xl border py-0 shadow-none",
+                    "transition-[border-color,background-color,box-shadow,transform] duration-200",
                     current
-                      ? 'border-primary/70 bg-primary/6 ring-1 ring-primary/20'
-                      : 'border-border bg-catalog-line hover:-translate-y-0.5 hover:border-foreground/20 hover:bg-background hover:shadow-sm',
+                      ? "border-primary/70 bg-primary/6 ring-1 ring-primary/20"
+                      : "border-border bg-catalog-line hover:-translate-y-0.5 hover:border-foreground/20 hover:bg-background hover:shadow-sm",
                   )}
                 >
                   <CardContent className="flex h-full flex-col p-5 sm:p-6">
@@ -214,10 +214,10 @@ export function CatalogLineMoreContent({
                       </div>
 
                       <Badge
-                        variant={current ? 'default' : 'secondary'}
+                        variant={current ? "default" : "secondary"}
                         className={cn(
-                          'shrink-0',
-                          !current && 'text-muted-foreground',
+                          "shrink-0",
+                          !current && "text-muted-foreground",
                         )}
                       >
                         {current
@@ -270,11 +270,11 @@ export function CatalogLineMoreContent({
                     </div>
                   </CardContent>
                 </Card>
-              )
+              );
             })}
           </div>
         </section>
       )}
     </div>
-  )
+  );
 }

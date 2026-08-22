@@ -19,7 +19,10 @@ export function WorkDetailPageSkeleton() {
         </div>
       </section>
 
-      <section className="py-10 sm:py-12 lg:py-16" aria-label="Cargando galería">
+      <section
+        className="py-10 sm:py-12 lg:py-16"
+        aria-label="Cargando galería"
+      >
         <div className="container">
           <div className="lg:hidden">
             <Skeleton className="aspect-4/3 w-full rounded-xl" />
@@ -47,7 +50,10 @@ export function WorkDetailPageSkeleton() {
             </div>
             <div className="grid gap-7 sm:grid-cols-2 sm:gap-8">
               {Array.from({ length: 2 }).map((_, index) => (
-                <div key={index} className="space-y-3 border-t border-border pt-5">
+                <div
+                  key={index}
+                  className="space-y-3 border-t border-border pt-5"
+                >
                   <Skeleton className="h-3 w-24 rounded-full" />
                   <Skeleton className="h-4 w-full rounded-md" />
                   <Skeleton className="h-4 w-5/6 rounded-md" />

@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@/components/ui/skeleton";
 
 /** Replica las zonas del configurador para evitar saltos al hidratar la ficha de producto. */
 export function ProductConfiguratorSkeleton() {
@@ -70,5 +70,5 @@ export function ProductConfiguratorSkeleton() {
         </div>
       </section>
     </div>
-  )
+  );
 }

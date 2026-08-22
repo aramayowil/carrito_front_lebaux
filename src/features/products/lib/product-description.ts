@@ -11,5 +11,5 @@ export function descripcionProductoComoTexto(
     .replace(/&quot;/gi, '"')
     .replace(/&#39;/gi, "'")
     .replace(/\s+/g, " ")
-    .trim()
+    .trim();
 }

@@ -1,4 +1,4 @@
-import type { SVGProps } from "react"
+import type { SVGProps } from "react";
 
 /**
  * Ícono de Instagram como SVG inline. lucide-react (desde v1.x) ya no
@@ -21,5 +21,5 @@ export function InstagramIcon(props: SVGProps<SVGSVGElement>) {
       <circle cx="12" cy="12" r="4" />
       <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" stroke="none" />
     </svg>
-  )
+  );
 }
