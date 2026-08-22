@@ -1,4 +1,4 @@
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtmlLib from "sanitize-html";
 
 /**
  * Etiquetas y atributos permitidos, acotados al vocabulario real que emite
@@ -37,17 +37,6 @@ const TAGS_PERMITIDAS = [
 
 const ATRIBUTOS_PERMITIDOS = ["href", "target", "rel", "src", "alt", "style"];
 
-// Cualquier <a target="_blank"> que venga del editor debe forzar
-// rel="noopener noreferrer": sin esto, la pestaña abierta puede acceder a
-// `window.opener` y redirigir la página original (tabnabbing). DOMPurify no
-// lo hace por sí solo, así que se agrega acá vía hook, siguiendo el patrón
-// que la propia documentación de DOMPurify recomienda para este caso.
-DOMPurify.addHook("afterSanitizeAttributes", (node) => {
-  if (node.tagName === "A" && node.getAttribute("target") === "_blank") {
-    node.setAttribute("rel", "noopener noreferrer");
-  }
-});
-
 /**
  * Sanitiza HTML enriquecido antes de renderizarlo con `dangerouslySetInnerHTML`.
  *
@@ -58,21 +47,40 @@ DOMPurify.addHook("afterSanitizeAttributes", (node) => {
  * antes de que ese HTML llegue al navegador de un cliente real, así que se
  * sanitiza acá aunque el origen sea "de confianza" en el flujo normal.
  *
- * `"use cache"`: internamente DOMPurify/jsdom tocan `Date` al inicializar,
- * lo que Next marca como "valor inestable" si se llama directo dentro de
- * una página que se prerenderiza estáticamente (ver `cacheComponents` en
- * next.config.mjs). Como esta función es pura — mismo `html` de entrada,
- * mismo resultado siempre —, cachearla por argumento (mismo patrón que
- * `src/server/datos-publicos.ts`) resuelve el error de prerender y de paso
- * evita correr DOMPurify de nuevo en cada render del mismo contenido.
+ * Se usa `sanitize-html` (puro JS, sin `jsdom`) en vez de `isomorphic-dompurify`:
+ * la cadena de dependencias de `jsdom` (vía `html-encoding-sniffer`) incluye
+ * un paquete ESM-only (`@exodus/bytes`) que revienta con `ERR_REQUIRE_ESM` al
+ * quedar bundleado como CommonJS en el runtime serverless de Netlify/Vercel.
+ * Ese crash durante el render de Server Component cortaba el stream de RSC a
+ * mitad de camino, lo que el navegador reportaba como "Minified React error
+ * #412: Connection closed".
+ *
+ * `"use cache"`: la función es pura (mismo `html` de entrada, mismo resultado
+ * siempre), así que cachearla por argumento —mismo patrón que
+ * `src/server/datos-publicos.ts`— evita volver a sanitizar el mismo
+ * contenido en cada render.
  */
 export async function sanitizarHtml(html: string): Promise<string> {
   "use cache";
-  return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: TAGS_PERMITIDAS,
-    ALLOWED_ATTR: ATRIBUTOS_PERMITIDOS,
-    // Por defecto DOMPurify deja pasar cualquier atributo data-*
-    // independientemente de ALLOWED_ATTR; acá no hay ningún uso legítimo.
-    ALLOW_DATA_ATTR: false,
+  return sanitizeHtmlLib(html, {
+    allowedTags: TAGS_PERMITIDAS,
+    allowedAttributes: { "*": ATRIBUTOS_PERMITIDOS },
+    // Por defecto sanitize-html ya descarta cualquier atributo que no esté
+    // en `allowedAttributes` (a diferencia de DOMPurify, que deja pasar
+    // data-* aunque no esté en ALLOWED_ATTR), así que acá no hace falta un
+    // equivalente a `ALLOW_DATA_ATTR: false`.
+    transformTags: {
+      // Cualquier <a target="_blank"> que venga del editor debe forzar
+      // rel="noopener noreferrer": sin esto, la pestaña abierta puede
+      // acceder a `window.opener` y redirigir la página original
+      // (tabnabbing).
+      a: (tagName, attribs) => ({
+        tagName,
+        attribs:
+          attribs.target === "_blank"
+            ? { ...attribs, rel: "noopener noreferrer" }
+            : attribs,
+      }),
+    },
   });
 }
