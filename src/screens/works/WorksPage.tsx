@@ -1,5 +1,6 @@
 import { ArrowRight, BadgeCheck, MapPin, Ruler, Settings2 } from "lucide-react";
 
+import { RichTextContent } from "@/components/content/RichTextContent";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { ProductImage } from "@/components/media/ProductImage";
 import { Badge } from "@/components/ui/badge";
@@ -134,9 +135,10 @@ export function WorksPage({
                   <h3 className="mt-4 text-3xl font-bold tracking-tight text-balance sm:text-4xl">
                     {obraDestacada.titulo}
                   </h3>
-                  <p className="mt-4 leading-7 text-muted-foreground">
-                    {obraDestacada.detalleEspecial}
-                  </p>
+                  <RichTextContent
+                    html={obraDestacada.detalleEspecial}
+                    className="mt-4 leading-7 text-muted-foreground"
+                  />
                   <p className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
                     <MapPin
                       className="size-4 text-primary"
@@ -148,7 +150,10 @@ export function WorksPage({
 
                 <figure className="mt-8 border-l-2 border-primary pl-5 sm:pl-6">
                   <blockquote className="text-lg leading-8 text-foreground/85">
-                    “{obraDestacada.testimonio}”
+                    <RichTextContent
+                      html={obraDestacada.testimonio}
+                      className="rich-text-content--quote"
+                    />
                   </blockquote>
                   <figcaption className="mt-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                     — {obraDestacada.autor}

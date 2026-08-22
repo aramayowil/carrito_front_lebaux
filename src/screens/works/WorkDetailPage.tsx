@@ -1,6 +1,7 @@
 import { ArrowLeft, ArrowRight, MapPin } from "lucide-react";
 import Link from "next/link";
 
+import { RichTextContent } from "@/components/content/RichTextContent";
 import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Button } from "@/components/ui/button";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
@@ -47,9 +48,10 @@ export function WorkDetailPage({
             <h1 className="mt-4 text-4xl font-bold uppercase tracking-tight text-balance sm:text-5xl lg:text-6xl">
               {obra.titulo}
             </h1>
-            <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
-              {obra.detalleEspecial}
-            </p>
+            <RichTextContent
+              html={obra.detalleEspecial}
+              className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8"
+            />
             <p className="mt-5 flex items-center gap-2 text-sm text-muted-foreground">
               <MapPin className="size-4 text-primary" aria-hidden="true" />
               {obra.ubicacion}
@@ -83,18 +85,20 @@ export function WorkDetailPage({
                 <p className="text-xs font-semibold uppercase tracking-widest text-primary">
                   El desafío
                 </p>
-                <p className="mt-3 leading-7 text-muted-foreground">
-                  {obra.desafio}
-                </p>
+                <RichTextContent
+                  html={obra.desafio}
+                  className="mt-3 leading-7 text-muted-foreground"
+                />
               </article>
 
               <article className="works-reveal-soft border-t border-border pt-5">
                 <p className="text-xs font-semibold uppercase tracking-widest text-primary">
                   La solución
                 </p>
-                <p className="mt-3 leading-7 text-muted-foreground">
-                  {obra.solucion}
-                </p>
+                <RichTextContent
+                  html={obra.solucion}
+                  className="mt-3 leading-7 text-muted-foreground"
+                />
               </article>
             </div>
           </div>
@@ -127,7 +131,10 @@ export function WorkDetailPage({
         <div className="container grid items-center gap-10 lg:grid-cols-[1fr_0.75fr] lg:gap-16">
           <figure className="works-reveal-soft border-l-2 border-primary pl-5 sm:pl-7">
             <blockquote className="max-w-3xl text-xl leading-9 text-white/85 sm:text-2xl sm:leading-10">
-              “{obra.testimonio}”
+              <RichTextContent
+                html={obra.testimonio}
+                className="rich-text-content--quote"
+              />
             </blockquote>
             <figcaption className="mt-5 text-xs font-semibold uppercase tracking-widest text-primary">
               — {obra.autor}

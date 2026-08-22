@@ -478,6 +478,25 @@
     @apply bg-primary/10;
   }
 
+  /* Variante para citas/testimonios (ver `obra.testimonio` en WorkDetailPage
+     y WorksPage): el HTML del editor casi siempre envuelve el texto en un
+     <p>, que es de bloque. Si dejáramos las comillas “ ” como caracteres
+     literales alrededor del componente, la comilla de apertura quedaría
+     flotando en su propia línea antes de ese bloque. Acá forzamos los hijos
+     a fluir en línea y agregamos las comillas por CSS para que todo quede
+     en el mismo renglón visual. */
+  .rich-text-content--quote > * {
+    display: inline;
+  }
+
+  .rich-text-content--quote::before {
+    content: "“";
+  }
+
+  .rich-text-content--quote::after {
+    content: "”";
+  }
+
   .rich-text-content p.is-editor-empty:first-child::before {
     content: attr(data-placeholder);
     @apply pointer-events-none float-left h-0 text-muted-foreground;

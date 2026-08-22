@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { htmlComoTextoPlano } from "@/lib/public-text";
 import { WorkDetailPage } from "@/screens/works/WorkDetailPage";
 import {
   cargarCategoriasObras,
@@ -22,7 +23,7 @@ export async function generateMetadata({
 
   return {
     title: obra.titulo,
-    description: obra.detalleEspecial,
+    description: htmlComoTextoPlano(obra.detalleEspecial),
   };
 }
 

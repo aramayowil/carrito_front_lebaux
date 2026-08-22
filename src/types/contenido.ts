@@ -56,12 +56,27 @@ export interface Obra {
   tipo: string;
   especificacion: string;
   imagen: string;
+  /**
+   * Contenido enriquecido (HTML del editor Tiptap del admin). Se renderiza
+   * con `RichTextContent` en las vistas completas; en tarjetas con
+   * `line-clamp` y en `description` de metadata/SEO se convierte antes a
+   * texto plano con `htmlComoTextoPlano` (ver `@/lib/public-text`).
+   */
   detalleEspecial: string;
   ubicacion: string;
+  /**
+   * Contenido enriquecido (HTML del editor Tiptap del admin). Se renderiza
+   * con `RichTextContent` usando la variante `.rich-text-content--quote`
+   * (ver `src/index.css`), que fuerza el contenido a fluir en línea y agrega
+   * las comillas tipográficas por CSS — el `<blockquote>` que lo envuelve ya
+   * no debe llevar comillas literales en el JSX.
+   */
   testimonio: string;
   autor: string;
   galeria: string[];
+  /** Contenido enriquecido (HTML del editor Tiptap del admin). Se sanitiza y renderiza con `RichTextContent`. */
   desafio: string;
+  /** Contenido enriquecido (HTML del editor Tiptap del admin). Se sanitiza y renderiza con `RichTextContent`. */
   solucion: string;
   materiales: string[];
   antesYDespues?: AntesYDespuesObra;
