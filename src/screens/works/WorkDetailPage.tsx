@@ -63,10 +63,7 @@ export function WorkDetailPage({
         aria-label={`Galería de ${obra.titulo}`}
       >
         <div className="container">
-          <WorkGalleryLightbox
-            images={obra.galeria.length > 0 ? obra.galeria : [obra.imagen]}
-            title={obra.titulo}
-          />
+          <WorkGalleryLightbox images={obra.galeria} title={obra.titulo} />
         </div>
       </section>
 

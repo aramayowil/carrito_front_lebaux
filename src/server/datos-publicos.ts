@@ -11,7 +11,6 @@ import type {
   ConfiguracionInicio,
   ConfiguracionSitio,
   LineaProducto,
-  MosaicoInicioLinea,
   Obra,
   Producto,
   TipoAperturaProducto,
@@ -49,70 +48,11 @@ function normalizarProductoDesdePayload(payload: unknown): Producto {
   };
 }
 
-function mosaicoInicioPorDefecto(
-  linea: Partial<LineaProducto>,
-): MosaicoInicioLinea {
-  const slug = (linea.slug ?? "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
-
-  if (slug.includes("modena")) {
-    return {
-      descripcion:
-        "La Línea Módena ofrece aberturas de alta prestación con perfiles resistentes, excelente hermeticidad y herrajes de calidad, brindando durabilidad, funcionalidad y un óptimo desempeño en todo tipo de proyectos.",
-      coloresDisponibles: "Blanco / Negro",
-      vidrios: "Estándar, laminado 3+3, DVH",
-      idealPara: "Viviendas y locales comerciales",
-      productosIds: [],
-    };
-  }
-
-  if (slug.includes("herrero")) {
-    return {
-      descripcion:
-        "La Línea Herrero de Lebaux está diseñada para brindar resistencia, durabilidad y un excelente desempeño frente a las condiciones climáticas. Una solución funcional, de fácil mantenimiento y larga vida útil.",
-      coloresDisponibles: "Blanco / Negro",
-      vidrios: "Estándar",
-      idealPara: "Viviendas",
-      productosIds: [],
-    };
-  }
-
-  return {
-    descripcion: linea.descripcion ?? "",
-    coloresDisponibles: "",
-    vidrios: "",
-    idealPara: linea.idealPara?.filter(Boolean).join(" · ") ?? "",
-    productosIds: [],
-  };
-}
-
-function normalizarMosaicoInicio(
-  linea: Partial<LineaProducto>,
-): MosaicoInicioLinea {
-  const base = mosaicoInicioPorDefecto(linea);
-  const actual = linea.mosaicoInicio;
-
-  const productosIds = Array.isArray(actual?.productosIds)
-    ? actual.productosIds.filter((id): id is string => typeof id === "string")
-    : base.productosIds;
-
-  return {
-    descripcion: actual?.descripcion ?? base.descripcion,
-    coloresDisponibles: actual?.coloresDisponibles ?? base.coloresDisponibles,
-    vidrios: actual?.vidrios ?? base.vidrios,
-    idealPara: actual?.idealPara ?? base.idealPara,
-    productosIds: Array.from(new Set(productosIds)).slice(0, 3),
-  };
-}
-
 /** Completa el contrato dual de documentos durante el backfill de líneas. */
 function normalizarLineaDesdePayload(payload: unknown): LineaProducto {
   const linea = payload as LineaProducto;
   return {
     ...linea,
-    mosaicoInicio: normalizarMosaicoInicio(linea),
     catalogoTecnicoUrl: linea.catalogoTecnicoUrl ?? "",
     catalogoTecnicoVersion: linea.catalogoTecnicoVersion ?? "",
     catalogoTecnicoActualizadoEn: linea.catalogoTecnicoActualizadoEn ?? "",
@@ -124,10 +64,27 @@ function normalizarLineaDesdePayload(payload: unknown): LineaProducto {
   };
 }
 
+function normalizarGaleriaObra(valor: unknown, imagenPrincipal: string) {
+  const vistas = Array.isArray(valor) ? valor : [];
+  const unicas = new Set<string>();
+
+  for (const vista of vistas) {
+    if (typeof vista !== "string") continue;
+    const url = vista.trim();
+    if (url) unicas.add(url);
+  }
+
+  if (unicas.size === 0 && imagenPrincipal) unicas.add(imagenPrincipal);
+  return [...unicas];
+}
+
 /** Mantiene legibles las tres obras anteriores mientras se completa su ficha. */
 function normalizarObraDesdePayload(payload: unknown): Obra {
-  const obra = payload as Partial<Obra>;
-  const imagen = obra.imagen ?? "";
+  const obra =
+    payload && typeof payload === "object" && !Array.isArray(payload)
+      ? (payload as Partial<Obra>)
+      : {};
+  const imagen = typeof obra.imagen === "string" ? obra.imagen.trim() : "";
   return {
     id: obra.id ?? "obra",
     slug: obra.slug ?? obra.id ?? "obra",
@@ -144,7 +101,7 @@ function normalizarObraDesdePayload(payload: unknown): Obra {
     ubicacion: obra.ubicacion ?? "",
     testimonio: obra.testimonio ?? "",
     autor: obra.autor ?? "",
-    galeria: obra.galeria?.length ? obra.galeria : imagen ? [imagen] : [],
+    galeria: normalizarGaleriaObra(obra.galeria, imagen),
     desafio: obra.desafio ?? "",
     solucion: obra.solucion ?? "",
     materiales: obra.materiales ?? [],

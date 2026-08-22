@@ -1,10 +1,11 @@
-"use client";
+'use client'
 
-import { useEffect, useRef, useState } from "react";
-import { X, ZoomIn, ZoomOut } from "lucide-react";
-import Image from "next/image";
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { animated, useSpring } from '@react-spring/web'
+import { useGesture } from '@use-gesture/react'
+import { ImageOff, X, ZoomIn, ZoomOut } from 'lucide-react'
 
-import { ProductImage } from "@/components/media/ProductImage";
+import { ProductImage } from '@/components/media/ProductImage'
 import {
   Carousel,
   type CarouselApi,
@@ -12,113 +13,245 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel";
+} from '@/components/ui/carousel'
 import {
   Dialog,
   DialogClose,
   DialogContent,
   DialogDescription,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/dialog'
+import { cn } from '@/lib/utils'
 
-const ZOOM_AMPLIADO = 2.25;
+const ZOOM_AMPLIADO = 2.25
+const ZOOM_MAXIMO = 4
+const ZOOM_ASENTADO = 1.05
+const SPRING_CONFIG = { tension: 300, friction: 30 }
+
+const SIZES_PREVIEW_MOBILE = '(max-width: 1023px) 100vw, 50vw'
+const SIZES_PREVIEW_DESKTOP_PRINCIPAL = '(max-width: 1023px) 100vw, 60vw'
+const SIZES_PREVIEW_DESKTOP_SECUNDARIA = '(max-width: 1023px) 100vw, 30vw'
+const SIZES_LIGHTBOX = '(max-width: 767px) 100vw, 90vw'
+
+function limitarValor(valor: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, valor))
+}
+
+/**
+ * Cuánto se le permite desplazar (paneo) a la imagen ampliada en cada eje
+ * antes de que el rubber-band de use-gesture empiece a frenarla. Con la
+ * imagen centrada, el margen disponible es la mitad del sobrante que deja
+ * el zoom respecto del contenedor.
+ */
+function calcularLimitesDePaneo(escala: number, el: HTMLDivElement | null) {
+  if (!el || escala <= 1) return { x: 0, y: 0 }
+  const { width, height } = el.getBoundingClientRect()
+  return {
+    x: (width * (escala - 1)) / 2,
+    y: (height * (escala - 1)) / 2,
+  }
+}
 
 /** Galería responsive con lightbox, carrusel y zoom sobre la imagen activa. */
 export function WorkGalleryLightbox({
   images,
   title,
 }: {
-  images: string[];
-  title: string;
+  images: string[]
+  title: string
 }) {
-  const [open, setOpen] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [previewIndex, setPreviewIndex] = useState(0);
-  const [previewApi, setPreviewApi] = useState<CarouselApi>();
-  const [api, setApi] = useState<CarouselApi>();
-  const [zoom, setZoom] = useState(1);
-  const zoomViewportRef = useRef<HTMLDivElement>(null);
-  const lastTouchRef = useRef(0);
+  const galleryImages = useMemo(() => {
+    const unicas = new Set<string>()
+    for (const image of Array.isArray(images) ? images : []) {
+      if (typeof image !== 'string') continue
+      const fuente = image.trim()
+      if (fuente) unicas.add(fuente)
+    }
+    return [...unicas]
+  }, [images])
+
+  const [open, setOpen] = useState(false)
+  const [selectedIndex, setSelectedIndex] = useState(0)
+  const [previewIndex, setPreviewIndex] = useState(0)
+  // Índices "seguros": si la galería encoge (p. ej. cambia `images` desde
+  // afuera) el estado puede quedar apuntando a una posición que ya no
+  // existe. En vez de sincronizarlo con un efecto (setState en el cuerpo
+  // de un efecto dispara un render en cascada), lo derivamos acá mismo.
+  const maxIndex = Math.max(galleryImages.length - 1, 0)
+  const selectedIndexSeguro = Math.min(selectedIndex, maxIndex)
+  const previewIndexSeguro = Math.min(previewIndex, maxIndex)
+  const [previewApi, setPreviewApi] = useState<CarouselApi>()
+  const [api, setApi] = useState<CarouselApi>()
+  const [zoomed, setZoomed] = useState(false)
+  const zoomViewportRef = useRef<HTMLDivElement>(null)
+
+  // Posición y escala de la imagen ampliada. Un solo spring para la imagen
+  // seleccionada: use-gesture escribe acá durante el gesto (pellizco/paneo)
+  // y react-spring anima los saltos discretos (reset, toggle de zoom).
+  const [{ x, y, scale }, springApi] = useSpring(() => ({
+    x: 0,
+    y: 0,
+    scale: 1,
+    config: SPRING_CONFIG,
+  }))
+
+  function resetearZoom(inmediato = true) {
+    springApi.start({ x: 0, y: 0, scale: 1, immediate: inmediato })
+    setZoomed(false)
+  }
 
   useEffect(() => {
-    if (!previewApi) return;
+    if (!previewApi) return
 
     const updatePreviewSelection = () => {
-      setPreviewIndex(previewApi.selectedScrollSnap());
-    };
+      setPreviewIndex(previewApi.selectedScrollSnap())
+    }
 
-    updatePreviewSelection();
-    previewApi.on("select", updatePreviewSelection);
-    previewApi.on("reInit", updatePreviewSelection);
+    updatePreviewSelection()
+    previewApi.on('select', updatePreviewSelection)
+    previewApi.on('reInit', updatePreviewSelection)
 
     return () => {
-      previewApi.off("select", updatePreviewSelection);
-      previewApi.off("reInit", updatePreviewSelection);
-    };
-  }, [previewApi]);
+      previewApi.off('select', updatePreviewSelection)
+      previewApi.off('reInit', updatePreviewSelection)
+    }
+  }, [previewApi])
 
   useEffect(() => {
-    if (!open || !api) return;
-    api.scrollTo(selectedIndex, true);
-  }, [api, open, selectedIndex]);
+    if (!open || !api || galleryImages.length === 0) return
+    api.scrollTo(selectedIndexSeguro, true)
+  }, [api, galleryImages.length, open, selectedIndexSeguro])
 
   useEffect(() => {
-    if (!api) return;
+    if (!api) return
 
     const updateSelection = () => {
-      setSelectedIndex(api.selectedScrollSnap());
-      setZoom(1);
-    };
+      setSelectedIndex(api.selectedScrollSnap())
+      resetearZoom()
+    }
 
-    api.on("select", updateSelection);
+    api.on('select', updateSelection)
     return () => {
-      api.off("select", updateSelection);
-    };
-  }, [api]);
-
-  useEffect(() => {
-    if (zoom === 1) return;
-
-    const frame = requestAnimationFrame(() => {
-      const viewport = zoomViewportRef.current;
-      if (!viewport) return;
-      viewport.scrollTo({
-        left: (viewport.scrollWidth - viewport.clientWidth) / 2,
-        top: (viewport.scrollHeight - viewport.clientHeight) / 2,
-        behavior: "smooth",
-      });
-    });
-
-    return () => cancelAnimationFrame(frame);
-  }, [zoom]);
+      api.off('select', updateSelection)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- resetearZoom es estable en la práctica (solo usa springApi/setZoomed)
+  }, [api])
 
   function openAt(index: number) {
-    setSelectedIndex(index);
-    setZoom(1);
-    setOpen(true);
+    if (!galleryImages[index]) return
+    setSelectedIndex(index)
+    resetearZoom()
+    setOpen(true)
   }
 
   function toggleZoom() {
-    setZoom((current) => (current === 1 ? ZOOM_AMPLIADO : 1));
+    if (zoomed) {
+      resetearZoom(false)
+      return
+    }
+    springApi.start({ x: 0, y: 0, scale: ZOOM_AMPLIADO })
+    setZoomed(true)
   }
 
-  function handleTouchEnd() {
-    const now = Date.now();
-    if (now - lastTouchRef.current < 300) toggleZoom();
-    lastTouchRef.current = now;
+  const bind = useGesture(
+    {
+      onDrag: ({ pinching, cancel, offset: [ox, oy] }) => {
+        if (pinching) return cancel()
+        springApi.start({ x: ox, y: oy, immediate: true })
+      },
+      onPinch: ({
+        origin: [ox, oy],
+        first,
+        movement: [escalaRelativa],
+        offset: [escalaAbsoluta],
+        memo,
+      }) => {
+        if (first) {
+          const rect = zoomViewportRef.current?.getBoundingClientRect()
+          const centroX = rect ? rect.x + rect.width / 2 : ox
+          const centroY = rect ? rect.y + rect.height / 2 : oy
+          memo = {
+            xInicial: x.get(),
+            yInicial: y.get(),
+            distanciaAlCentroX: ox - centroX,
+            distanciaAlCentroY: oy - centroY,
+          }
+        }
+
+        const nuevaEscala = limitarValor(escalaAbsoluta, 1, ZOOM_MAXIMO)
+        springApi.start({
+          scale: nuevaEscala,
+          x: memo.xInicial - (escalaRelativa - 1) * memo.distanciaAlCentroX,
+          y: memo.yInicial - (escalaRelativa - 1) * memo.distanciaAlCentroY,
+          immediate: true,
+        })
+        setZoomed(nuevaEscala > ZOOM_ASENTADO)
+
+        return memo
+      },
+      onPinchEnd: ({ offset: [escalaAbsoluta] }) => {
+        const seAsienta = escalaAbsoluta <= ZOOM_ASENTADO
+        const escalaFinal = seAsienta ? 1 : escalaAbsoluta
+        const limites = calcularLimitesDePaneo(
+          escalaFinal,
+          zoomViewportRef.current,
+        )
+
+        springApi.start({
+          scale: escalaFinal,
+          x: limitarValor(x.get(), -limites.x, limites.x),
+          y: limitarValor(y.get(), -limites.y, limites.y),
+        })
+        setZoomed(!seAsienta)
+      },
+    },
+    {
+      drag: {
+        from: () => [x.get(), y.get()],
+        bounds: () => {
+          const limites = calcularLimitesDePaneo(
+            scale.get(),
+            zoomViewportRef.current,
+          )
+          return {
+            left: -limites.x,
+            right: limites.x,
+            top: -limites.y,
+            bottom: limites.y,
+          }
+        },
+        rubberband: true,
+        decay: true,
+        enabled: zoomed,
+      },
+      pinch: {
+        scaleBounds: { min: 1, max: ZOOM_MAXIMO },
+        rubberband: true,
+      },
+    },
+  )
+
+  if (galleryImages.length === 0) {
+    return (
+      <div className="works-reveal-media flex aspect-4/3 w-full flex-col items-center justify-center gap-3 rounded-xl bg-muted text-muted-foreground">
+        <ImageOff className="size-9" aria-hidden="true" />
+        <p className="px-4 text-center text-sm">
+          No hay imágenes disponibles para esta obra.
+        </p>
+      </div>
+    )
   }
 
   return (
     <>
       <Carousel
-        opts={{ align: "start", loop: images.length > 1 }}
+        opts={{ align: 'start', loop: galleryImages.length > 1 }}
         setApi={setPreviewApi}
         className="works-reveal-media w-full lg:hidden"
         aria-label={`Vistas de ${title}`}
       >
         <CarouselContent>
-          {images.map((image, index) => (
+          {galleryImages.map((image, index) => (
             <CarouselItem
               key={`${image}-preview-mobile-${index}`}
               className="basis-full"
@@ -132,8 +265,7 @@ export function WorkGalleryLightbox({
                 <ProductImage
                   src={image}
                   alt={`${title}, vista ${index + 1}`}
-                  priority={index === 0}
-                  sizes="(max-width: 640px) calc(100vw - 2rem), (max-width: 1024px) calc(100vw - 3rem), 100vw"
+                  sizes={SIZES_PREVIEW_MOBILE}
                   className="aspect-4/3 w-full"
                   imgClassName="object-cover"
                 />
@@ -146,22 +278,22 @@ export function WorkGalleryLightbox({
         </CarouselContent>
       </Carousel>
 
-      {images.length > 1 && (
+      {galleryImages.length > 1 && (
         <div
           className="mt-4 flex items-center justify-center gap-2 lg:hidden"
           aria-label="Seleccionar imagen"
         >
-          {images.map((_, index) => (
+          {galleryImages.map((_, index) => (
             <button
               key={`preview-indicator-${index}`}
               type="button"
               onClick={() => previewApi?.scrollTo(index)}
               className={cn(
-                "size-2 rounded-full transition-[width,background-color] duration-300 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none",
-                previewIndex === index ? "w-6 bg-primary" : "bg-border",
+                'size-2 rounded-full transition-[width,background-color] duration-300 focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none',
+                previewIndexSeguro === index ? 'w-6 bg-primary' : 'bg-border',
               )}
               aria-label={`Ir a la imagen ${index + 1}`}
-              aria-current={previewIndex === index ? "true" : undefined}
+              aria-current={previewIndexSeguro === index ? 'true' : undefined}
             />
           ))}
         </div>
@@ -169,37 +301,40 @@ export function WorkGalleryLightbox({
 
       <div
         className={cn(
-          "hidden gap-4 lg:grid",
-          images.length === 1
-            ? "lg:aspect-video lg:grid-cols-1 lg:grid-rows-1"
-            : "lg:aspect-[16/7] lg:grid-cols-[1.35fr_0.65fr] lg:grid-rows-2",
+          'hidden gap-4 lg:grid',
+          galleryImages.length === 1
+            ? 'lg:aspect-video lg:grid-cols-1 lg:grid-rows-1'
+            : 'lg:aspect-[16/7] lg:grid-cols-[1.35fr_0.65fr] lg:grid-rows-2',
         )}
       >
-        {images.slice(0, 3).map((image, index) => (
+        {galleryImages.slice(0, 3).map((image, index) => (
           <button
             key={`${image}-preview-desktop-${index}`}
             type="button"
             onClick={() => openAt(index)}
             className={cn(
-              "group relative h-full w-full overflow-hidden rounded-xl bg-muted outline-none focus-visible:ring-3 focus-visible:ring-ring/40",
-              index === 0 && images.length > 1 && "row-span-2",
-              index === 1 && images.length === 2 && "row-span-2",
-              index === 0 ? "works-reveal-media" : "works-reveal-soft",
+              'group relative h-full w-full overflow-hidden rounded-xl bg-muted outline-none focus-visible:ring-3 focus-visible:ring-ring/40',
+              index === 0 && galleryImages.length > 1 && 'row-span-2',
+              index === 1 && galleryImages.length === 2 && 'row-span-2',
+              index === 0 ? 'works-reveal-media' : 'works-reveal-soft',
             )}
             aria-label={`Ampliar ${title}, vista ${index + 1}`}
           >
             <ProductImage
               src={image}
               alt={`${title}, vista ${index + 1}`}
-              priority={index === 0}
-              sizes={index === 0 ? "68vw" : "32vw"}
+              sizes={
+                index === 0
+                  ? SIZES_PREVIEW_DESKTOP_PRINCIPAL
+                  : SIZES_PREVIEW_DESKTOP_SECUNDARIA
+              }
               className="h-full min-h-full w-full"
               imgClassName="object-cover transition-transform duration-700 ease-out motion-safe:group-hover:scale-[1.02]"
             />
 
-            {index === 2 && images.length > 3 ? (
+            {index === 2 && galleryImages.length > 3 ? (
               <span className="absolute inset-0 flex items-center justify-center bg-brand-black/55 text-3xl font-semibold text-white backdrop-blur-[0.0625rem]">
-                +{images.length - 3}
+                +{galleryImages.length - 3}
               </span>
             ) : (
               <span className="absolute right-3 bottom-3 flex size-9 items-center justify-center rounded-full bg-brand-black/75 text-white opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
@@ -213,13 +348,13 @@ export function WorkGalleryLightbox({
       <Dialog
         open={open}
         onOpenChange={(nextOpen) => {
-          setOpen(nextOpen);
-          if (!nextOpen) setZoom(1);
+          setOpen(nextOpen)
+          if (!nextOpen) resetearZoom()
         }}
       >
         <DialogContent
           showCloseButton={false}
-          className="fixed inset-0 top-0 left-0 h-dvh max-h-none w-screen max-w-none translate-x-0 translate-y-0 gap-0 rounded-none border-0 bg-brand-black/90 p-0 text-white shadow-none ring-0 supports-backdrop-filter:backdrop-blur-sm sm:max-w-none sm:rounded-none"
+          className="fixed inset-0 top-0 left-0 h-dvh max-h-none w-screen max-w-none translate-x-0 translate-y-0 gap-0 overscroll-none rounded-none border-0 bg-brand-black/90 p-0 text-white shadow-none ring-0 supports-backdrop-filter:backdrop-blur-sm sm:max-w-none sm:rounded-none"
         >
           <DialogTitle className="sr-only">Galería de {title}</DialogTitle>
           <DialogDescription className="sr-only">
@@ -228,7 +363,7 @@ export function WorkGalleryLightbox({
 
           <div className="absolute top-4 right-4 left-4 z-20 flex items-center justify-between gap-3 sm:top-6 sm:right-6 sm:left-6">
             <p className="rounded-full bg-black/35 px-3 py-1.5 text-xs font-medium text-white/75 backdrop-blur-sm">
-              {selectedIndex + 1} / {images.length}
+              {selectedIndexSeguro + 1} / {galleryImages.length}
             </p>
 
             <div className="flex items-center gap-2">
@@ -236,9 +371,9 @@ export function WorkGalleryLightbox({
                 type="button"
                 onClick={toggleZoom}
                 className="inline-flex size-10 touch-manipulation items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-sm transition-colors hover:bg-black/55 focus-visible:ring-3 focus-visible:ring-primary/50 focus-visible:outline-none"
-                aria-label={zoom === 1 ? "Ampliar imagen" : "Reducir imagen"}
+                aria-label={zoomed ? 'Reducir imagen' : 'Ampliar imagen'}
               >
-                {zoom === 1 ? (
+                {!zoomed ? (
                   <ZoomIn className="size-5" aria-hidden="true" />
                 ) : (
                   <ZoomOut className="size-5" aria-hidden="true" />
@@ -261,54 +396,53 @@ export function WorkGalleryLightbox({
 
           <Carousel
             setApi={setApi}
-            opts={{ loop: images.length > 1, watchDrag: zoom === 1 }}
-            className="flex h-dvh w-full items-center"
+            opts={{
+              loop: false,
+              watchDrag: !zoomed,
+            }}
+            className="h-dvh w-full"
           >
             <CarouselContent className="ml-0 h-dvh w-full">
-              {images.map((image, index) => (
+              {galleryImages.map((image, index) => (
                 <CarouselItem
                   key={`${image}-modal-${index}`}
                   className="h-dvh w-full pl-0"
                 >
                   <div
-                    ref={index === selectedIndex ? zoomViewportRef : undefined}
+                    ref={
+                      index === selectedIndexSeguro
+                        ? zoomViewportRef
+                        : undefined
+                    }
                     onDoubleClick={toggleZoom}
-                    onTouchMove={() => {
-                      lastTouchRef.current = 0;
-                    }}
-                    onTouchEnd={handleTouchEnd}
+                    {...(index === selectedIndexSeguro ? bind() : {})}
                     className={cn(
-                      "h-full w-full",
-                      zoom === 1
-                        ? "cursor-zoom-in overflow-hidden"
-                        : "cursor-zoom-out touch-auto overflow-auto",
+                      'h-full w-full touch-none overscroll-contain select-none',
+                      zoomed ? 'cursor-zoom-out' : 'cursor-zoom-in',
                     )}
                   >
-                    <div
-                      className="transition-[width,height] duration-300 ease-out"
-                      style={{
-                        width:
-                          index === selectedIndex ? `${zoom * 100}%` : "100%",
-                        height:
-                          index === selectedIndex ? `${zoom * 100}%` : "100%",
-                      }}
+                    <animated.div
+                      className="h-full w-full"
+                      style={
+                        index === selectedIndexSeguro
+                          ? { x, y, scale }
+                          : undefined
+                      }
                     >
-                      <Image
+                      <ProductImage
                         src={image}
                         alt={`${title}, imagen ampliada ${index + 1}`}
-                        width={1448}
-                        height={1086}
-                        priority={index === selectedIndex}
-                        sizes="100vw"
-                        className="h-full w-full object-contain"
+                        sizes={SIZES_LIGHTBOX}
+                        className="pointer-events-none h-full w-full select-none"
+                        imgClassName="object-contain"
                       />
-                    </div>
+                    </animated.div>
                   </div>
                 </CarouselItem>
               ))}
             </CarouselContent>
 
-            {images.length > 1 && (
+            {galleryImages.length > 1 && (
               <>
                 <CarouselPrevious className="left-4 hidden size-11 border-white/10 bg-black/35 text-white backdrop-blur-sm hover:bg-black/55 sm:flex" />
                 <CarouselNext className="right-4 hidden size-11 border-white/10 bg-black/35 text-white backdrop-blur-sm hover:bg-black/55 sm:flex" />
@@ -317,27 +451,31 @@ export function WorkGalleryLightbox({
           </Carousel>
 
           <p className="pointer-events-none absolute right-4 bottom-4 left-4 z-20 text-center text-xs text-white/50 sm:bottom-6">
-            {zoom === 1
-              ? "Deslizá para recorrer · Doble toque para ampliar"
-              : "Desplazá la imagen para explorar sus detalles"}
+            {!zoomed
+              ? 'Deslizá para recorrer · Usá dos dedos o doble toque para ampliar'
+              : 'Desplazá la imagen para explorar sus detalles'}
           </p>
 
-          {images.length > 1 && (
+          {galleryImages.length > 1 && (
             <div
               className="absolute right-4 bottom-10 left-4 z-20 flex items-center justify-center gap-2 sm:bottom-12"
               aria-label="Seleccionar imagen ampliada"
             >
-              {images.map((_, index) => (
+              {galleryImages.map((_, index) => (
                 <button
                   key={`modal-indicator-${index}`}
                   type="button"
                   onClick={() => api?.scrollTo(index)}
                   className={cn(
-                    "size-2 rounded-full transition-[width,background-color] duration-300 focus-visible:ring-3 focus-visible:ring-primary/50 focus-visible:outline-none",
-                    selectedIndex === index ? "w-6 bg-primary" : "bg-white/35",
+                    'size-2 rounded-full transition-[width,background-color] duration-300 focus-visible:ring-3 focus-visible:ring-primary/50 focus-visible:outline-none',
+                    selectedIndexSeguro === index
+                      ? 'w-6 bg-primary'
+                      : 'bg-white/35',
                   )}
                   aria-label={`Ir a la imagen ${index + 1}`}
-                  aria-current={selectedIndex === index ? "true" : undefined}
+                  aria-current={
+                    selectedIndexSeguro === index ? 'true' : undefined
+                  }
                 />
               ))}
             </div>
@@ -345,5 +483,5 @@ export function WorkGalleryLightbox({
         </DialogContent>
       </Dialog>
     </>
-  );
+  )
 }
