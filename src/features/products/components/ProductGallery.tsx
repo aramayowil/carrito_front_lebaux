@@ -1,25 +1,16 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
-import { X, ZoomIn } from "lucide-react"
-import Image from "next/image"
+import { useEffect, useMemo, useState } from "react"
+import { ZoomIn } from "lucide-react"
 
+import { Lightbox } from "@/components/media/Lightbox"
 import { ProductImage } from "@/components/media/ProductImage"
 import {
   Carousel,
   type CarouselApi,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel"
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 import type { ImagenProducto } from "@/types"
 
@@ -30,9 +21,8 @@ interface ProductGalleryProps {
 
 const MAX_MINIATURAS_DESKTOP = 6
 const MINIATURAS_SIN_RESUMEN = MAX_MINIATURAS_DESKTOP - 1
-const ZOOM_AMPLIADO = 2.25
 
-/** Galería de producto: selector estático desktop, carrusel mobile y visor inmersivo. */
+/** Galería de producto: selector estático desktop, carrusel mobile y visor inmersivo compartido. */
 export function ProductGallery({ images, productName }: ProductGalleryProps) {
   const orderedImages = useMemo(
     () =>
@@ -45,11 +35,11 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [mobileIndex, setMobileIndex] = useState(0)
   const [mobileApi, setMobileApi] = useState<CarouselApi>()
-  const [lightboxApi, setLightboxApi] = useState<CarouselApi>()
   const [lightboxOpen, setLightboxOpen] = useState(false)
-  const [zoom, setZoom] = useState(1)
-  const zoomViewportRef = useRef<HTMLDivElement>(null)
-  const lastTouchRef = useRef(0)
+
+  const maxIndex = Math.max(orderedImages.length - 1, 0)
+  const selectedIndexSeguro = Math.min(selectedIndex, maxIndex)
+  const mobileIndexSeguro = Math.min(mobileIndex, maxIndex)
 
   const hasMultiple = orderedImages.length > 1
   const hasThumbnailOverflow = orderedImages.length > MAX_MINIATURAS_DESKTOP
@@ -58,7 +48,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
     0,
     orderedImages.length - MINIATURAS_SIN_RESUMEN,
   )
-  const selectedImage = orderedImages[selectedIndex]
+  const selectedImage = orderedImages[selectedIndexSeguro]
 
   useEffect(() => {
     if (!mobileApi) return
@@ -77,55 +67,9 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
     }
   }, [mobileApi])
 
-  useEffect(() => {
-    if (!lightboxOpen || !lightboxApi) return
-    lightboxApi.scrollTo(selectedIndex, true)
-  }, [lightboxApi, lightboxOpen, selectedIndex])
-
-  useEffect(() => {
-    if (!lightboxApi) return
-
-    const updateSelection = () => {
-      setSelectedIndex(lightboxApi.selectedScrollSnap())
-      setZoom(1)
-    }
-
-    lightboxApi.on("select", updateSelection)
-    return () => {
-      lightboxApi.off("select", updateSelection)
-    }
-  }, [lightboxApi])
-
-  useEffect(() => {
-    if (zoom === 1) return
-
-    const frame = requestAnimationFrame(() => {
-      const viewport = zoomViewportRef.current
-      if (!viewport) return
-      viewport.scrollTo({
-        left: (viewport.scrollWidth - viewport.clientWidth) / 2,
-        top: (viewport.scrollHeight - viewport.clientHeight) / 2,
-        behavior: "smooth",
-      })
-    })
-
-    return () => cancelAnimationFrame(frame)
-  }, [zoom])
-
   function openAt(index: number) {
     setSelectedIndex(index)
-    setZoom(1)
     setLightboxOpen(true)
-  }
-
-  function toggleZoom() {
-    setZoom((current) => (current === 1 ? ZOOM_AMPLIADO : 1))
-  }
-
-  function handleTouchEnd() {
-    const now = Date.now()
-    if (now - lastTouchRef.current < 300) toggleZoom()
-    lastTouchRef.current = now
   }
 
   if (orderedImages.length === 0) {
@@ -144,7 +88,7 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
             {desktopThumbnails.map((image, index) => {
               const isOverflowTrigger =
                 hasThumbnailOverflow && index === MAX_MINIATURAS_DESKTOP - 1
-              const selected = selectedIndex === index && !isOverflowTrigger
+              const selected = selectedIndexSeguro === index && !isOverflowTrigger
 
               return (
                 <button
@@ -187,12 +131,12 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
 
         <button
           type="button"
-          onClick={() => openAt(selectedIndex)}
+          onClick={() => openAt(selectedIndexSeguro)}
           className={cn(
             "relative aspect-square min-w-0 cursor-zoom-in overflow-hidden rounded-2xl border border-border/70 bg-white outline-none focus-visible:ring-3 focus-visible:ring-ring/40",
             !hasMultiple && "lg:col-span-2",
           )}
-          aria-label={`Ampliar ${productName}, imagen ${selectedIndex + 1}`}
+          aria-label={`Ampliar ${productName}, imagen ${selectedIndexSeguro + 1}`}
         >
           <ProductImage
             src={selectedImage.url}
@@ -247,136 +191,24 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
               onClick={() => mobileApi?.scrollTo(index)}
               className={cn(
                 "size-2 rounded-full transition-[width,background-color] duration-300 outline-none focus-visible:ring-3 focus-visible:ring-ring/40",
-                mobileIndex === index ? "w-6 bg-primary" : "bg-border",
+                mobileIndexSeguro === index ? "w-6 bg-primary" : "bg-border",
               )}
               aria-label={`Ir a la imagen ${index + 1}`}
-              aria-current={mobileIndex === index ? "true" : undefined}
+              aria-current={mobileIndexSeguro === index ? "true" : undefined}
             />
           ))}
         </div>
       )}
 
-      <Dialog
+      <Lightbox
+        images={orderedImages.map((image) => image.url)}
+        alts={orderedImages.map((image) => image.textoAlternativo || productName)}
+        title={productName}
         open={lightboxOpen}
-        onOpenChange={(open) => {
-          setLightboxOpen(open)
-          if (!open) setZoom(1)
-        }}
-      >
-        <DialogContent
-          showCloseButton={false}
-          className="fixed inset-0 left-0 top-0 h-dvh max-h-none w-screen max-w-none translate-x-0 translate-y-0 gap-0 rounded-none border-0 bg-brand-black/90 p-0 text-white shadow-none ring-0 supports-backdrop-filter:backdrop-blur-sm sm:max-w-none sm:rounded-none"
-        >
-          <DialogTitle className="sr-only">
-            Galería de {productName}
-          </DialogTitle>
-          <DialogDescription className="sr-only">
-            Navegá entre las imágenes y ampliá la fotografía seleccionada.
-          </DialogDescription>
-
-          <div className="absolute left-4 right-4 top-4 z-20 flex items-center justify-between gap-3 sm:left-6 sm:right-6 sm:top-6">
-            <p className="rounded-full bg-black/35 px-3 py-1.5 text-xs font-medium text-white/75 backdrop-blur-sm">
-              {selectedIndex + 1} / {orderedImages.length}
-            </p>
-
-            <DialogClose
-              render={
-                <button
-                  type="button"
-                  className="inline-flex size-10 touch-manipulation items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-sm transition-colors hover:bg-black/55 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-primary/50"
-                />
-              }
-            >
-              <X className="size-5" aria-hidden="true" />
-              <span className="sr-only">Cerrar galería</span>
-            </DialogClose>
-          </div>
-
-          <Carousel
-            setApi={setLightboxApi}
-            opts={{ loop: false, watchDrag: zoom === 1 }}
-            className="flex h-dvh w-full items-center"
-          >
-            <CarouselContent className="ml-0 h-dvh w-full">
-              {orderedImages.map((image, index) => (
-                <CarouselItem
-                  key={`${image.url}-lightbox-${index}`}
-                  className="h-dvh w-full pl-0"
-                >
-                  <div
-                    ref={index === selectedIndex ? zoomViewportRef : undefined}
-                    onDoubleClick={toggleZoom}
-                    onTouchMove={() => {
-                      lastTouchRef.current = 0
-                    }}
-                    onTouchEnd={handleTouchEnd}
-                    className={cn(
-                      "h-full w-full",
-                      zoom === 1
-                        ? "cursor-zoom-in overflow-hidden"
-                        : "cursor-zoom-out touch-auto overflow-auto",
-                    )}
-                  >
-                    <div
-                      className="transition-[width,height] duration-300 ease-out"
-                      style={{
-                        width:
-                          index === selectedIndex ? `${zoom * 100}%` : "100%",
-                        height:
-                          index === selectedIndex ? `${zoom * 100}%` : "100%",
-                      }}
-                    >
-                      <Image
-                        src={image.url}
-                        alt={image.textoAlternativo || productName}
-                        width={1400}
-                        height={1400}
-                        sizes="(max-width: 64rem) 100vw, 60vw"
-                        priority={index === selectedIndex}
-                        className="h-full w-full object-contain"
-                      />
-                    </div>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-
-            {hasMultiple && (
-              <>
-                <CarouselPrevious className="left-4 hidden size-11 border-white/10 bg-black/35 text-white backdrop-blur-sm hover:bg-black/55 sm:flex" />
-                <CarouselNext className="right-4 hidden size-11 border-white/10 bg-black/35 text-white backdrop-blur-sm hover:bg-black/55 sm:flex" />
-              </>
-            )}
-          </Carousel>
-
-          <p className="pointer-events-none absolute bottom-4 left-4 right-4 z-20 text-center text-xs text-white/50 sm:bottom-6">
-            {zoom === 1
-              ? "Deslizá para recorrer · Doble toque para ampliar"
-              : "Desplazá la imagen para explorar sus detalles"}
-          </p>
-
-          {hasMultiple && (
-            <div
-              className="absolute bottom-10 left-4 right-4 z-20 flex items-center justify-center gap-2 sm:bottom-12"
-              aria-label="Seleccionar imagen ampliada"
-            >
-              {orderedImages.map((_, index) => (
-                <button
-                  key={`lightbox-indicator-${index}`}
-                  type="button"
-                  onClick={() => lightboxApi?.scrollTo(index)}
-                  className={cn(
-                    "size-2 rounded-full transition-[width,background-color] duration-300 outline-none focus-visible:ring-3 focus-visible:ring-primary/50",
-                    selectedIndex === index ? "w-6 bg-primary" : "bg-white/35",
-                  )}
-                  aria-label={`Ir a la imagen ${index + 1}`}
-                  aria-current={selectedIndex === index ? "true" : undefined}
-                />
-              ))}
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+        initialIndex={selectedIndexSeguro}
+        onOpenChange={setLightboxOpen}
+        onIndexChange={setSelectedIndex}
+      />
     </>
   )
 }
