@@ -10,14 +10,16 @@ import {
   type CarouselApi,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from '@/components/ui/carousel'
 import { cn } from '@/lib/utils'
 
 const SIZES_PREVIEW_MOBILE = '(max-width: 1023px) 100vw, 50vw'
 const SIZES_PREVIEW_DESKTOP_PRINCIPAL = '(max-width: 1023px) 100vw, 60vw'
 const SIZES_PREVIEW_DESKTOP_SECUNDARIA = '(max-width: 1023px) 100vw, 30vw'
+
+/** Cada cuánto avanza sola la vista previa mobile (ms). A propósito lento:
+ *  es un acompañamiento de fondo, no debe apurar al usuario. */
+const AUTOPLAY_INTERVAL_MS = 5000
 
 /** Galería responsive: vista previa (grilla en desktop, carrusel en mobile) que abre el visor compartido. */
 export function WorkGalleryLightbox({
@@ -61,6 +63,42 @@ export function WorkGalleryLightbox({
       previewApi.off('reInit', updatePreviewSelection)
     }
   }, [previewApi])
+
+  // Sin flechas, la única forma de recorrer la vista previa mobile es el
+  // swipe o los puntos, así que avanza sola de fondo. Se frena apenas el
+  // usuario la toca (no vuelve a arrancar hasta que la suelta) y respeta
+  // "reducir movimiento" del sistema operativo.
+  useEffect(() => {
+    if (!previewApi || galleryImages.length <= 1) return
+    if (
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) {
+      return
+    }
+
+    let intervalId: ReturnType<typeof setInterval> | undefined
+
+    const play = () => {
+      intervalId = setInterval(() => {
+        previewApi.scrollNext()
+      }, AUTOPLAY_INTERVAL_MS)
+    }
+
+    const stop = () => {
+      if (intervalId) clearInterval(intervalId)
+    }
+
+    play()
+    previewApi.on('pointerDown', stop)
+    previewApi.on('pointerUp', play)
+
+    return () => {
+      stop()
+      previewApi.off('pointerDown', stop)
+      previewApi.off('pointerUp', play)
+    }
+  }, [previewApi, galleryImages.length])
 
   function openAt(index: number) {
     if (!galleryImages[index]) return
@@ -113,13 +151,6 @@ export function WorkGalleryLightbox({
             </CarouselItem>
           ))}
         </CarouselContent>
-
-        {galleryImages.length > 1 && (
-          <>
-            <CarouselPrevious className="left-3 flex size-9 rounded-full border-none bg-brand-black/75 text-white backdrop-blur-sm hover:bg-brand-black/90" />
-            <CarouselNext className="right-3 flex size-9 rounded-full border-none bg-brand-black/75 text-white backdrop-blur-sm hover:bg-brand-black/90" />
-          </>
-        )}
       </Carousel>
 
       {galleryImages.length > 1 && (

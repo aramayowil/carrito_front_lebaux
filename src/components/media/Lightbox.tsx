@@ -1,11 +1,11 @@
-"use client";
+'use client'
 
-import { useEffect, useRef, useState } from "react";
-import { animated, useSpring } from "@react-spring/web";
-import { useGesture } from "@use-gesture/react";
-import { X, ZoomIn, ZoomOut } from "lucide-react";
+import { useEffect, useRef, useState } from 'react'
+import { animated, useSpring } from '@react-spring/web'
+import { useGesture } from '@use-gesture/react'
+import { X, ZoomIn, ZoomOut } from 'lucide-react'
 
-import { ProductImage } from "@/components/media/ProductImage";
+import { ProductImage } from '@/components/media/ProductImage'
 import {
   Carousel,
   type CarouselApi,
@@ -13,24 +13,24 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel";
+} from '@/components/ui/carousel'
 import {
   Dialog,
   DialogClose,
   DialogContent,
   DialogDescription,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/dialog'
+import { cn } from '@/lib/utils'
 
-const ZOOM_AMPLIADO = 2.25;
-const ZOOM_MAXIMO = 4;
-const ZOOM_ASENTADO = 1.05;
-const SPRING_CONFIG = { tension: 300, friction: 30 };
-const SIZES_LIGHTBOX = "(max-width: 767px) 100vw, 90vw";
+const ZOOM_AMPLIADO = 2.25
+const ZOOM_MAXIMO = 4
+const ZOOM_ASENTADO = 1.05
+const SPRING_CONFIG = { tension: 300, friction: 30 }
+const SIZES_LIGHTBOX = '(max-width: 767px) 100vw, 90vw'
 
 function limitarValor(valor: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, valor));
+  return Math.min(max, Math.max(min, valor))
 }
 
 /**
@@ -40,27 +40,27 @@ function limitarValor(valor: number, min: number, max: number) {
  * el zoom respecto del contenedor.
  */
 function calcularLimitesDePaneo(escala: number, el: HTMLDivElement | null) {
-  if (!el || escala <= 1) return { x: 0, y: 0 };
-  const { width, height } = el.getBoundingClientRect();
+  if (!el || escala <= 1) return { x: 0, y: 0 }
+  const { width, height } = el.getBoundingClientRect()
   return {
     x: (width * (escala - 1)) / 2,
     y: (height * (escala - 1)) / 2,
-  };
+  }
 }
 
 export interface LightboxProps {
   /** URLs de las imágenes, en el orden en que se navegan. */
-  images: string[];
+  images: string[]
   /** Usado para el título accesible del diálogo y como alt por defecto. */
-  title: string;
+  title: string
   /** Alt por imagen; si falta alguno cae a `${title}, imagen ampliada N`. */
-  alts?: string[];
-  open: boolean;
+  alts?: string[]
+  open: boolean
   /** Imagen desde la que arranca cada vez que se abre. */
-  initialIndex?: number;
-  onOpenChange: (open: boolean) => void;
+  initialIndex?: number
+  onOpenChange: (open: boolean) => void
   /** Se dispara cuando el usuario navega dentro del visor (swipe, flechas, puntos). */
-  onIndexChange?: (index: number) => void;
+  onIndexChange?: (index: number) => void
 }
 
 /**
@@ -79,13 +79,14 @@ export function Lightbox({
   onOpenChange,
   onIndexChange,
 }: LightboxProps) {
-  const [selectedIndex, setSelectedIndex] = useState(initialIndex);
-  const [api, setApi] = useState<CarouselApi>();
-  const [zoomed, setZoomed] = useState(false);
-  const zoomViewportRef = useRef<HTMLDivElement>(null);
+  const [selectedIndex, setSelectedIndex] = useState(initialIndex)
+  const [openPrevio, setOpenPrevio] = useState(open)
+  const [api, setApi] = useState<CarouselApi>()
+  const [zoomed, setZoomed] = useState(false)
+  const zoomViewportRef = useRef<HTMLDivElement>(null)
 
-  const maxIndex = Math.max(images.length - 1, 0);
-  const selectedIndexSeguro = Math.min(selectedIndex, maxIndex);
+  const maxIndex = Math.max(images.length - 1, 0)
+  const selectedIndexSeguro = Math.min(selectedIndex, maxIndex)
 
   // Posición y escala de la imagen ampliada. Un solo spring para la imagen
   // seleccionada: use-gesture escribe acá durante el gesto (pellizco/paneo)
@@ -95,57 +96,77 @@ export function Lightbox({
     y: 0,
     scale: 1,
     config: SPRING_CONFIG,
-  }));
+  }))
 
   function resetearZoom(inmediato = true) {
-    springApi.start({ x: 0, y: 0, scale: 1, immediate: inmediato });
-    setZoomed(false);
+    springApi.start({ x: 0, y: 0, scale: 1, immediate: inmediato })
+    setZoomed(false)
   }
 
   // Cada vez que se abre, arrancamos siempre desde la imagen que se clickeó.
+  // El índice y el flag de zoom se ajustan acá, durante el render (no en un
+  // efecto): es el patrón que React recomienda para "resetear estado cuando
+  // cambia una prop", comparando contra el valor anterior guardado en
+  // estado (no en un ref, que no puede leerse durante el render).
+  if (open !== openPrevio) {
+    setOpenPrevio(open)
+    if (open) {
+      setSelectedIndex(initialIndex)
+      setZoomed(false)
+    }
+  }
+
+  // El spring de react-spring es un sistema externo a React (no estado de
+  // React), así que su reset imperativo sí vive en un efecto.
   useEffect(() => {
-    if (!open) return;
-    setSelectedIndex(initialIndex);
-    resetearZoom();
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- solo nos interesa el instante en que `open` pasa a true
-  }, [open]);
+    if (!open) return
+    springApi.start({ x: 0, y: 0, scale: 1, immediate: true })
+  }, [open, springApi])
 
   useEffect(() => {
-    if (!open || !api || images.length === 0) return;
-    api.scrollTo(selectedIndexSeguro, true);
-  }, [api, images.length, open, selectedIndexSeguro]);
+    if (!open || !api || images.length === 0) return
+    api.scrollTo(selectedIndexSeguro, true)
+  }, [api, images.length, open, selectedIndexSeguro])
 
   useEffect(() => {
-    if (!api) return;
+    if (!api) return
 
     const updateSelection = () => {
-      const index = api.selectedScrollSnap();
-      setSelectedIndex(index);
-      onIndexChange?.(index);
-      resetearZoom();
-    };
+      const index = api.selectedScrollSnap()
+      setSelectedIndex(index)
+      onIndexChange?.(index)
+      resetearZoom()
+    }
 
-    api.on("select", updateSelection);
+    api.on('select', updateSelection)
     return () => {
-      api.off("select", updateSelection);
-    };
+      api.off('select', updateSelection)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- resetearZoom/onIndexChange son estables en la práctica
-  }, [api]);
+  }, [api])
 
   function toggleZoom() {
     if (zoomed) {
-      resetearZoom(false);
-      return;
+      resetearZoom(false)
+      return
     }
-    springApi.start({ x: 0, y: 0, scale: ZOOM_AMPLIADO });
-    setZoomed(true);
+    springApi.start({ x: 0, y: 0, scale: ZOOM_AMPLIADO })
+    setZoomed(true)
   }
 
-  const bind = useGesture(
+  // `target: zoomViewportRef` hace que use-gesture ate los listeners con
+  // addEventListener nativo (passive: false) en vez de props sintéticas de
+  // React. Sin esto, el wheel del pinch-zoom de trackpad queda pasivo: la
+  // librería llama preventDefault() pero el navegador lo ignora y termina
+  // zoomeando la página entera en lugar de la imagen (y tira el warning
+  // "To properly support zoom on trackpads..." en consola). El ref cambia
+  // de nodo en cada slide, pero el efecto interno de use-gesture reata en
+  // cada render, así que sigue targeteando siempre a la imagen activa.
+  useGesture(
     {
       onDrag: ({ pinching, cancel, offset: [ox, oy] }) => {
-        if (pinching) return cancel();
-        springApi.start({ x: ox, y: oy, immediate: true });
+        if (pinching) return cancel()
+        springApi.start({ x: ox, y: oy, immediate: true })
       },
       onPinch: ({
         origin: [ox, oy],
@@ -155,47 +176,59 @@ export function Lightbox({
         memo,
       }) => {
         if (first) {
-          const rect = zoomViewportRef.current?.getBoundingClientRect();
-          const centroX = rect ? rect.x + rect.width / 2 : ox;
-          const centroY = rect ? rect.y + rect.height / 2 : oy;
+          const rect = zoomViewportRef.current?.getBoundingClientRect()
+          const centroX = rect ? rect.x + rect.width / 2 : ox
+          const centroY = rect ? rect.y + rect.height / 2 : oy
           memo = {
             xInicial: x.get(),
             yInicial: y.get(),
             distanciaAlCentroX: ox - centroX,
             distanciaAlCentroY: oy - centroY,
-          };
+          }
         }
 
-        const nuevaEscala = limitarValor(escalaAbsoluta, 1, ZOOM_MAXIMO);
+        const nuevaEscala = limitarValor(escalaAbsoluta, 1, ZOOM_MAXIMO)
         springApi.start({
           scale: nuevaEscala,
           x: memo.xInicial - (escalaRelativa - 1) * memo.distanciaAlCentroX,
           y: memo.yInicial - (escalaRelativa - 1) * memo.distanciaAlCentroY,
           immediate: true,
-        });
-        setZoomed(nuevaEscala > ZOOM_ASENTADO);
+        })
+        setZoomed(nuevaEscala > ZOOM_ASENTADO)
 
-        return memo;
+        return memo
       },
       onPinchEnd: ({ offset: [escalaAbsoluta] }) => {
-        const seAsienta = escalaAbsoluta <= ZOOM_ASENTADO;
-        const escalaFinal = seAsienta ? 1 : escalaAbsoluta;
-        const limites = calcularLimitesDePaneo(escalaFinal, zoomViewportRef.current);
+        const seAsienta = escalaAbsoluta <= ZOOM_ASENTADO
+        const escalaFinal = seAsienta ? 1 : escalaAbsoluta
+        const limites = calcularLimitesDePaneo(
+          escalaFinal,
+          zoomViewportRef.current,
+        )
 
         springApi.start({
           scale: escalaFinal,
           x: limitarValor(x.get(), -limites.x, limites.x),
           y: limitarValor(y.get(), -limites.y, limites.y),
-        });
-        setZoomed(!seAsienta);
+        })
+        setZoomed(!seAsienta)
       },
     },
     {
+      target: zoomViewportRef,
       drag: {
         from: () => [x.get(), y.get()],
         bounds: () => {
-          const limites = calcularLimitesDePaneo(scale.get(), zoomViewportRef.current);
-          return { left: -limites.x, right: limites.x, top: -limites.y, bottom: limites.y };
+          const limites = calcularLimitesDePaneo(
+            scale.get(),
+            zoomViewportRef.current,
+          )
+          return {
+            left: -limites.x,
+            right: limites.x,
+            top: -limites.y,
+            bottom: limites.y,
+          }
         },
         rubberband: true,
         decay: true,
@@ -206,16 +239,16 @@ export function Lightbox({
         rubberband: true,
       },
     },
-  );
+  )
 
-  if (images.length === 0) return null;
+  if (images.length === 0) return null
 
   return (
     <Dialog
       open={open}
       onOpenChange={(nextOpen) => {
-        onOpenChange(nextOpen);
-        if (!nextOpen) resetearZoom();
+        onOpenChange(nextOpen)
+        if (!nextOpen) resetearZoom()
       }}
     >
       <DialogContent
@@ -237,7 +270,7 @@ export function Lightbox({
               type="button"
               onClick={toggleZoom}
               className="inline-flex size-10 touch-manipulation items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-sm transition-colors hover:bg-black/55 focus-visible:ring-3 focus-visible:ring-primary/50 focus-visible:outline-none"
-              aria-label={zoomed ? "Reducir imagen" : "Ampliar imagen"}
+              aria-label={zoomed ? 'Reducir imagen' : 'Ampliar imagen'}
             >
               {!zoomed ? (
                 <ZoomIn className="size-5" aria-hidden="true" />
@@ -270,23 +303,34 @@ export function Lightbox({
         >
           <CarouselContent className="ml-0 h-dvh w-full">
             {images.map((image, index) => (
-              <CarouselItem key={`${image}-lightbox-${index}`} className="h-dvh w-full pl-0">
+              <CarouselItem
+                key={`${image}-lightbox-${index}`}
+                className="h-dvh w-full pl-0"
+              >
                 <div
-                  ref={index === selectedIndexSeguro ? zoomViewportRef : undefined}
+                  ref={
+                    index === selectedIndexSeguro ? zoomViewportRef : undefined
+                  }
                   onDoubleClick={toggleZoom}
-                  {...(index === selectedIndexSeguro ? bind() : {})}
                   className={cn(
-                    "h-full w-full touch-none overscroll-contain select-none",
-                    zoomed ? "cursor-zoom-out" : "cursor-zoom-in",
+                    'h-full w-full touch-none overscroll-contain select-none',
+                    zoomed ? 'cursor-zoom-out' : 'cursor-zoom-in',
                   )}
                 >
                   <animated.div
                     className="h-full w-full"
-                    style={index === selectedIndexSeguro ? { x, y, scale } : undefined}
+                    style={
+                      index === selectedIndexSeguro
+                        ? { x, y, scale }
+                        : undefined
+                    }
                   >
                     <ProductImage
                       src={image}
-                      alt={alts?.[index] ?? `${title}, imagen ampliada ${index + 1}`}
+                      alt={
+                        alts?.[index] ??
+                        `${title}, imagen ampliada ${index + 1}`
+                      }
                       sizes={SIZES_LIGHTBOX}
                       className="pointer-events-none h-full w-full select-none"
                       imgClassName="object-contain"
@@ -307,8 +351,8 @@ export function Lightbox({
 
         <p className="pointer-events-none absolute right-4 bottom-4 left-4 z-20 text-center text-xs text-white/50 sm:bottom-6">
           {!zoomed
-            ? "Deslizá para recorrer · Usá dos dedos o doble toque para ampliar"
-            : "Desplazá la imagen para explorar sus detalles"}
+            ? 'Deslizá para recorrer · Usá dos dedos o doble toque para ampliar'
+            : 'Desplazá la imagen para explorar sus detalles'}
         </p>
 
         {images.length > 1 && (
@@ -322,16 +366,20 @@ export function Lightbox({
                 type="button"
                 onClick={() => api?.scrollTo(index)}
                 className={cn(
-                  "size-2 rounded-full transition-[width,background-color] duration-300 focus-visible:ring-3 focus-visible:ring-primary/50 focus-visible:outline-none",
-                  selectedIndexSeguro === index ? "w-6 bg-primary" : "bg-white/35",
+                  'size-2 rounded-full transition-[width,background-color] duration-300 focus-visible:ring-3 focus-visible:ring-primary/50 focus-visible:outline-none',
+                  selectedIndexSeguro === index
+                    ? 'w-6 bg-primary'
+                    : 'bg-white/35',
                 )}
                 aria-label={`Ir a la imagen ${index + 1}`}
-                aria-current={selectedIndexSeguro === index ? "true" : undefined}
+                aria-current={
+                  selectedIndexSeguro === index ? 'true' : undefined
+                }
               />
             ))}
           </div>
         )}
       </DialogContent>
     </Dialog>
-  );
+  )
 }
