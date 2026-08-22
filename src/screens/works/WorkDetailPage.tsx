@@ -129,17 +129,12 @@ export function WorkDetailPage({
 
       <section className="bg-brand-black py-12 text-white sm:py-14 lg:py-16">
         <div className="container grid items-center gap-10 lg:grid-cols-[1fr_0.75fr] lg:gap-16">
-          <figure className="works-reveal-soft border-l-2 border-primary pl-5 sm:pl-7">
-            <blockquote className="max-w-3xl text-xl leading-9 text-white/85 sm:text-2xl sm:leading-10">
-              <RichTextContent
-                html={obra.testimonio}
-                className="rich-text-content--quote"
-              />
-            </blockquote>
-            <figcaption className="mt-5 text-xs font-semibold uppercase tracking-widest text-primary">
-              — {obra.autor}
-            </figcaption>
-          </figure>
+          <div className="works-reveal-soft hidden border-l-2 border-primary pl-5 sm:pl-7 md:block">
+            <p className="max-w-md text-xl leading-9 text-white/85 sm:text-2xl sm:leading-10">
+              Escuchamos la idea, medimos el espacio y diseñamos cada detalle
+              a medida. Así nace cada proyecto que hacemos realidad.
+            </p>
+          </div>
 
           <div className="works-reveal-soft border-t border-white/10 pt-7 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-12">
             <p className="eyebrow mb-2">Tu espacio puede ser el próximo</p>
