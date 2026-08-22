@@ -24,6 +24,12 @@ export function WorkCard({
         src={obra.imagen}
         alt={obra.titulo}
         priority={priority}
+        // Debe coincidir con los breakpoints reales del grid de WorksGallery
+        // (sm:grid-cols-2 xl:grid-cols-3). El default de ProductImage corta
+        // en 1024px, pero acá el salto a 3 columnas es en xl (1280px); con
+        // el default, entre 1024–1280px el navegador precarga una imagen
+        // más chica de la que realmente se termina usando.
+        sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
         className="aspect-4/3 w-full bg-muted"
         imgClassName="object-cover transition-transform duration-700 ease-out motion-safe:group-hover:scale-[1.025]"
       />

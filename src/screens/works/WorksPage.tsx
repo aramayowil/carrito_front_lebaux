@@ -51,6 +51,11 @@ export function WorksPage({
   const obraDestacada =
     obras.find((obra) => obra.destacadaEnInicio && obra.esPrincipal) ??
     obras[0];
+  // Evita precargar la misma imagen dos veces (una en "Historia destacada"
+  // y otra con priority en la primera fila de WorksGallery).
+  const obrasGaleria = obraDestacada
+    ? obras.filter((obra) => obra.id !== obraDestacada.id)
+    : obras;
   const remodelaciones = obras.filter((obra) => obra.antesYDespues?.activo);
   const whatsappHref = buildWhatsAppUrl(
     "Hola! Vi la galería de obras y quiero asesoramiento para mi proyecto.",
@@ -188,7 +193,7 @@ export function WorksPage({
             </p>
           </div>
 
-          <WorksGallery categorias={categorias} obras={obras} />
+          <WorksGallery categorias={categorias} obras={obrasGaleria} />
         </div>
       </section>
 
